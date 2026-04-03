@@ -102,6 +102,9 @@ static EGLBoolean (*g_OrigEglSwapBuffers)(EGLDisplay, EGLSurface) = nullptr;
 // 标记：是否已初始化 OpenGL 路径的 ImGui
 static bool g_GlesInitialized = false;
 
+// 记录 ImGui 初始化时使用的 ANativeWindow，用于检测 window 重建
+static ANativeWindow* g_ImGuiWindow = nullptr;
+
 /**
  * @brief 在游戏的 EGL Context 上初始化 ImGui（仅首次调用）
  *
@@ -165,6 +168,7 @@ static bool InitImGuiOnGameContext(EGLDisplay display, EGLSurface surface)
 
     g_GlesInitialized = true;
     g_ImGuiReady.store(true);
+    g_ImGuiWindow = g_App->window;
 
     LOGI("[SwapChainHook] ImGui initialized on game EGL context  %dx%d", w, h);
     return true;
@@ -181,27 +185,59 @@ static bool InitImGuiOnGameContext(EGLDisplay display, EGLSurface surface)
  */
 static EGLBoolean Hooked_eglSwapBuffers(EGLDisplay display, EGLSurface surface)
 {
-    // 首次调用：初始化 ImGui
+    if (eglGetCurrentContext() == EGL_NO_CONTEXT)
+        return g_OrigEglSwapBuffers(display, surface);
+
     if (!g_GlesInitialized)
     {
-        // 仅 hook 有实际 Context 的线程
-        if (eglGetCurrentContext() != EGL_NO_CONTEXT)
+        if (!InitImGuiOnGameContext(display, surface))
         {
-            if (!InitImGuiOnGameContext(display, surface))
-            {
-                // 初始化失败，直接调用原始函数
-                return g_OrigEglSwapBuffers(display, surface);
-            }
-        }
-        else
-        {
+            // 初始化失败，直接调用原始函数
             return g_OrigEglSwapBuffers(display, surface);
         }
     }
 
+    if (!g_App || !g_App->window)
+        return g_OrigEglSwapBuffers(display, surface);
+
+    // ANativeWindow 重建后需要重新初始化 ImGui
+    if (g_GlesInitialized && g_App->window != g_ImGuiWindow)
+    {
+        LOGI("[SwapChainHook] ANativeWindow changed %p -> %p, reinitializing ImGui", g_ImGuiWindow, g_App->window);
+        g_ImGuiReady.store(false);
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplAndroid_Shutdown();
+        ImGui::DestroyContext();
+        g_GlesInitialized = false;
+        g_ImGuiWindow = nullptr;
+        if (!InitImGuiOnGameContext(display, surface))
+            return g_OrigEglSwapBuffers(display, surface);
+    }
+
+    // --- 查询 EGL surface 实际尺寸 ---
+    EGLint sw = 0, sh = 0;
+    eglQuerySurface(display, surface, EGL_WIDTH, &sw);
+    eglQuerySurface(display, surface, EGL_HEIGHT, &sh);
+
     // --- ImGui 渲染帧 ---
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplAndroid_NewFrame();
+
+    // 通过 DisplayFramebufferScale 计算 ImGui 渲染后端真实帧缓冲分辨率。
+    {
+        ImGuiIO &ioUpdate = ImGui::GetIO();
+        // DisplaySize 保持 ANativeWindow 尺寸（与触摸坐标一致）
+        float dispW = ioUpdate.DisplaySize.x;
+        float dispH = ioUpdate.DisplaySize.y;
+        g_Width  = (int)dispW;
+        g_Height = (int)dispH;
+        // 设置 framebuffer scale: EGL surface 尺寸 / 显示尺寸
+        if (sw > 0 && sh > 0 && dispW > 0 && dispH > 0)
+        {
+            ioUpdate.DisplayFramebufferScale = ImVec2((float)sw / dispW, (float)sh / dispH);
+        }
+    }
+
     ImGui::NewFrame();
     ImGuiSoftKeyboard::PreUpdate();
 
@@ -212,18 +248,39 @@ static EGLBoolean Hooked_eglSwapBuffers(EGLDisplay display, EGLSurface surface)
 
     ImGui::Render();
 
+    // --- 保存游戏的 GL 状态 ---
+    GLint prevFBO = 0;
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFBO);
+    GLint prevViewport[4];
+    glGetIntegerv(GL_VIEWPORT, prevViewport);
+    GLboolean prevBlend = glIsEnabled(GL_BLEND);
+    GLint prevBlendSrcRGB, prevBlendDstRGB, prevBlendSrcA, prevBlendDstA;
+    glGetIntegerv(GL_BLEND_SRC_RGB, &prevBlendSrcRGB);
+    glGetIntegerv(GL_BLEND_DST_RGB, &prevBlendDstRGB);
+    glGetIntegerv(GL_BLEND_SRC_ALPHA, &prevBlendSrcA);
+    glGetIntegerv(GL_BLEND_DST_ALPHA, &prevBlendDstA);
+
     // 渲染到游戏的默认帧缓冲区（FBO 0）
     // 注意：不做 glClear，保留游戏已有画面内容
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+    // viewport 使用 EGL surface 实际分辨率（framebuffer 尺寸）
     ImGuiIO &io = ImGui::GetIO();
-    glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
+    int fbW = (int)(io.DisplaySize.x * io.DisplayFramebufferScale.x);
+    int fbH = (int)(io.DisplaySize.y * io.DisplayFramebufferScale.y);
+    glViewport(0, 0, fbW, fbH);
 
     // 开启混合，ImGui 绘制叠加在游戏画面之上
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    // --- 恢复游戏的 GL 状态 ---
+    glBindFramebuffer(GL_FRAMEBUFFER, prevFBO);
+    glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
+    if (prevBlend) glEnable(GL_BLEND); else glDisable(GL_BLEND);
+    glBlendFuncSeparate(prevBlendSrcRGB, prevBlendDstRGB, prevBlendSrcA, prevBlendDstA);
 
     // --- 调用原始 eglSwapBuffers ---
     return g_OrigEglSwapBuffers(display, surface);
@@ -1056,15 +1113,8 @@ void Install()
     case HookStrategy::EGL:
     {
         // --- 方案1: EGL hook (适用所有 OpenGL 后端程序) ---
-        void* sym = DobbySymbolResolver(NULL, "eglSwapBuffers");
-        if (sym)
-        {
-            DobbyHook(sym, (void *)Hooked_eglSwapBuffers, (void **)&g_OrigEglSwapBuffers);
-        }
-        else
-        {
-            LOGE("[SwapChainHook] eglSwapBuffers not found via DobbySymbolResolver");
-        }
+        void* sym = (void*)&eglSwapBuffers;
+        DobbyHook(sym, (void *)Hooked_eglSwapBuffers, (void **)&g_OrigEglSwapBuffers);
         break;
     }
     case HookStrategy::VkCreateInstance:
@@ -1115,7 +1165,8 @@ void Install()
     {
         g_Orig_onInputEvent = g_App->onInputEvent;
         g_App->onInputEvent = [](struct android_app* app, AInputEvent* event) -> int32_t {
-            ImGui_ImplAndroid_HandleInputEvent(event);
+            if (g_ImGuiReady.load() && ImGui::GetCurrentContext())
+                ImGui_ImplAndroid_HandleInputEvent(event);
             return g_Orig_onInputEvent(app, event);
         };
         LOGI("[SwapChainHook] Android input event hooked");
@@ -1137,8 +1188,7 @@ void Uninstall()
     {
         if (g_OrigEglSwapBuffers)
         {
-            void* sym = DobbySymbolResolver(NULL, "eglSwapBuffers");
-            if (sym) DobbyDestroy(sym);
+            DobbyDestroy((void*)&eglSwapBuffers);
             g_OrigEglSwapBuffers = nullptr;
         }
         break;
