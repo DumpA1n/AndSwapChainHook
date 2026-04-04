@@ -28,7 +28,7 @@ cmake --build build
 使用 [AndKittyInjector v5.1.0](https://github.com/MJx0/AndKittyInjector) 注入到目标应用：
 
 ```bash
-./AndKittyInjector --package <包名> -lib libAndSwapChainHook.so -dl_memfd -hide_maps -hide_solist -watch -delay 50
+./AndKittyInjector --package <包名> -lib libAndSwapChainHook.so --memfd --hide -watch -delay 50
 ```
 
 ---
@@ -57,7 +57,7 @@ Output: `libAndSwapChainHook.so`
 Inject into a target app using [AndKittyInjector v5.1.0](https://github.com/MJx0/AndKittyInjector):
 
 ```bash
-./AndKittyInjector --package <package_name> -lib libAndSwapChainHook.so -dl_memfd -hide_maps -hide_solist -watch -delay 50
+./AndKittyInjector --package <package_name> -lib libAndSwapChainHook.so --memfd --hide -watch -delay 50
 ```
 
 ## Credits
