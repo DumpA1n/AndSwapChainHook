@@ -20,7 +20,7 @@ void main_thread()
 			// "libUE4.so", // Enable when injecting Unreal Engine games and use VkGIPA_Pointer hook strategy
 			"libvulkan.so",
 			"libinput.so",
-			"libart.so",
+			"libart.so", // For GetJavaVM()
 			"libandroid_runtime.so",
 		}))
 	{
@@ -71,6 +71,7 @@ __attribute__((constructor)) void ctor()
 {
 	LOGI("ctor");
 
+	// Enable if not use AndKittyInjector
 	// if (!g_Initialized.exchange(true))
 	// 	std::thread(main_thread).detach();
 }
