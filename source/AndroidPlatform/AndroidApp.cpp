@@ -1,23 +1,57 @@
-#pragma once
-
-// Android 平台基础：全局 android_app / JavaVM / JNI 环境获取
-// 整个项目通过此头文件访问平台上下文
-
-#include <android/native_activity.h>
-#include <android/native_window.h>
-#include <android/native_window_jni.h>
-#include "android_native_app_glue.h"
+#include "AndroidApp.h"
 #include <jni.h>
+#include "Core/ElfScannerManager.h"
+#include "Utils/Logger.h"
 
-inline struct android_app *g_App = nullptr;
+struct android_app *g_App = nullptr;
 
-inline JavaVM *g_JavaVM = nullptr;
+JavaVM* g_JavaVM = nullptr; /// deprecated, use AndroidApp::GetJavaVM() instead
 
-inline JNIEnv *GetJavaEnv()
+namespace AndroidApp {
+
+/**
+ * 通过 ElfScanner 解析 libart.so 的 JNI_GetCreatedJavaVMs 符号获取 JavaVM 指针
+ */
+JavaVM* GetJavaVM()
 {
+    static JavaVM* s_vm = nullptr;
+    if (s_vm) return s_vm;
+
+    auto addr = Elf.art().findSymbol("JNI_GetCreatedJavaVMs");
+    if (!addr)
+    {
+        LOGE("[AndroidApp] GetJavaVM: findSymbol(JNI_GetCreatedJavaVMs) failed");
+        return nullptr;
+    }
+
+    using JNI_GetCreatedJavaVMs_t = jint (*)(JavaVM**, jsize, jsize*);
+    auto fn = reinterpret_cast<JNI_GetCreatedJavaVMs_t>(addr);
+
+    JavaVM* vm = nullptr;
+    jsize count = 0;
+    if (fn(&vm, 1, &count) == JNI_OK && count > 0)
+    {
+        s_vm = vm;
+        LOGI("[AndroidApp] GetJavaVM: got VM=%p", s_vm);
+        return s_vm;
+    }
+
+    LOGE("[AndroidApp] GetJavaVM: JNI_GetCreatedJavaVMs failed, count=%d", (int)count);
+    return nullptr;
+}
+
+JNIEnv *GetJavaEnv()
+{
+    JavaVM* vm = GetJavaVM();
+    if (!vm)
+    {
+        LOGE("[AndroidApp] GetJavaEnv: JavaVM is null");
+        return nullptr;
+    }
     JNIEnv *env = nullptr;
-    if (g_JavaVM->GetEnv((void **)&env, JNI_VERSION_1_6) == JNI_OK)
+    if (vm->GetEnv((void **)&env, JNI_VERSION_1_6) == JNI_OK)
         return env;
+    LOGW("[AndroidApp] GetJavaEnv: GetEnv failed (thread not attached?)");
     return nullptr;
 }
 
@@ -29,15 +63,27 @@ inline JNIEnv *GetJavaEnv()
  *   NativeActivity.mNativeHandle (long) 即 ANativeActivity*
  *   ANativeActivity::instance 由 glue code 设置为 android_app*
  */
-inline android_app* FindAndroidAppViaJNI(JavaVM* vm)
+android_app* FindAndroidAppViaJNI()
 {
+    LOGI("[AndroidApp] FindAndroidAppViaJNI: starting");
+    JavaVM* vm = GetJavaVM();
+    if (!vm)
+    {
+        LOGE("[AndroidApp] FindAndroidAppViaJNI: JavaVM is null");
+        return nullptr;
+    }
+
     JNIEnv* env = nullptr;
     bool needDetach = false;
 
     if (vm->GetEnv((void**)&env, JNI_VERSION_1_6) != JNI_OK)
     {
+        LOGI("[AndroidApp] FindAndroidAppViaJNI: attaching current thread");
         if (vm->AttachCurrentThread(&env, nullptr) != JNI_OK)
+        {
+            LOGE("[AndroidApp] FindAndroidAppViaJNI: AttachCurrentThread failed");
             return nullptr;
+        }
         needDetach = true;
     }
 
@@ -103,10 +149,12 @@ inline android_app* FindAndroidAppViaJNI(JavaVM* vm)
                 if (env->IsInstanceOf(activity, naClass))
                 {
                     jlong handle = env->GetLongField(activity, handleField);
+                    LOGI("[AndroidApp] FindAndroidAppViaJNI: NativeActivity found, mNativeHandle=0x%llx", (unsigned long long)handle);
                     if (handle != 0)
                     {
                         auto* na = reinterpret_cast<ANativeActivity*>(handle);
                         result = static_cast<android_app*>(na->instance);
+                        LOGI("[AndroidApp] FindAndroidAppViaJNI: android_app=%p", result);
                     }
                 }
                 if (result) break;
@@ -122,5 +170,10 @@ inline android_app* FindAndroidAppViaJNI(JavaVM* vm)
     if (needDetach)
         vm->DetachCurrentThread();
 
+    if (!result)
+        LOGE("[AndroidApp] FindAndroidAppViaJNI: failed to find android_app");
+
     return result;
+}
+
 }

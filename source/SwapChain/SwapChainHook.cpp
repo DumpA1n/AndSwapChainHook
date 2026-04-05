@@ -19,7 +19,7 @@
 #include "Core/ResourceManager.h"
 #include "Dobby/dobby.h"
 #include "ImGuiExtern/ImGuiSoftKeyboard.h"
-#include "Platform/AndroidApp.h"
+#include "AndroidPlatform/AndroidApp.h"
 #include "PointerHook/PointerHookManager.h"
 #include "PointerHook/SafePointerHook.h"
 #include "Utils/Logger.h"
@@ -40,7 +40,7 @@ enum class HookStrategy { EGL, VkCreateInstance, VkGIPA_Pointer, VkGIPA_Thunk };
 //   VkCreateInstance — 方案2: hook vkCreateInstance (Vulkan)
 //   VkGIPA_Pointer   — 方案3: hook vkGetInstanceProcAddr 指针 (UE + Vulkan)
 //   VkGIPA_Thunk     — 方案4: hook vkGetInstanceProcAddr thunk (UE + Vulkan)
-constexpr HookStrategy g_HookStrategy = HookStrategy::VkGIPA_Thunk;
+constexpr HookStrategy g_HookStrategy = HookStrategy::EGL;
 
 static std::atomic<bool>           g_Installed{false};
 static std::atomic<bool>           g_ImGuiReady{false};

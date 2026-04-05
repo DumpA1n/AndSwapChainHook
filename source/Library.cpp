@@ -1,5 +1,5 @@
+#include "AndroidPlatform/AndroidApp.h"
 #include "Core/ElfScannerManager.h"
-#include "Platform/AndroidApp.h"
 #include "SwapChain/SwapChainHook.h"
 #include "Utils/CrashHandler.h"
 #include "Utils/FileLogger.h"
@@ -7,16 +7,20 @@
 #include "Utils/Logger.h"
 #include "imgui/imgui.h"
 
+#include <atomic>
 #include <chrono>
 #include <thread>
 
 void main_thread()
 {
+	CrashHandler::Install();
+
 	if (!Elf.scanAsync({
 			"libc.so",
 			// "libUE4.so", // Enable when injecting Unreal Engine games and use VkGIPA_Pointer hook strategy
 			"libvulkan.so",
 			"libinput.so",
+			"libart.so",
 			"libandroid_runtime.so",
 		}))
 	{
@@ -24,11 +28,10 @@ void main_thread()
 		MAKE_CRASH();
 	}
 
-	while (!g_App)
-	{
-		g_App = FindAndroidAppViaJNI(g_JavaVM);
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-	}
+	LOGI("Waiting for valid android_app* via JNI...");
+
+	while (!(g_App = AndroidApp::FindAndroidAppViaJNI()))
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	LOGI("[*] g_App: %p", g_App);
 
 	GetLogFile("Debug")->Append("Hello\n"); // Must after g_App is valid
@@ -40,19 +43,17 @@ void main_thread()
 	SwapChainHook::Install();
 }
 
+static std::atomic<bool> g_Initialized{false};
+
 extern "C" jint JNIEXPORT JNI_OnLoad(JavaVM* vm, void* key)
 {
 	// key 1337 is passed by injector
-	if (key != (void*)1337)
+	if (key != (void*)20030331)
 		return JNI_VERSION_1_6;
-
-	CrashHandler::Install();
 
 	LOGI("JNI_OnLoad called by injector.");
 
 	LOGI("JavaVM: %p", vm);
-
-	g_JavaVM = vm;
 
 	JNIEnv* env = nullptr;
 	if (vm->GetEnv((void**)&env, JNI_VERSION_1_6) == JNI_OK)
@@ -60,11 +61,18 @@ extern "C" jint JNIEXPORT JNI_OnLoad(JavaVM* vm, void* key)
 		LOGI("JavaEnv: %p", env);
 	}
 
-	std::thread(main_thread).detach();
+	if (!g_Initialized.exchange(true))
+		std::thread(main_thread).detach();
 
 	return JNI_VERSION_1_6;
 }
 
-__attribute__((constructor)) void ctor() { LOGI("ctor"); }
+__attribute__((constructor)) void ctor()
+{
+	LOGI("ctor");
+
+	// if (!g_Initialized.exchange(true))
+	// 	std::thread(main_thread).detach();
+}
 
 __attribute__((destructor)) void dtor() { LOGI("dtor"); }
