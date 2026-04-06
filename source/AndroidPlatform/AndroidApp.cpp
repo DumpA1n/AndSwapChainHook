@@ -65,7 +65,6 @@ JNIEnv *GetJavaEnv()
  */
 android_app* FindAndroidAppViaJNI()
 {
-    LOGI("[AndroidApp] FindAndroidAppViaJNI: starting");
     JavaVM* vm = GetJavaVM();
     if (!vm)
     {
@@ -78,7 +77,6 @@ android_app* FindAndroidAppViaJNI()
 
     if (vm->GetEnv((void**)&env, JNI_VERSION_1_6) != JNI_OK)
     {
-        LOGI("[AndroidApp] FindAndroidAppViaJNI: attaching current thread");
         if (vm->AttachCurrentThread(&env, nullptr) != JNI_OK)
         {
             LOGE("[AndroidApp] FindAndroidAppViaJNI: AttachCurrentThread failed");
@@ -169,9 +167,6 @@ android_app* FindAndroidAppViaJNI()
 
     if (needDetach)
         vm->DetachCurrentThread();
-
-    if (!result)
-        LOGE("[AndroidApp] FindAndroidAppViaJNI: failed to find android_app");
 
     return result;
 }
