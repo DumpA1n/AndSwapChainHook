@@ -33,29 +33,21 @@ inline uintptr_t Strip(uintptr_t address) {
 }
 
 inline bool IsValid(uintptr_t address) {
-    address = Strip(address);
-    if (!address || (address & 0x3) || !(address >= 0x10000000 && address <= (uintptr_t)0x7fffffffff)) {
+    // 高位只允许全 0 或 Android tagged pointer 前缀 0xB4000
+    uintptr_t highBits = address & ~(uintptr_t)0x7fffffffff;
+    if (highBits != 0 && highBits != (uintptr_t)0xB400000000000000)
         return false;
-    }
-    return true;
-}
 
-inline bool IsValidStrong(uintptr_t address) {
-    address = Strip(address);
-    if (!address || (address & 0x7) || !(address >= (uintptr_t)0x6000000000 && address < (uintptr_t)0x7fffffffff)) {
+    uintptr_t stripped = Strip(address);
+    if (!stripped || stripped < (uintptr_t)0x10000000)
         return false;
-    }
+
     return true;
 }
 
 template<class T>
 inline bool IsValid(const T& c) {
     return IsValid((uintptr_t)c);
-}
-
-template<class T>
-inline bool IsValidStrong(const T& c) {
-    return IsValidStrong((uintptr_t)c);
 }
 
 inline bool IsValidF(float value) {
@@ -105,6 +97,9 @@ inline const char* errorString(MemError e) {
 
 // ============================================================
 //  Platform backend — the ONLY place with #if defined
+//
+//  Safe  = KittyMemory (遍历 maps, mprotect)，安全但慢
+//  Fast  = 直接 memcpy，零开销但调用者需自行保证地址可读写
 // ============================================================
 namespace detail {
 #if defined(kBUILD_LIBRARY)
@@ -112,12 +107,16 @@ namespace detail {
         bool init(const std::string&) { return true; }
         pid_t getpid() { return ::getpid(); }
 
-        bool rawRead(uint64_t address, void* buffer, size_t len) {
-            std::memcpy(buffer, reinterpret_cast<void*>(address), len);
+        // ---------- Safe: KittyMemory (遍历 maps) ----------
+        bool safeRead(uint64_t address, void* buffer, size_t len) {
+            if (!KittyMemory::memRead(buffer, reinterpret_cast<void*>(address), len)) {
+                setError(MemError::ReadFailed);
+                return false;
+            }
             return true;
         }
 
-        bool rawWrite(uint64_t address, void* buffer, size_t len) {
+        bool safeWrite(uint64_t address, void* buffer, size_t len) {
             if (!KittyMemory::memWrite(reinterpret_cast<void*>(address), buffer, len)) {
                 setError(MemError::WriteFailed);
                 return false;
@@ -125,13 +124,19 @@ namespace detail {
             return true;
         }
 
-        bool rawWriteDirect(uint64_t address, const void* data, size_t len) {
+        // ---------- Fast: 直接 memcpy ----------
+        bool fastRead(uint64_t address, void* buffer, size_t len) {
+            std::memcpy(buffer, reinterpret_cast<const void*>(address), len);
+            return true;
+        }
+
+        bool fastWrite(uint64_t address, const void* data, size_t len) {
             std::memcpy(reinterpret_cast<void*>(address), data, len);
             return true;
         }
 
         template<typename T>
-        T directRead(uint64_t address) {
+        T fastReadValue(uint64_t address) {
             return *reinterpret_cast<T*>(address);
         }
 
@@ -163,7 +168,8 @@ namespace detail {
 
         pid_t getpid() { return m_pid; }
 
-        bool rawRead(uint64_t address, void* buffer, size_t len) {
+        // 跨进程无 Safe/Fast 区分，统一使用 syscall
+        bool safeRead(uint64_t address, void* buffer, size_t len) {
             struct iovec local = { .iov_base = buffer, .iov_len = len };
             struct iovec remote = { .iov_base = reinterpret_cast<void*>(address), .iov_len = len };
             ssize_t ret = (ssize_t)syscall_aarch64(__NR_process_vm_readv, m_pid, &local, 1, &remote, 1, 0, 1);
@@ -175,7 +181,7 @@ namespace detail {
             return true;
         }
 
-        bool rawWrite(uint64_t address, void* buffer, size_t len) {
+        bool safeWrite(uint64_t address, void* buffer, size_t len) {
             struct iovec local = { .iov_base = buffer, .iov_len = len };
             struct iovec remote = { .iov_base = reinterpret_cast<void*>(address), .iov_len = len };
             ssize_t ret = (ssize_t)syscall_aarch64(__NR_process_vm_writev, m_pid, &local, 1, &remote, 1, 0, 1);
@@ -188,14 +194,18 @@ namespace detail {
             return true;
         }
 
-        bool rawWriteDirect(uint64_t address, const void* data, size_t len) {
-            return rawWrite(address, const_cast<void*>(data), len);
+        bool fastRead(uint64_t address, void* buffer, size_t len) {
+            return safeRead(address, buffer, len);
+        }
+
+        bool fastWrite(uint64_t address, const void* data, size_t len) {
+            return safeWrite(address, const_cast<void*>(data), len);
         }
 
         template<typename T>
-        T directRead(uint64_t address) {
+        T fastReadValue(uint64_t address) {
             T value{};
-            rawRead(address, &value, sizeof(T));
+            safeRead(address, &value, sizeof(T));
             return value;
         }
 
@@ -233,6 +243,9 @@ namespace detail {
 
 // ============================================================
 //  Mem — platform-agnostic, zero #if defined
+//
+//  read / write             = Fast (直接 memcpy, 零开销, 默认)
+//  safeRead / safeWrite     = Safe (KittyMemory, 遍历 maps)
 // ============================================================
 class Mem {
 public:
@@ -251,36 +264,22 @@ public:
         return m_backend.getpid();
     }
 
-    inline bool read_and_write(uint64_t address, void* buffer, size_t len, bool is_read) {
-        if (!IsValid(address)) {
-            setError(MemError::InvalidAddress);
-            LOGE("Mem::read_and_write error: address (%p) is invalid", address);
-            return false;
-        }
-        return is_read ? m_backend.rawRead(address, buffer, len)
-                       : m_backend.rawWrite(address, buffer, len);
+    // ---------- Fast (默认) ----------
+    inline bool read(uint64_t address, void* buffer, size_t len) {
+        return m_backend.fastRead(address, buffer, len);
     }
 
-    template<typename T>
-    inline T readA(uint64_t address) {
-        if (IsValid(address)) {
-            return m_backend.directRead<T>(address);
-        }
-        setError(MemError::InvalidAddress);
-        return T{};
+    inline bool write(uint64_t address, const void* data, size_t len) {
+        return m_backend.fastWrite(address, data, len);
     }
 
-    inline bool writeDirect(uint64_t address, const void* data, size_t len) {
-        if (!IsValid(address)) {
-            setError(MemError::InvalidAddress);
-            LOGE("Mem::writeDirect error: address (%p) is invalid", address);
-            return false;
-        }
-        return m_backend.rawWriteDirect(address, data, len);
+    // ---------- Safe ----------
+    inline bool safeRead(uint64_t address, void* buffer, size_t len) {
+        return m_backend.safeRead(address, buffer, len);
     }
 
-    inline bool readRaw(uint64_t address, void* buffer, size_t len) {
-        return m_backend.rawRead(address, buffer, len);
+    inline bool safeWrite(uint64_t address, void* buffer, size_t len) {
+        return m_backend.safeWrite(address, buffer, len);
     }
 
     ElfScanner createScanner(const std::string& name) {
@@ -295,6 +294,9 @@ private:
 
 // ============================================================
 //  Free functions — platform-agnostic, zero #if defined
+//
+//  Read / Write             = Fast (直接 memcpy, 默认)
+//  SafeRead / SafeWrite     = Safe (KittyMemory, 遍历 maps)
 // ============================================================
 inline bool init(const std::string& processName) {
     return MemIns->init(processName);
@@ -310,32 +312,35 @@ inline void elfScan(const std::string& elfName, ElfScanner& scanner) {
     } while (!scanner.isValid());
 };
 
+// ---------- Fast (默认) ----------
 inline bool Read(uint64_t address, void *buffer, size_t len) {
-    return MemIns->read_and_write(address, buffer, len, true);
+    return MemIns->read(address, buffer, len);
 }
 
-inline bool ReadRaw(uint64_t address, void *buffer, size_t len) {
-    return MemIns->readRaw(address, buffer, len);
-}
-
-inline bool Write(uint64_t address, void *buffer, size_t len) {
-    return MemIns->read_and_write(address, buffer, len, false);
+inline bool Write(uint64_t address, const void *data, size_t len) {
+    return MemIns->write(address, data, len);
 }
 
 template<typename Ret, typename T, typename... Offsets>
 inline Ret Read(T base, Offsets... offsets) {
     uint64_t address = (uint64_t)base;
     if (sizeof...(offsets) == 0) {
-        return MemIns->readA<Ret>(address);
+        Ret value{};
+        MemIns->read(address, &value, sizeof(Ret));
+        return value;
     }
     std::array<uint64_t, sizeof...(offsets)> offset_array = {static_cast<uint64_t>(offsets)...};
     for (size_t i = 0; i < sizeof...(offsets) - 1; ++i) {
-        address = MemIns->readA<uint64_t>(address + offset_array[i]);
+        uint64_t next = 0;
+        MemIns->read(address + offset_array[i], &next, sizeof(next));
+        address = next;
         if (!IsValid(address)) {
             return Ret{};
         }
     }
-    return MemIns->readA<Ret>(address + offset_array[sizeof...(offsets) - 1]);
+    Ret value{};
+    MemIns->read(address + offset_array[sizeof...(offsets) - 1], &value, sizeof(Ret));
+    return value;
 }
 
 template<typename T>
@@ -364,6 +369,45 @@ inline bool Write(uintptr_t address, const std::string& hexString) {
 
 inline bool Write(uintptr_t address, const std::vector<uint8_t>& byteArray) {
     return Write(address, (void*)byteArray.data(), byteArray.size());
+}
+
+// ---------- Safe ----------
+inline bool SafeRead(uint64_t address, void *buffer, size_t len) {
+    return MemIns->safeRead(address, buffer, len);
+}
+
+inline bool SafeWrite(uint64_t address, void *buffer, size_t len) {
+    return MemIns->safeWrite(address, buffer, len);
+}
+
+template<typename Ret, typename T, typename... Offsets>
+inline Ret SafeRead(T base, Offsets... offsets) {
+    uint64_t address = (uint64_t)base;
+    if (sizeof...(offsets) == 0) {
+        Ret value{};
+        MemIns->safeRead(address, &value, sizeof(Ret));
+        return value;
+    }
+    std::array<uint64_t, sizeof...(offsets)> offset_array = {static_cast<uint64_t>(offsets)...};
+    for (size_t i = 0; i < sizeof...(offsets) - 1; ++i) {
+        uint64_t next = 0;
+        if (!MemIns->safeRead(address + offset_array[i], &next, sizeof(next)) || !IsValid(next)) {
+            return Ret{};
+        }
+        address = next;
+    }
+    Ret value{};
+    MemIns->safeRead(address + offset_array[sizeof...(offsets) - 1], &value, sizeof(Ret));
+    return value;
+}
+
+template<typename T>
+inline typename std::enable_if<
+    !std::is_convertible<T, std::string>::value &&
+    !std::is_convertible<T, std::vector<uint8_t>>::value,
+    bool >::type
+SafeWrite(uintptr_t address, T value) {
+    return SafeWrite(address, &value, sizeof(T));
 }
 
 }
