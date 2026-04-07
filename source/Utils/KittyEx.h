@@ -279,6 +279,10 @@ public:
         return m_backend.rawWriteDirect(address, data, len);
     }
 
+    inline bool readRaw(uint64_t address, void* buffer, size_t len) {
+        return m_backend.rawRead(address, buffer, len);
+    }
+
     ElfScanner createScanner(const std::string& name) {
         return m_backend.createScanner(name);
     }
@@ -308,6 +312,10 @@ inline void elfScan(const std::string& elfName, ElfScanner& scanner) {
 
 inline bool Read(uint64_t address, void *buffer, size_t len) {
     return MemIns->read_and_write(address, buffer, len, true);
+}
+
+inline bool ReadRaw(uint64_t address, void *buffer, size_t len) {
+    return MemIns->readRaw(address, buffer, len);
 }
 
 inline bool Write(uint64_t address, void *buffer, size_t len) {
