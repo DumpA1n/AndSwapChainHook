@@ -16,7 +16,7 @@
 ```bash
 # 设置 NDK_HOME 环境变量（替换为你的 NDK 实际路径）
 export NDK_HOME=/path/to/android-ndk
-
+git submodule update --init --recursive
 cmake -B build -G "Ninja"
 cmake --build build
 ```
@@ -45,7 +45,7 @@ cmake --build build
 ```bash
 # Set NDK_HOME environment variable (replace with your actual NDK path)
 export NDK_HOME=/path/to/android-ndk
-
+git submodule update --init --recursive
 cmake -B build -G "Ninja"
 cmake --build build
 ```
