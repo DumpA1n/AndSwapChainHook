@@ -1,0 +1,8 @@
+[submodule "external/KittyMemoryEx"]
+	path = external/KittyMemoryEx
+	url = https://github.com/MJx0/KittyMemoryEx.git
+	branch = main
+[submodule "external/KittyMemory"]
+	path = external/KittyMemory
+	url = https://github.com/MJx0/KittyMemory.git
+	branch = master

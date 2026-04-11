@@ -6,22 +6,20 @@
 #include <algorithm>
 #include <android/native_window.h>
 #include <atomic>
-#include <cstddef>
 #include <cstdint>
-#include <cstring>
 #include <dlfcn.h>
 #include <functional>
 #include <mutex>
-#include <unordered_map>
-#include <vulkan/vulkan_core.h>
 
-#include "Core/ElfScannerManager.h"
+#ifndef VK_USE_PLATFORM_ANDROID_KHR
+#define VK_USE_PLATFORM_ANDROID_KHR
+#endif
+#include <vulkan/vulkan.h>
+
+#include "AndroidPlatform/AndroidPlatform.h"
 #include "Core/ResourceManager.h"
 #include "Dobby/dobby.h"
 #include "ImGuiExtern/ImGuiSoftKeyboard.h"
-#include "AndroidPlatform/AndroidApp.h"
-#include "PointerHook/PointerHookManager.h"
-#include "PointerHook/SafePointerHook.h"
 #include "Utils/Logger.h"
 #include "imgui/backends/imgui_impl_android.h"
 #include "imgui/backends/imgui_impl_opengl3.h"
@@ -29,112 +27,42 @@
 #include "imgui/imgui.h"
 
 // ===========================================================================
+// 调试日志开关：设为 0 关闭 SwapChainHook 的详细调试日志（LOGE 始终保留）
+// ===========================================================================
+#define SWAPCHAIN_DEBUG_LOG 1
+
+#if SWAPCHAIN_DEBUG_LOG
+#define SCH_LOGI(fmt, ...) LOGI(fmt, ##__VA_ARGS__)
+#define SCH_LOGW(fmt, ...) LOGW(fmt, ##__VA_ARGS__)
+#else
+#define SCH_LOGI(fmt, ...) do {} while(0)
+#define SCH_LOGW(fmt, ...) do {} while(0)
+#endif
+
+// ===========================================================================
 // 内部状态
 // ===========================================================================
 
-// hook 策略
-enum class HookStrategy { EGL, VkCreateInstance, VkGIPA_Pointer, VkGIPA_Thunk };
-
-// EGL              — 方案1: hook eglSwapBuffers (OpenGL)
-// VkCreateInstance — 方案2: hook vkCreateInstance (Vulkan)
-// VkGIPA_Pointer   — 方案3: hook vkGetInstanceProcAddr 指针 (UE + Vulkan)
-// VkGIPA_Thunk     — 方案4: hook vkGetInstanceProcAddr thunk (UE + Vulkan)
-static constexpr HookStrategy kDefaultStrategy = HookStrategy::EGL;
-
-static const std::unordered_map<std::string, HookStrategy> kPackageStrategies = {
-    { "com.tencent.tmgp.dfm", HookStrategy::VkGIPA_Thunk },
-    { "com.tencent.tmgp.nz",  HookStrategy::VkGIPA_Thunk },
-    { "com.tencent.mf.uam",   HookStrategy::EGL },
-    { "com.tencent.nrc",      HookStrategy::EGL },
-    { "com.tencent.ig",       HookStrategy::EGL },
-};
-
-static HookStrategy ResolveHookStrategy()
-{
-    const char* progName = getprogname();
-    if (progName)
-    {
-        auto it = kPackageStrategies.find(progName);
-        if (it != kPackageStrategies.end())
-        {
-            LOGI("[SwapChainHook] Package '%s' matched strategy %d", progName, (int)it->second);
-            return it->second;
-        }
-        LOGI("[SwapChainHook] Package '%s' not in strategy table, using default %d", progName, (int)kDefaultStrategy);
-    }
-    return kDefaultStrategy;
-}
-
-static const HookStrategy g_HookStrategy = ResolveHookStrategy();
-
 static std::atomic<bool>           g_Installed{false};
 static std::atomic<bool>           g_ImGuiReady{false};
-static std::atomic<bool>           g_VkGIPAHooked{false}; // vkGetInstanceProcAddr Dobby hook 是否存活
-static void*                       g_VkGIPAImplAddr = nullptr; // 解析出的实际实现地址
 static std::mutex                  g_CallbackMutex;
 static std::function<void()>       g_RenderCallback;
 static int                         g_Width  = 0;
 static int                         g_Height = 0;
-
-static int32_t (*g_Orig_onInputEvent)(struct android_app* app, AInputEvent* event);
-
-/**
- * @brief 从 ARM64 thunk 函数解析尾调用目标地址
- *
- * vkGetInstanceProcAddr 导出符号只有两条指令：
- *   BTI c          (0xD503245F)
- *   B   sub_XXXXX  (000101 | imm26)
- * 无法直接 inline hook，需解码 B 指令的立即数得到实际实现函数地址
- */
-static void* ResolveArm64TailCall(void* thunkAddr)
-{
-    auto* code = (const uint32_t*)thunkAddr;
-
-    // 跳过可能的 BTI 指令（编码 0xD503245F）
-    int idx = 0;
-    if (code[0] == 0xD503245F)
-        idx = 1;
-
-    uint32_t insn = code[idx];
-    // 检查是否为 B 指令：bits[31:26] == 000101
-    if ((insn >> 26) != 0b000101)
-    {
-        LOGE("[SwapChainHook] Not a B instruction at %p+%d: 0x%08X", thunkAddr, idx * 4, insn);
-        return nullptr;
-    }
-
-    // 提取 imm26 并符号扩展
-    int32_t imm26 = (int32_t)(insn & 0x03FFFFFF);
-    if (imm26 & (1 << 25))  // 符号位
-        imm26 |= (int32_t)0xFC000000;
-
-    // target = PC + imm26 * 4
-    uintptr_t pc = (uintptr_t)&code[idx];
-    uintptr_t target = pc + ((int64_t)imm26 << 2);
-
-    LOGI("[SwapChainHook] Resolved thunk %p -> impl %p (B offset=0x%X)",
-         thunkAddr, (void*)target, (uint32_t)(imm26 << 2));
-    return (void*)target;
-}
+static bool                        g_VkInitialized = false;
 
 // ---------------------------------------------------------------------------
 // OpenGL ES 路径
 // ---------------------------------------------------------------------------
 
-// eglSwapBuffers 原始函数指针
 static EGLBoolean (*g_OrigEglSwapBuffers)(EGLDisplay, EGLSurface) = nullptr;
-
-// 标记：是否已初始化 OpenGL 路径的 ImGui
+static PFNEGLSWAPBUFFERSWITHDAMAGEKHRPROC g_OrigEglSwapBuffersWithDamage = nullptr;
 static bool g_GlesInitialized = false;
-
-// 记录 ImGui 初始化时使用的 ANativeWindow，用于检测 window 重建
 static ANativeWindow* g_ImGuiWindow = nullptr;
+static EGLContext g_ImGuiEglContext = EGL_NO_CONTEXT;
 
 /**
  * @brief 在游戏的 EGL Context 上初始化 ImGui（仅首次调用）
- *
- * 复用游戏的 Context，直接渲染到默认 FBO（帧缓冲区 0），
- * 无需创建独立 EGLContext / EGLSurface。
  */
 static bool InitImGuiOnGameContext(EGLDisplay display, EGLSurface surface)
 {
@@ -142,14 +70,15 @@ static bool InitImGuiOnGameContext(EGLDisplay display, EGLSurface surface)
     EGLint w = 0, h = 0;
     eglQuerySurface(display, surface, EGL_WIDTH, &w);
     eglQuerySurface(display, surface, EGL_HEIGHT, &h);
-    LOGI("[SwapChainHook] eglQuerySurface returned %dx%d", w, h);
+    SCH_LOGI("[SwapChainHook] eglQuerySurface returned %dx%d", w, h);
 
     // 回退：从 ANativeWindow 获取尺寸
-    if ((w <= 0 || h <= 0) && g_App && g_App->window)
+    ANativeWindow* nativeWindow = AndroidPlatform::GetNativeWindow();
+    if ((w <= 0 || h <= 0) && nativeWindow)
     {
-        w = ANativeWindow_getWidth(g_App->window);
-        h = ANativeWindow_getHeight(g_App->window);
-        LOGI("[SwapChainHook] Fallback to ANativeWindow size %dx%d", w, h);
+        w = ANativeWindow_getWidth(nativeWindow);
+        h = ANativeWindow_getHeight(nativeWindow);
+        SCH_LOGI("[SwapChainHook] Fallback to ANativeWindow size %dx%d", w, h);
     }
 
     if (w <= 0 || h <= 0)
@@ -183,7 +112,14 @@ static bool InitImGuiOnGameContext(EGLDisplay display, EGLSurface surface)
     style.ScaleAllSizes(2.0f);
 
     // 平台后端
-    ImGui_ImplAndroid_Init(g_App->window);
+    ANativeWindow* initWindow = AndroidPlatform::GetNativeWindow();
+    if (!initWindow)
+    {
+        LOGE("[SwapChainHook] ANativeWindow is null, cannot init ImGui");
+        ImGui::DestroyContext();
+        return false;
+    }
+    ImGui_ImplAndroid_Init(initWindow);
 
     // OpenGL 渲染后端（复用游戏 Context）
     ImGui_ImplOpenGL3_Init("#version 300 es");
@@ -193,9 +129,10 @@ static bool InitImGuiOnGameContext(EGLDisplay display, EGLSurface surface)
 
     g_GlesInitialized = true;
     g_ImGuiReady.store(true);
-    g_ImGuiWindow = g_App->window;
+    g_ImGuiWindow = initWindow;
+    g_ImGuiEglContext = eglGetCurrentContext();
 
-    LOGI("[SwapChainHook] ImGui initialized on game EGL context  %dx%d", w, h);
+    SCH_LOGI("[SwapChainHook] ImGui initialized on game EGL context=%p  %dx%d", g_ImGuiEglContext, w, h);
     return true;
 }
 
@@ -213,28 +150,33 @@ static EGLBoolean Hooked_eglSwapBuffers(EGLDisplay display, EGLSurface surface)
     if (eglGetCurrentContext() == EGL_NO_CONTEXT)
         return g_OrigEglSwapBuffers(display, surface);
 
+    // Vulkan 已接管渲染，不再在 EGL 上绘制 ImGui
+    if (g_VkInitialized)
+        return g_OrigEglSwapBuffers(display, surface);
+
     if (!g_GlesInitialized)
     {
         if (!InitImGuiOnGameContext(display, surface))
-        {
-            // 初始化失败，直接调用原始函数
             return g_OrigEglSwapBuffers(display, surface);
-        }
     }
 
-    if (!g_App || !g_App->window)
+    ANativeWindow* currentWindow = AndroidPlatform::GetNativeWindow();
+    if (!currentWindow)
         return g_OrigEglSwapBuffers(display, surface);
 
-    // ANativeWindow 重建后需要重新初始化 ImGui
-    if (g_GlesInitialized && g_App->window != g_ImGuiWindow)
+    // ANativeWindow 或 EGL Context 变化后需重新初始化 ImGui
+    EGLContext currentCtx = eglGetCurrentContext();
+    if (g_GlesInitialized && (currentWindow != g_ImGuiWindow || currentCtx != g_ImGuiEglContext))
     {
-        LOGI("[SwapChainHook] ANativeWindow changed %p -> %p, reinitializing ImGui", g_ImGuiWindow, g_App->window);
+        SCH_LOGI("[SwapChainHook] EGL changed: window %p->%p  ctx %p->%p, reinitializing ImGui",
+                 g_ImGuiWindow, currentWindow, g_ImGuiEglContext, currentCtx);
         g_ImGuiReady.store(false);
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplAndroid_Shutdown();
         ImGui::DestroyContext();
         g_GlesInitialized = false;
         g_ImGuiWindow = nullptr;
+        g_ImGuiEglContext = EGL_NO_CONTEXT;
         if (!InitImGuiOnGameContext(display, surface))
             return g_OrigEglSwapBuffers(display, surface);
     }
@@ -270,7 +212,6 @@ static EGLBoolean Hooked_eglSwapBuffers(EGLDisplay display, EGLSurface surface)
         g_RenderCallback();
 
     ImGuiSoftKeyboard::Draw();
-
     ImGui::Render();
 
     // --- 保存游戏的 GL 状态 ---
@@ -311,12 +252,108 @@ static EGLBoolean Hooked_eglSwapBuffers(EGLDisplay display, EGLSurface surface)
     return g_OrigEglSwapBuffers(display, surface);
 }
 
+/**
+ * @brief eglSwapBuffersWithDamageKHR hook
+ * Godot 等引擎可能调用此变体而非 eglSwapBuffers
+ */
+static EGLBoolean Hooked_eglSwapBuffersWithDamageKHR(
+    EGLDisplay display, EGLSurface surface, EGLint* rects, EGLint n_rects)
+{
+    if (eglGetCurrentContext() == EGL_NO_CONTEXT)
+        return g_OrigEglSwapBuffersWithDamage(display, surface, rects, n_rects);
+
+    // Vulkan 已接管渲染，不再在 EGL 上绘制 ImGui
+    if (g_VkInitialized)
+        return g_OrigEglSwapBuffersWithDamage(display, surface, rects, n_rects);
+
+    if (!g_GlesInitialized)
+    {
+        if (!InitImGuiOnGameContext(display, surface))
+            return g_OrigEglSwapBuffersWithDamage(display, surface, rects, n_rects);
+    }
+
+    ANativeWindow* currentWindow = AndroidPlatform::GetNativeWindow();
+    if (!currentWindow)
+        return g_OrigEglSwapBuffersWithDamage(display, surface, rects, n_rects);
+
+    EGLContext currentCtx = eglGetCurrentContext();
+    if (g_GlesInitialized && (currentWindow != g_ImGuiWindow || currentCtx != g_ImGuiEglContext))
+    {
+        SCH_LOGI("[SwapChainHook] WithDamage: EGL changed: window %p->%p  ctx %p->%p, reinitializing ImGui",
+                 g_ImGuiWindow, currentWindow, g_ImGuiEglContext, currentCtx);
+        g_ImGuiReady.store(false);
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplAndroid_Shutdown();
+        ImGui::DestroyContext();
+        g_GlesInitialized = false;
+        g_ImGuiWindow = nullptr;
+        g_ImGuiEglContext = EGL_NO_CONTEXT;
+        if (!InitImGuiOnGameContext(display, surface))
+            return g_OrigEglSwapBuffersWithDamage(display, surface, rects, n_rects);
+    }
+
+    EGLint sw = 0, sh = 0;
+    eglQuerySurface(display, surface, EGL_WIDTH, &sw);
+    eglQuerySurface(display, surface, EGL_HEIGHT, &sh);
+
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplAndroid_NewFrame();
+
+    {
+        ImGuiIO &ioUpdate = ImGui::GetIO();
+        float dispW = ioUpdate.DisplaySize.x;
+        float dispH = ioUpdate.DisplaySize.y;
+        g_Width  = (int)dispW;
+        g_Height = (int)dispH;
+        if (sw > 0 && sh > 0 && dispW > 0 && dispH > 0)
+            ioUpdate.DisplayFramebufferScale = ImVec2((float)sw / dispW, (float)sh / dispH);
+    }
+
+    ImGui::NewFrame();
+    ImGuiSoftKeyboard::PreUpdate();
+
+    if (g_RenderCallback)
+        g_RenderCallback();
+
+    ImGuiSoftKeyboard::Draw();
+    ImGui::Render();
+
+    GLint prevFBO = 0;
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFBO);
+    GLint prevViewport[4];
+    glGetIntegerv(GL_VIEWPORT, prevViewport);
+    GLboolean prevBlend = glIsEnabled(GL_BLEND);
+    GLint prevBlendSrcRGB, prevBlendDstRGB, prevBlendSrcA, prevBlendDstA;
+    glGetIntegerv(GL_BLEND_SRC_RGB, &prevBlendSrcRGB);
+    glGetIntegerv(GL_BLEND_DST_RGB, &prevBlendDstRGB);
+    glGetIntegerv(GL_BLEND_SRC_ALPHA, &prevBlendSrcA);
+    glGetIntegerv(GL_BLEND_DST_ALPHA, &prevBlendDstA);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    ImGuiIO &io = ImGui::GetIO();
+    int fbW = (int)(io.DisplaySize.x * io.DisplayFramebufferScale.x);
+    int fbH = (int)(io.DisplaySize.y * io.DisplayFramebufferScale.y);
+    glViewport(0, 0, fbW, fbH);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    glBindFramebuffer(GL_FRAMEBUFFER, prevFBO);
+    glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
+    if (prevBlend) glEnable(GL_BLEND); else glDisable(GL_BLEND);
+    glBlendFuncSeparate(prevBlendSrcRGB, prevBlendDstRGB, prevBlendSrcA, prevBlendDstA);
+
+    return g_OrigEglSwapBuffersWithDamage(display, surface, rects, n_rects);
+}
+
 // ---------------------------------------------------------------------------
 // Vulkan 路径
 // ---------------------------------------------------------------------------
 
 // Vulkan 函数指针
-static PFN_vkCreateInstance        g_OrigVkCreateInstance    = nullptr;
 static PFN_vkQueuePresentKHR       g_OrigVkQueuePresent      = nullptr;
 static PFN_vkCreateDevice          g_OrigVkCreateDevice      = nullptr;
 static PFN_vkDestroyDevice         g_OrigVkDestroyDevice     = nullptr;
@@ -349,7 +386,6 @@ static std::vector<VkFence>          g_VkFences;
 static VkFormat   g_VkSwapFormat = VK_FORMAT_UNDEFINED;
 static VkExtent2D g_VkSwapExtent = {};  // 交换链实际尺寸（可能是竖屏）
 static VkSurfaceTransformFlagBitsKHR g_VkPreTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
-static bool       g_VkInitialized = false;
 
 /**
  * @brief 判断 preTransform 是否包含 90°/270° 旋转
@@ -629,7 +665,7 @@ static bool CreateVkImGuiResources()
         return false;
     }
 
-    LOGI("[SwapChainHook/Vk] Resources created  images=%u  %ux%u",
+    SCH_LOGI("[SwapChainHook/Vk] Resources created  images=%u  %ux%u",
          imageCount, g_VkSwapExtent.width, g_VkSwapExtent.height);
     return true;
 }
@@ -649,7 +685,7 @@ static bool InitImGuiVulkan()
     if (IsRotated90or270(g_VkPreTransform))
     {
         std::swap(displayW, displayH);
-        LOGI("[SwapChainHook/Vk] preTransform=0x%x, swapped display %ux%u → %ux%u",
+        SCH_LOGI("[SwapChainHook/Vk] preTransform=0x%x, swapped display %ux%u → %ux%u",
              (int)g_VkPreTransform, g_VkSwapExtent.width, g_VkSwapExtent.height, displayW, displayH);
     }
 
@@ -671,7 +707,14 @@ static bool InitImGuiVulkan()
     style.ScaleAllSizes(2.0f);
 
     // 平台后端
-    ImGui_ImplAndroid_Init(g_App->window);
+    ANativeWindow* vkWindow = AndroidPlatform::GetNativeWindow();
+    if (!vkWindow)
+    {
+        LOGE("[SwapChainHook/Vk] ANativeWindow is null, cannot init ImGui");
+        ImGui::DestroyContext();
+        return false;
+    }
+    ImGui_ImplAndroid_Init(vkWindow);
 
     // Vulkan 渲染后端
     ImGui_ImplVulkan_InitInfo initInfo{};
@@ -704,7 +747,7 @@ static bool InitImGuiVulkan()
     g_VkInitialized = true;
     g_ImGuiReady.store(true);
 
-    LOGI("[SwapChainHook/Vk] ImGui initialized  display=%ux%u  fb=%ux%u  preTransform=0x%x",
+    SCH_LOGI("[SwapChainHook/Vk] ImGui initialized  display=%ux%u  fb=%ux%u  preTransform=0x%x",
          displayW, displayH, g_VkSwapExtent.width, g_VkSwapExtent.height, (int)g_VkPreTransform);
     return true;
 }
@@ -734,7 +777,7 @@ static VkResult VKAPI_CALL Hooked_vkCreateDevice(
             g_VkQueueFamily = pCreateInfo->pQueueCreateInfos[0].queueFamilyIndex;
         }
 
-        LOGI("[SwapChainHook/Vk] Captured device=%p  physDev=%p  queueFamily=%u",
+        SCH_LOGI("[SwapChainHook/Vk] Captured device=%p  physDev=%p  queueFamily=%u",
              g_VkDevice, g_VkPhysDev, g_VkQueueFamily);
     }
     return result;
@@ -750,7 +793,7 @@ static void VKAPI_CALL Hooked_vkGetDeviceQueue(
     if (pQueue && *pQueue && queueFamilyIndex == g_VkQueueFamily)
     {
         g_VkQueue = *pQueue;
-        LOGI("[SwapChainHook/Vk] Captured queue=%p  family=%u", g_VkQueue, queueFamilyIndex);
+        SCH_LOGI("[SwapChainHook/Vk] Captured queue=%p  family=%u", g_VkQueue, queueFamilyIndex);
     }
 }
 
@@ -763,12 +806,24 @@ static VkResult VKAPI_CALL Hooked_vkCreateSwapchainKHR(
     const VkAllocationCallbacks *pAllocator,
     VkSwapchainKHR *pSwapchain)
 {
-    // 先清理旧资源（交换链重建时）
+    // 先清理旧资源（交换链重建时，或 EGL→Vulkan 切换时）
     if (g_VkInitialized)
     {
         CleanupVkResources();
         ImGui_ImplAndroid_Shutdown();
         ImGui::DestroyContext();
+    }
+    else if (g_GlesInitialized)
+    {
+        // 游戏从 EGL 切换到 Vulkan，先清理 EGL ImGui
+        SCH_LOGI("[SwapChainHook/Vk] EGL→Vulkan transition, cleaning up EGL ImGui");
+        g_ImGuiReady.store(false);
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplAndroid_Shutdown();
+        ImGui::DestroyContext();
+        g_GlesInitialized = false;
+        g_ImGuiWindow = nullptr;
+        g_ImGuiEglContext = EGL_NO_CONTEXT;
     }
 
     VkResult result = g_OrigVkCreateSwapchain(device, pCreateInfo, pAllocator, pSwapchain);
@@ -786,7 +841,7 @@ static VkResult VKAPI_CALL Hooked_vkCreateSwapchainKHR(
     g_VkSwapImages.resize(imageCount);
     vkGetSwapchainImagesKHR(device, *pSwapchain, &imageCount, g_VkSwapImages.data());
 
-    LOGI("[SwapChainHook/Vk] Swapchain created  %ux%u  images=%u  format=%d",
+    SCH_LOGI("[SwapChainHook/Vk] Swapchain created  %ux%u  images=%u  format=%d",
          g_VkSwapExtent.width, g_VkSwapExtent.height, imageCount, (int)g_VkSwapFormat);
 
     // 创建 ImGui 渲染资源
@@ -848,7 +903,10 @@ static void VKAPI_CALL Hooked_vkDestroyDevice(
 static VkResult VKAPI_CALL Hooked_vkQueuePresentKHR(
     VkQueue queue, const VkPresentInfoKHR *pPresentInfo)
 {
-    if (!g_VkInitialized || !pPresentInfo || pPresentInfo->swapchainCount == 0)
+    if (!pPresentInfo || pPresentInfo->swapchainCount == 0)
+        return g_OrigVkQueuePresent(queue, pPresentInfo);
+
+    if (!g_VkInitialized)
         return g_OrigVkQueuePresent(queue, pPresentInfo);
 
     // 找到我们跟踪的交换链
@@ -948,196 +1006,6 @@ static VkResult VKAPI_CALL Hooked_vkQueuePresentKHR(
 
 
 // ===========================================================================
-// InlineHook方案 (通用方案，适用于所有程序)
-// ===========================================================================
-
-/**
- * @brief 在 vkCreateInstance 成功后，通过 vkGetInstanceProcAddr 解析并 hook 其余 Vulkan 函数
- */
-static void HookVulkanFunctionsFromInstance(VkInstance instance)
-{
-    // 只 hook 一次，避免重复 DobbyHook 同一地址
-    static std::atomic<bool> s_Hooked{false};
-    if (s_Hooked.exchange(true))
-        return;
-
-    struct VkHookEntry {
-        const char* name;
-        void*       hookFunc;
-        void**      origSlot;
-    };
-
-    VkHookEntry hooks[] = {
-        { "vkCreateDevice",        (void*)Hooked_vkCreateDevice,        (void**)&g_OrigVkCreateDevice      },
-        { "vkDestroyDevice",       (void*)Hooked_vkDestroyDevice,       (void**)&g_OrigVkDestroyDevice     },
-        { "vkGetDeviceQueue",      (void*)Hooked_vkGetDeviceQueue,      (void**)&g_OrigVkGetDeviceQueue    },
-        { "vkCreateSwapchainKHR",  (void*)Hooked_vkCreateSwapchainKHR,  (void**)&g_OrigVkCreateSwapchain   },
-        { "vkDestroySwapchainKHR", (void*)Hooked_vkDestroySwapchainKHR, (void**)&g_OrigVkDestroySwapchain  },
-        { "vkQueuePresentKHR",     (void*)Hooked_vkQueuePresentKHR,     (void**)&g_OrigVkQueuePresent      },
-    };
-
-    for (auto& h : hooks)
-    {
-        void* sym = (void*)vkGetInstanceProcAddr(instance, h.name);
-        if (sym)
-        {
-            DobbyHook(sym, h.hookFunc, h.origSlot);
-            {
-                std::lock_guard<std::mutex> lk(g_HookedAddrsMutex);
-                g_DobbyHookedAddrs.push_back(sym);
-            }
-            LOGI("[SwapChainHook] %s hooked  addr=%p", h.name, sym);
-        }
-        else
-        {
-            LOGE("[SwapChainHook] %s not found via vkGetInstanceProcAddr", h.name);
-        }
-    }
-}
-
-/**
- * @brief vkCreateInstance hook — 捕获 VkInstance 后解析并 hook 其余函数
- */
-static VkResult VKAPI_CALL Hooked_vkCreateInstance(
-    const VkInstanceCreateInfo *pCreateInfo,
-    const VkAllocationCallbacks *pAllocator,
-    VkInstance *pInstance)
-{
-    VkResult result = g_OrigVkCreateInstance(pCreateInfo, pAllocator, pInstance);
-    if (result == VK_SUCCESS && pInstance && *pInstance)
-    {
-        LOGI("[SwapChainHook/Vk] Captured VkInstance=%p", *pInstance);
-        // 第二阶段：用有效的 VkInstance 解析并 hook 其余 Vulkan 函数
-        HookVulkanFunctionsFromInstance(*pInstance);
-    }
-    return result;
-}
-
-
-// ===========================================================================
-// InlineHook + 指针Hook方案 (适用于使用 vkGetInstanceProcAddr 获取函数指针的程序)
-// ===========================================================================
-
-install_hook_name(vkGetInstanceProcAddr, PFN_vkVoidFunction, VkInstance instance, const char* pName)
-{
-    if (!pName)
-        return orig_vkGetInstanceProcAddr(instance, pName);
-
-    struct HookEntry { void* hookFunc; void** origSlot; };
-    static const std::unordered_map<std::string, HookEntry> kHooks = {
-        { "vkCreateDevice",        { (void*)Hooked_vkCreateDevice,        (void**)&g_OrigVkCreateDevice      } },
-        { "vkDestroyDevice",       { (void*)Hooked_vkDestroyDevice,       (void**)&g_OrigVkDestroyDevice     } },
-        { "vkGetDeviceQueue",      { (void*)Hooked_vkGetDeviceQueue,      (void**)&g_OrigVkGetDeviceQueue    } },
-        { "vkCreateSwapchainKHR",  { (void*)Hooked_vkCreateSwapchainKHR,  (void**)&g_OrigVkCreateSwapchain   } },
-        { "vkDestroySwapchainKHR", { (void*)Hooked_vkDestroySwapchainKHR, (void**)&g_OrigVkDestroySwapchain  } },
-        { "vkQueuePresentKHR",     { (void*)Hooked_vkQueuePresentKHR,     (void**)&g_OrigVkQueuePresent      } },
-    };
-    static std::atomic<size_t> s_HookedCount{0};
-
-    auto it = kHooks.find(pName);
-    if (it == kHooks.end())
-        return orig_vkGetInstanceProcAddr(instance, pName);
-
-    const auto& e = it->second;
-    auto origFunc = orig_vkGetInstanceProcAddr(instance, pName);
-    if (origFunc && *e.origSlot == nullptr)
-    {
-        *e.origSlot = (void*)origFunc;
-        size_t count = s_HookedCount.fetch_add(1) + 1;
-
-        LOGI("[PointerHook] vkGetInstanceProcAddr  %s → orig=%p  hook=%p  (%zu/%zu)",
-             pName, (void*)origFunc, e.hookFunc, count, kHooks.size());
-
-        if (count >= kHooks.size() && g_VkGIPAHooked.exchange(false))
-        {
-            LOGI("[PointerHook] All %zu hooks captured, destroying vkGetInstanceProcAddr Dobby hook", kHooks.size());
-            DobbyDestroy(g_VkGIPAImplAddr);
-        }
-    }
-    else
-    {
-        LOGI("[PointerHook] vkGetInstanceProcAddr  %s → orig=%p  hook=%p  (already captured)",
-             pName, (void*)origFunc, e.hookFunc);
-    }
-
-    return (PFN_vkVoidFunction)e.hookFunc;
-}
-
-
-// ===========================================================================
-// 指针Hook方案
-// ===========================================================================
-
-class vkGetInstanceProcAddrHook : public SafePointerHook
-{
-public:
-    vkGetInstanceProcAddrHook() : SafePointerHook() {}
-    ~vkGetInstanceProcAddrHook() override = default;
-
-    std::string GetName() const override { return "vkGetInstanceProcAddrHook"; }
-
-    uintptr_t FakeFunction(RegContext* ctx) override
-    {
-        // VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL vkGetInstanceProcAddr(
-        //     VkInstance                                  instance,
-        //     const char*                                 pName);
-
-        VkInstance instance = (VkInstance)ctx->general.x[0];
-        const char* pName = (const char*)ctx->general.x[1];
-
-        if (!pName)
-            return GetOrigFuncAddr();
-
-        struct HookEntry { void* hookFunc; void** origSlot; };
-        static const std::unordered_map<std::string, HookEntry> kHooks = {
-            { "vkCreateDevice",        { (void*)Hooked_vkCreateDevice,        (void**)&g_OrigVkCreateDevice      } },
-            { "vkDestroyDevice",       { (void*)Hooked_vkDestroyDevice,       (void**)&g_OrigVkDestroyDevice     } },
-            { "vkGetDeviceQueue",      { (void*)Hooked_vkGetDeviceQueue,      (void**)&g_OrigVkGetDeviceQueue    } },
-            { "vkCreateSwapchainKHR",  { (void*)Hooked_vkCreateSwapchainKHR,  (void**)&g_OrigVkCreateSwapchain   } },
-            { "vkDestroySwapchainKHR", { (void*)Hooked_vkDestroySwapchainKHR, (void**)&g_OrigVkDestroySwapchain  } },
-            { "vkQueuePresentKHR",     { (void*)Hooked_vkQueuePresentKHR,     (void**)&g_OrigVkQueuePresent      } },
-        };
-        static std::atomic<size_t> s_HookedCount{0};
-
-        auto it = kHooks.find(pName);
-        if (it == kHooks.end())
-            return GetOrigFuncAddr();
-
-        const auto& e = it->second;
-        auto origFunc = orig_vkGetInstanceProcAddr(instance, pName);
-        if (origFunc && *e.origSlot == nullptr)
-        {
-            *e.origSlot = (void*)origFunc;
-            size_t count = s_HookedCount.fetch_add(1) + 1;
-
-            LOGI("[PointerHook] vkGetInstanceProcAddr  %s → orig=%p  hook=%p  (%zu/%zu)",
-                pName, (void*)origFunc, e.hookFunc, count, kHooks.size());
-
-            if (count >= kHooks.size() && g_VkGIPAHooked.exchange(false))
-            {
-                LOGI("[PointerHook] All %zu hooks captured, destroying vkGetInstanceProcAddr Dobby hook", kHooks.size());
-                RestoreHook();
-            }
-        }
-        else
-        {
-            LOGI("[PointerHook] vkGetInstanceProcAddr  %s → orig=%p  hook=%p  (already captured)",
-                pName, (void*)origFunc, e.hookFunc);
-        }
-
-        ctx->general.x[0] = (uintptr_t)e.hookFunc;
-        return 0;
-    }
-
-protected:
-    uintptr_t GetElfBaseImpl() const override { return Elf.UE4().base(); }
-    uintptr_t GetPtrAddrImpl() const override { return GetElfBaseImpl() + 0x1A2B7E68; }
-    uintptr_t GetFuncAddrImpl() const override { return (uintptr_t)&vkGetInstanceProcAddr; }
-};
-
-
-
-// ===========================================================================
 // 公开接口
 // ===========================================================================
 
@@ -1149,73 +1017,229 @@ void Install()
     if (g_Installed.exchange(true))
         return;
 
-    LOGI("[SwapChainHook] Installing hooks...  strategy=%d", (int)g_HookStrategy);
+    SCH_LOGI("[SwapChainHook] Installing hooks...");
 
-    switch (g_HookStrategy)
-    {
-    case HookStrategy::EGL:
-    {
-        // --- 方案1: EGL hook (适用所有 OpenGL 后端程序) ---
-        void* sym = (void*)&eglSwapBuffers;
-        DobbyHook(sym, (void *)Hooked_eglSwapBuffers, (void **)&g_OrigEglSwapBuffers);
-        break;
-    }
-    case HookStrategy::VkCreateInstance:
-    {
-        // --- 方案2: Vulkan InlineHook (适用所有 vulkan 后端程序) ---
-        void* sym = (void*)vkGetInstanceProcAddr(VK_NULL_HANDLE, "vkCreateInstance");
-        if (sym)
-        {
-            DobbyHook(sym, (void*)Hooked_vkCreateInstance, (void**)&g_OrigVkCreateInstance);
-            g_DobbyHookedAddrs.push_back(sym);
-            LOGI("[SwapChainHook] vkCreateInstance hooked  addr=%p", sym);
-        }
-        else
-        {
-            LOGE("[SwapChainHook] vkCreateInstance not found via vkGetInstanceProcAddr");
-        }
-        break;
-    }
-    case HookStrategy::VkGIPA_Pointer:
-    {
-        // --- 方案3: vkGetInstanceProcAddr 指针 hook（适用 UE + vulkan 程序) ---
-        // uintptr_t ptrAddr = Elf.UE4().base() + 0x1A2B7E68;
-        // while (*(uintptr_t*)ptrAddr == 0) {
-        //     std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        // }
-        // LOGI("[SwapChainHook] vkGetInstanceProcAddr GOT value=%p", (void*)*(uintptr_t*)ptrAddr);
-        // PointerHookManager::GetInstance().Add<vkGetInstanceProcAddrHook>();
-        break;
-    }
-    case HookStrategy::VkGIPA_Thunk:
-    {
-        // --- 方案4: vkGetInstanceProcAddr InlineHook (适用 UE + vulkan 程序) ---
-        g_VkGIPAImplAddr = ResolveArm64TailCall((void*)vkGetInstanceProcAddr);
-        if (g_VkGIPAImplAddr)
-        {
-            install_hook_vkGetInstanceProcAddr(g_VkGIPAImplAddr);
-            g_VkGIPAHooked.store(true);
-        }
-        else
-        {
-            LOGE("[SwapChainHook] Failed to resolve vkGetInstanceProcAddr impl");
-        }
-        break;
-    }
-    }
+    // ====================================================================
+    // Dispatch Target Hook
+    //
+    // Godot 4 使用 VK_NO_PROTOTYPES，通过 vkGetDeviceProcAddr 获取函数指针
+    // 来调用 Vulkan 函数。所有函数指针指向 loader 内部的"dispatch target"，
+    // 而非 dlsym 返回的"trampoline"：
+    //
+    //   dlsym("vkQueuePresentKHR")
+    //     → api_gen.cpp 中的 trampoline（Godot 永远不会调用, hook无效）
+    //
+    //   vkGetDeviceProcAddr(dev, "vkQueuePresentKHR")
+    //     → swapchain.cpp 中的实现（Godot 缓存并每帧调用此指针）
+    //
+    // 解决方案：
+    //   1. 创建辅助 VkDevice（启用 swapchain 扩展）
+    //   2. 通过 vkGetDeviceProcAddr 解析 dispatch target 地址
+    //   3. DobbyHook 那个地址（修改 .text 段机器码）
+    //   4. 清理辅助设备（hook 不受影响，代码在 .text 永久存在）
+    //
+    // 同一个 ProcHook 函数对所有 VkDevice 返回相同地址，
+    // 所以 hook 辅助设备的 target == hook 游戏设备的 target。
+    // ====================================================================
 
-    if (g_App)
+    void* libVk = dlopen("libvulkan.so", RTLD_NOW | RTLD_NOLOAD);
+    SCH_LOGI("[SwapChainHook] libvulkan.so=%p", libVk);
+
+    // --- 诊断: dlsym trampoline 地址（仅用于对比） ---
+    void* trampolineQP = libVk ? dlsym(libVk, "vkQueuePresentKHR") : nullptr;
+    SCH_LOGI("[SwapChainHook] dlsym(vkQueuePresentKHR) trampoline=%p", trampolineQP);
+
+    // --- 1. 创建辅助 VkInstance + VkDevice ---
+    VkInstance helperInst = VK_NULL_HANDLE;
+    VkDevice helperDev = VK_NULL_HANDLE;
+    VkPhysicalDevice helperPhysDev = VK_NULL_HANDLE;
+
+    do {
+        VkInstanceCreateInfo instCI{};
+        instCI.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+        VkResult r = vkCreateInstance(&instCI, nullptr, &helperInst);
+        SCH_LOGI("[SwapChainHook] helper vkCreateInstance=%d  inst=%p", (int)r, helperInst);
+        if (r != VK_SUCCESS || !helperInst) break;
+
+        uint32_t pdCount = 0;
+        vkEnumeratePhysicalDevices(helperInst, &pdCount, nullptr);
+        if (pdCount == 0) { LOGE("[SwapChainHook] No physical devices found"); break; }
+
+        std::vector<VkPhysicalDevice> pds(pdCount);
+        vkEnumeratePhysicalDevices(helperInst, &pdCount, pds.data());
+        helperPhysDev = pds[0];
+        SCH_LOGI("[SwapChainHook] helper physDev=%p (%u total)", helperPhysDev, pdCount);
+
+        // 查找图形队列族
+        uint32_t qfCount = 0;
+        vkGetPhysicalDeviceQueueFamilyProperties(helperPhysDev, &qfCount, nullptr);
+        std::vector<VkQueueFamilyProperties> qfProps(qfCount);
+        vkGetPhysicalDeviceQueueFamilyProperties(helperPhysDev, &qfCount, qfProps.data());
+
+        uint32_t gfxFamily = 0;
+        for (uint32_t i = 0; i < qfCount; i++)
+        {
+            if (qfProps[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
+            {
+                gfxFamily = i;
+                break;
+            }
+        }
+
+        float prio = 1.0f;
+        VkDeviceQueueCreateInfo qCI{};
+        qCI.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+        qCI.queueFamilyIndex = gfxFamily;
+        qCI.queueCount = 1;
+        qCI.pQueuePriorities = &prio;
+
+        // 启用 swapchain 扩展，否则 vkGetDeviceProcAddr("vkQueuePresentKHR") 返回 null
+        const char* exts[] = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+        VkDeviceCreateInfo devCI{};
+        devCI.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+        devCI.queueCreateInfoCount = 1;
+        devCI.pQueueCreateInfos = &qCI;
+        devCI.enabledExtensionCount = 1;
+        devCI.ppEnabledExtensionNames = exts;
+
+        r = vkCreateDevice(helperPhysDev, &devCI, nullptr, &helperDev);
+        SCH_LOGI("[SwapChainHook] helper vkCreateDevice=%d  dev=%p", (int)r, helperDev);
+    } while (false);
+
+    // --- 2. 通过 vkGetDeviceProcAddr 解析 dispatch target 并 hook ---
+    if (helperDev)
     {
-        g_Orig_onInputEvent = g_App->onInputEvent;
-        g_App->onInputEvent = [](struct android_app* app, AInputEvent* event) -> int32_t {
-            if (g_ImGuiReady.load() && ImGui::GetCurrentContext())
-                ImGui_ImplAndroid_HandleInputEvent(event);
-            return g_Orig_onInputEvent(app, event);
+        struct VkHookEntry { const char* name; void* hookFunc; void** origSlot; };
+        VkHookEntry devHooks[] = {
+            { "vkQueuePresentKHR",     (void*)Hooked_vkQueuePresentKHR,     (void**)&g_OrigVkQueuePresent      },
+            { "vkCreateSwapchainKHR",  (void*)Hooked_vkCreateSwapchainKHR,  (void**)&g_OrigVkCreateSwapchain   },
+            { "vkDestroySwapchainKHR", (void*)Hooked_vkDestroySwapchainKHR, (void**)&g_OrigVkDestroySwapchain  },
+            { "vkDestroyDevice",       (void*)Hooked_vkDestroyDevice,       (void**)&g_OrigVkDestroyDevice     },
+            { "vkGetDeviceQueue",      (void*)Hooked_vkGetDeviceQueue,      (void**)&g_OrigVkGetDeviceQueue    },
         };
-        LOGI("[SwapChainHook] Android input event hooked");
+
+        for (auto& h : devHooks)
+        {
+            void* dispatch = (void*)vkGetDeviceProcAddr(helperDev, h.name);
+            void* trampoline = libVk ? dlsym(libVk, h.name) : nullptr;
+
+            SCH_LOGI("[SwapChainHook] %s: dispatch=%p  trampoline=%p  %s",
+                 h.name, dispatch, trampoline,
+                 (dispatch && dispatch != trampoline) ? "DIFFERENT!" : "same");
+
+            void* target = dispatch ? dispatch : trampoline;
+            if (target)
+            {
+                int ret = DobbyHook(target, h.hookFunc, h.origSlot);
+                SCH_LOGI("[SwapChainHook] DobbyHook(%s)=%d  target=%p  orig=%p",
+                     h.name, ret, target, *(h.origSlot));
+                if (ret == 0)
+                {
+                    std::lock_guard<std::mutex> lk(g_HookedAddrsMutex);
+                    g_DobbyHookedAddrs.push_back(target);
+                }
+            }
+            else
+            {
+                SCH_LOGW("[SwapChainHook] %s: not found via dispatch or dlsym", h.name);
+            }
+        }
+
+        // vkCreateDevice 是 instance-level 函数，用 vkGetInstanceProcAddr
+        {
+            void* dispatch = (void*)vkGetInstanceProcAddr(helperInst, "vkCreateDevice");
+            void* trampoline = libVk ? dlsym(libVk, "vkCreateDevice") : nullptr;
+
+            SCH_LOGI("[SwapChainHook] vkCreateDevice: dispatch=%p  trampoline=%p  %s",
+                 dispatch, trampoline,
+                 (dispatch && dispatch != trampoline) ? "DIFFERENT!" : "same");
+
+            void* target = dispatch ? dispatch : trampoline;
+            if (target)
+            {
+                int ret = DobbyHook(target, (void*)Hooked_vkCreateDevice, (void**)&g_OrigVkCreateDevice);
+                SCH_LOGI("[SwapChainHook] DobbyHook(vkCreateDevice)=%d  target=%p  orig=%p",
+                     ret, target, g_OrigVkCreateDevice);
+                if (ret == 0)
+                {
+                    std::lock_guard<std::mutex> lk(g_HookedAddrsMutex);
+                    g_DobbyHookedAddrs.push_back(target);
+                }
+            }
+        }
+    }
+    else
+    {
+        // Fallback: 无法创建辅助 VkDevice，退回 dlsym trampoline
+        // （大概率不起作用，但记录诊断信息）
+        SCH_LOGW("[SwapChainHook] Cannot create helper VkDevice! Falling back to dlsym trampolines");
+        if (libVk)
+        {
+            struct VkHookEntry { const char* name; void* hookFunc; void** origSlot; };
+            VkHookEntry fallbackHooks[] = {
+                { "vkQueuePresentKHR",     (void*)Hooked_vkQueuePresentKHR,     (void**)&g_OrigVkQueuePresent      },
+                { "vkCreateDevice",        (void*)Hooked_vkCreateDevice,        (void**)&g_OrigVkCreateDevice      },
+                { "vkDestroyDevice",       (void*)Hooked_vkDestroyDevice,       (void**)&g_OrigVkDestroyDevice     },
+                { "vkGetDeviceQueue",      (void*)Hooked_vkGetDeviceQueue,      (void**)&g_OrigVkGetDeviceQueue    },
+                { "vkCreateSwapchainKHR",  (void*)Hooked_vkCreateSwapchainKHR,  (void**)&g_OrigVkCreateSwapchain   },
+                { "vkDestroySwapchainKHR", (void*)Hooked_vkDestroySwapchainKHR, (void**)&g_OrigVkDestroySwapchain  },
+            };
+
+            for (auto& h : fallbackHooks)
+            {
+                void* sym = dlsym(libVk, h.name);
+                if (sym)
+                {
+                    int ret = DobbyHook(sym, h.hookFunc, h.origSlot);
+                    SCH_LOGI("[SwapChainHook] fallback dlsym %s=%p  DobbyHook=%d", h.name, sym, ret);
+                    if (ret == 0)
+                    {
+                        std::lock_guard<std::mutex> lk(g_HookedAddrsMutex);
+                        g_DobbyHookedAddrs.push_back(sym);
+                    }
+                }
+            }
+        }
     }
 
-    LOGI("[SwapChainHook] Hooks installed");
+    // --- 3. 清理辅助设备 ---
+    // DobbyHook 修改 .text 段的机器码，不依赖 VkDevice 生命周期
+    // 注意：此时 Hooked_vkDestroyDevice 已安装，但 device != g_VkDevice，安全通过
+    if (helperDev)
+    {
+        vkDestroyDevice(helperDev, nullptr);
+        SCH_LOGI("[SwapChainHook] helper device destroyed");
+    }
+    if (helperInst)
+    {
+        vkDestroyInstance(helperInst, nullptr);
+        SCH_LOGI("[SwapChainHook] helper instance destroyed");
+    }
+    if (libVk) dlclose(libVk);
+
+    // === EGL hooks（以防游戏实际走 OpenGL） ===
+    {
+        void* libEGL = dlopen("libEGL.so", RTLD_NOW | RTLD_NOLOAD);
+        if (libEGL)
+        {
+            void* sym = dlsym(libEGL, "eglSwapBuffers");
+            if (sym)
+            {
+                DobbyHook(sym, (void*)Hooked_eglSwapBuffers, (void**)&g_OrigEglSwapBuffers);
+                SCH_LOGI("[SwapChainHook] eglSwapBuffers hooked at %p", sym);
+            }
+            void* symDmg = dlsym(libEGL, "eglSwapBuffersWithDamageKHR");
+            if (!symDmg) symDmg = (void*)eglGetProcAddress("eglSwapBuffersWithDamageKHR");
+            if (symDmg)
+            {
+                DobbyHook(symDmg, (void*)Hooked_eglSwapBuffersWithDamageKHR, (void**)&g_OrigEglSwapBuffersWithDamage);
+                SCH_LOGI("[SwapChainHook] eglSwapBuffersWithDamageKHR hooked at %p", symDmg);
+            }
+            dlclose(libEGL);
+        }
+    }
+
+    SCH_LOGI("[SwapChainHook] Hooks installed");
 }
 
 void Uninstall()
@@ -1223,39 +1247,18 @@ void Uninstall()
     if (!g_Installed.exchange(false))
         return;
 
-    LOGI("[SwapChainHook] Uninstalling...");
+    SCH_LOGI("[SwapChainHook] Uninstalling...");
 
-    switch (g_HookStrategy)
-    {
-    case HookStrategy::EGL:
-    {
-        if (g_OrigEglSwapBuffers)
-        {
-            DobbyDestroy((void*)&eglSwapBuffers);
-            g_OrigEglSwapBuffers = nullptr;
-        }
-        break;
-    }
-    case HookStrategy::VkCreateInstance:
+    // Unhook all DobbyHooked addresses
     {
         std::lock_guard<std::mutex> lk(g_HookedAddrsMutex);
         for (void* addr : g_DobbyHookedAddrs)
             DobbyDestroy(addr);
         g_DobbyHookedAddrs.clear();
-        break;
     }
-    case HookStrategy::VkGIPA_Pointer:
-    {
-        PointerHookManager::GetInstance().Remove<vkGetInstanceProcAddrHook>();
-        break;
-    }
-    case HookStrategy::VkGIPA_Thunk:
-    {
-        if (g_VkGIPAHooked.exchange(false) && g_VkGIPAImplAddr)
-            DobbyDestroy(g_VkGIPAImplAddr);
-        break;
-    }
-    }
+
+    g_OrigEglSwapBuffers = nullptr;
+    g_OrigEglSwapBuffersWithDamage = nullptr;
 
     // 清理 ImGui
     if (g_VkInitialized)
@@ -1273,10 +1276,7 @@ void Uninstall()
     g_VkInitialized   = false;
     g_ImGuiReady.store(false);
 
-    if (g_App)
-        g_App->onInputEvent = g_Orig_onInputEvent;
-
-    LOGI("[SwapChainHook] Uninstalled");
+    SCH_LOGI("[SwapChainHook] Uninstalled");
 }
 
 bool IsInitialized()

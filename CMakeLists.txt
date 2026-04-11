@@ -39,15 +39,20 @@ file(GLOB IMGUI_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui/backends/imgui_impl_opengl3.cpp
 )
 
-file(GLOB KITTYMEMORY_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/KittyMemory/*.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/KittyMemory/*.c
-)
+option(USE_KITTYMEMORYEX "Use KittyMemoryEx backend (pvm syscall) instead of KittyMemory (mprotect+memcpy)" ON)
+
+if(USE_KITTYMEMORYEX)
+    file(GLOB KITTY_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/external/KittyMemoryEx/KittyMemoryEx/*.cpp)
+    set(KITTY_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/KittyMemoryEx)
+else()
+    file(GLOB KITTY_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/external/KittyMemory/KittyMemory/*.cpp)
+    set(KITTY_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/KittyMemory)
+endif()
 
 set(LIBRARY_SOURCES
     ${COMMON_SOURCES}
     ${IMGUI_SOURCES}
-    ${KITTYMEMORY_SOURCES}
+    ${KITTY_SOURCES}
     ${CMAKE_CURRENT_SOURCE_DIR}/source/PointerHook/trampoline.s
 )
 
@@ -56,6 +61,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/source/Utils
     ${CMAKE_CURRENT_SOURCE_DIR}/external
     ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui
+    ${KITTY_INCLUDE_DIR}
 )
 
 set(LIBS
@@ -73,8 +79,9 @@ add_library(${PROJECT_NAME} SHARED
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
-    kBUILD_LIBRARY
-    kNO_KEYSTONE # KittyMemory
+    $<$<BOOL:${USE_KITTYMEMORYEX}>:kUSE_KITTYMEMORYEX>
+    kNO_KEYSTONE
+    kENABLE_FORMAT_LOG
     kANDROID_LOG
     kANDROID_LOG_TAG="INJECT"
     kPROJECT_NAME="${PROJECT_NAME}"

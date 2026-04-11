@@ -1,5 +1,7 @@
-#include "AndroidPlatform/AndroidApp.h"
+#include "AndroidPlatform/AndroidPlatform.h"
 #include "Core/ElfScannerManager.h"
+#include "InputEvent/CustomHandleInput.h"
+#include "InputEvent/InputEventHook.h"
 #include "SwapChain/SwapChainHook.h"
 #include "Utils/CrashHandler.h"
 #include "Utils/FileLogger.h"
@@ -15,32 +17,52 @@ void main_thread()
 {
 	CrashHandler::Install();
 
+	KT::Init(getprogname());
+
 	if (!Elf.scanAsync({
-			"libc.so",
-			// "libUE4.so", // Enable when injecting Unreal Engine games and use VkGIPA_Pointer hook strategy
-			"libvulkan.so",
-			"libinput.so",
+			// "libc.so",
+			// "libUE4.so", // For Unreal Engine 4
+			// "libvulkan.so",
+			"libinput.so", // For InputEventHook
 			"libart.so", // For GetJavaVM()
-			"libandroid_runtime.so",
+			// "libandroid_runtime.so",
 		}))
 	{
 		LOGE("Failed to scan necessary libraries.");
 		MAKE_CRASH();
 	}
 
-	LOGI("Waiting for valid android_app* via JNI...");
+	GetLogFile("Debug")->Append("Hello\n");
 
-	while (!(g_App = AndroidApp::FindAndroidAppViaJNI()))
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
-	LOGI("[*] g_App: %p", g_App);
-
-	GetLogFile("Debug")->Append("Hello\n"); // Must after g_App is valid
-
-	SwapChainHook::SetRenderCallback([]()
-	{
-		ImGui::ShowDemoWindow();
-	});
+	SwapChainHook::SetRenderCallback([]() { ImGui::ShowDemoWindow(); });
 	SwapChainHook::Install();
+
+	InputEventHook::Initialize([](AInputEvent* event)
+	{
+        if (event)
+        {
+            if (SwapChainHook::IsInitialized())
+            {
+				const ImVec2 size = { (float)SwapChainHook::GetWidth(), (float)SwapChainHook::GetHeight() };
+                CustomHandleInput::ImGui_ImplAndroid_HandleInputEvent(event, size);
+            }
+
+            int32_t event_type = AInputEvent_getType(event);
+            if (event_type == AINPUT_EVENT_TYPE_KEY)
+            {
+                int32_t event_key_code = AKeyEvent_getKeyCode(event);
+                int32_t event_action = AKeyEvent_getAction(event);
+                if (event_key_code == AKEYCODE_VOLUME_DOWN && event_action == AKEY_EVENT_ACTION_DOWN)
+                {
+                    LOGI("keycode: AKEYCODE_VOLUME_DOWN, action: AKEY_EVENT_ACTION_DOWN");
+                }
+                else if (event_key_code == AKEYCODE_VOLUME_UP && event_action == AKEY_EVENT_ACTION_DOWN)
+                {
+                    LOGI("keycode: AKEYCODE_VOLUME_UP, action: AKEY_EVENT_ACTION_DOWN");
+                }
+            }
+        }
+    });
 }
 
 static std::atomic<bool> g_Initialized{false};

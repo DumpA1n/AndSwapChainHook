@@ -56,7 +56,7 @@ bool ElfScannerManager::scanAsync(const std::set<std::string>& libraries) {
         futures.push_back(std::async(std::launch::async, [task]() -> std::pair<int, ElfScanner> {
             LOGI("[ElfScannerManager] Scanning library: %s", task.name.c_str());
             ElfScanner scanner;
-            KT::elfScan(task.name, scanner);
+            KT::ElfScan(task.name, scanner);
             return { task.index, std::move(scanner) };
         }));
     }

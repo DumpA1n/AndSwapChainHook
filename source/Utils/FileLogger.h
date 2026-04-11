@@ -1,9 +1,9 @@
 #pragma once
 
 #include "FileIO.h"
-#include "KittyEx.h"
 
 #include <chrono>
+#include <cstdlib>
 #include <filesystem>
 #include <iomanip>
 #include <memory>
@@ -43,7 +43,8 @@ inline FileIO* GetLogFile(const std::string& dir)
     auto [it, inserted] = g_log_files.try_emplace(dir, nullptr);
     if (inserted)
     {
-        fs::path saved_path = fs::path(KittyUtils::getExternalStorage()) / "Android" / "data" / getprogname() / "cache";
+        const char* ext = std::getenv("EXTERNAL_STORAGE");
+        fs::path saved_path = fs::path(ext && ext[0] ? ext : "/sdcard") / "Android" / "data" / getprogname() / "cache";
         fs::path final_path = saved_path / kPROJECT_NAME / dir;
         fs::path file_name = dir + "_" + FormatedTimeShort() + ".log";
         it->second = std::make_unique<FileIO>(final_path / file_name);

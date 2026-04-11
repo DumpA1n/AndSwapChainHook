@@ -22,7 +22,9 @@
     ELF_LIB_ENTRY(VULKAN,          vulkan,          "libvulkan.so")          \
     ELF_LIB_ENTRY(INPUT,           input,           "libinput.so")           \
     ELF_LIB_ENTRY(ART,             art,             "libart.so")             \
-    ELF_LIB_ENTRY(ANDROID_RUNTIME, android_runtime, "libandroid_runtime.so")
+    ELF_LIB_ENTRY(ANDROID_RUNTIME, android_runtime, "libandroid_runtime.so") \
+    ELF_LIB_ENTRY(GODOT,           godot,           "libgodot_android.so")   \
+    ELF_LIB_ENTRY(SEC2026,         sec2026,         "libsec2026.so")
 
 class ElfScannerManager {
 public:

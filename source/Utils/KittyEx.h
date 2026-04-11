@@ -2,12 +2,12 @@
 
 #include <sys/cdefs.h>
 #include <thread>
-#if defined(kBUILD_LIBRARY)
-#include "KittyMemory/KittyInclude.hpp"
-#else
-#include <KittyMemoryEx/KittyMemoryEx.hpp>
+#if defined(kUSE_KITTYMEMORYEX)
+#include "KittyMemoryEx/KittyMemoryEx.hpp"
 #include "KittyMemoryEx/KittyMemoryMgr.hpp"
-#include <KittyMemoryEx/KittyScanner.hpp>
+#include "KittyMemoryEx/KittyScanner.hpp"
+#else
+#include "KittyMemory/KittyInclude.hpp"
 #endif
 #include "Logger.h"
 
@@ -19,11 +19,10 @@
 #include <cstring>
 #include <unistd.h>
 #include <fcntl.h>
-#include <dlfcn.h> // dladdr
+#include <dlfcn.h>
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/uio.h>
-#include <asm/unistd.h>
 
 namespace KT
 {
@@ -33,34 +32,15 @@ inline uintptr_t Strip(uintptr_t address) {
 }
 
 inline bool IsValid(uintptr_t address) {
-    // 高位只允许全 0 或 Android tagged pointer 前缀 0xB4000
+    if (!address || address < 0x10000000)
+        return false;
     uintptr_t highBits = address & ~(uintptr_t)0x7fffffffff;
-    if (highBits != 0 && highBits != (uintptr_t)0xB400000000000000)
-        return false;
-
-    uintptr_t stripped = Strip(address);
-    if (!stripped || stripped < (uintptr_t)0x10000000)
-        return false;
-
-    return true;
+    return highBits == 0 || highBits == (uintptr_t)0xB400000000000000;
 }
 
 template<class T>
 inline bool IsValid(const T& c) {
     return IsValid((uintptr_t)c);
-}
-
-inline bool IsValidF(float value) {
-    if (std::isnan(value)) {
-        return false;
-    }
-    if (std::isinf(value)) {
-        return false;
-    }
-    if (!std::isfinite(value)) {
-        return false;
-    }
-    return true;
 }
 
 enum class MemError : uint8_t {
@@ -76,12 +56,12 @@ enum class MemError : uint8_t {
 
 inline thread_local MemError t_lastError = MemError::None;
 
-inline void clearError() { t_lastError = MemError::None; }
-inline void setError(MemError e) { t_lastError = e; }
-inline MemError lastError() { auto e = t_lastError; t_lastError = MemError::None; return e; }
-inline bool hasError() { return t_lastError != MemError::None; }
+inline void ClearError() { t_lastError = MemError::None; }
+inline void SetError(MemError e) { t_lastError = e; }
+inline MemError LastError() { auto e = t_lastError; t_lastError = MemError::None; return e; }
+inline bool HasError() { return t_lastError != MemError::None; }
 
-inline const char* errorString(MemError e) {
+inline const char* ErrorString(MemError e) {
     switch (e) {
         case MemError::None:           return "None";
         case MemError::InvalidAddress: return "InvalidAddress";
@@ -96,265 +76,254 @@ inline const char* errorString(MemError e) {
 }
 
 // ============================================================
-//  Platform backend — the ONLY place with #if defined
+//  Global state
 //
-//  Safe  = KittyMemory (遍历 maps, mprotect)，安全但慢
-//  Fast  = 直接 memcpy，零开销但调用者需自行保证地址可读写
+//  kUSE_KITTYMEMORYEX → KittyMemoryEx 后端
+//  默认               → KittyMemory 后端
 // ============================================================
 namespace detail {
-#if defined(kBUILD_LIBRARY)
-    struct MemBackend {
-        bool init(const std::string&) { return true; }
-        pid_t getpid() { return ::getpid(); }
-
-        // ---------- Safe: KittyMemory (遍历 maps) ----------
-        bool safeRead(uint64_t address, void* buffer, size_t len) {
-            if (!KittyMemory::memRead(buffer, reinterpret_cast<void*>(address), len)) {
-                setError(MemError::ReadFailed);
-                return false;
-            }
-            return true;
-        }
-
-        bool safeWrite(uint64_t address, void* buffer, size_t len) {
-            if (!KittyMemory::memWrite(reinterpret_cast<void*>(address), buffer, len)) {
-                setError(MemError::WriteFailed);
-                return false;
-            }
-            return true;
-        }
-
-        // ---------- Fast: 直接 memcpy ----------
-        bool fastRead(uint64_t address, void* buffer, size_t len) {
-            std::memcpy(buffer, reinterpret_cast<const void*>(address), len);
-            return true;
-        }
-
-        bool fastWrite(uint64_t address, const void* data, size_t len) {
-            std::memcpy(reinterpret_cast<void*>(address), data, len);
-            return true;
-        }
-
-        template<typename T>
-        T fastReadValue(uint64_t address) {
-            return *reinterpret_cast<T*>(address);
-        }
-
-        ElfScanner createScanner(const std::string& name) {
-            return ElfScanner::createWithPath(name);
-        }
-    };
-#else
-    struct MemBackend {
-        pid_t m_pid = 0;
-        KittyMemoryMgr m_kittyMemMgr;
-
-        bool init(const std::string& processName) {
-            clearError();
-            m_pid = KittyMemoryEx::getProcessID(processName);
-            if (m_pid < 1) {
-                setError(MemError::NotInitialized);
-                LOGE("MemBackend::init() error: Failed to get pid: %d", m_pid);
-                return false;
-            }
-            if (!m_kittyMemMgr.initialize(m_pid, EK_MEM_OP_SYSCALL, false)) {
-                setError(MemError::NotInitialized);
-                LOGE("MemBackend::init() error: failed to init KittyMemoryMgr");
-                return false;
-            }
-            LOGI("MemBackend::init() success, pid: %d, mgr: %p", m_pid, &m_kittyMemMgr);
-            return true;
-        }
-
-        pid_t getpid() { return m_pid; }
-
-        // 跨进程无 Safe/Fast 区分，统一使用 syscall
-        bool safeRead(uint64_t address, void* buffer, size_t len) {
-            struct iovec local = { .iov_base = buffer, .iov_len = len };
-            struct iovec remote = { .iov_base = reinterpret_cast<void*>(address), .iov_len = len };
-            ssize_t ret = (ssize_t)syscall_aarch64(__NR_process_vm_readv, m_pid, &local, 1, &remote, 1, 0, 1);
-            if (ret != (ssize_t)len) {
-                LOGE("MemBackend:: error: process_vm_readv(%p, %p, %zu) => %zd", address, buffer, len, ret);
-                setError(MemError::ReadFailed);
-                return false;
-            }
-            return true;
-        }
-
-        bool safeWrite(uint64_t address, void* buffer, size_t len) {
-            struct iovec local = { .iov_base = buffer, .iov_len = len };
-            struct iovec remote = { .iov_base = reinterpret_cast<void*>(address), .iov_len = len };
-            ssize_t ret = (ssize_t)syscall_aarch64(__NR_process_vm_writev, m_pid, &local, 1, &remote, 1, 0, 1);
-            if (ret != (ssize_t)len) {
-                LOGE("MemBackend:: error: process_vm_writev(%p, %p, %zu) => %zd", address, buffer, len, ret);
-                bool ok = IOWrite(address, buffer, len) == (ssize_t)len;
-                if (!ok) setError(MemError::IOWriteFailed);
-                return ok;
-            }
-            return true;
-        }
-
-        bool fastRead(uint64_t address, void* buffer, size_t len) {
-            return safeRead(address, buffer, len);
-        }
-
-        bool fastWrite(uint64_t address, const void* data, size_t len) {
-            return safeWrite(address, const_cast<void*>(data), len);
-        }
-
-        template<typename T>
-        T fastReadValue(uint64_t address) {
-            T value{};
-            safeRead(address, &value, sizeof(T));
-            return value;
-        }
-
-        ElfScanner createScanner(const std::string& name) {
-            return m_kittyMemMgr.findMemElf(name);
-        }
-
-        ssize_t IOWrite(uint64_t address, void* buffer, size_t len) {
-            if (!IsValid(address)) {
-                setError(MemError::InvalidAddress);
-                LOGE("MemBackend::IOWrite error: invalid address (%p)", address);
-                return -1;
-            }
-            char memPath[256] = {0};
-            snprintf(memPath, sizeof(memPath), "/proc/%d/mem", m_pid);
-            int fd = open(memPath, O_RDWR);
-            if (fd == -1) {
-                setError(MemError::OpenFailed);
-                LOGE("MemBackend::IOWrite error: failed to open %s", memPath);
-                return -1;
-            }
-            ssize_t rbytes = pwrite64(fd, buffer, len, address);
-            if (rbytes == -1) {
-                setError(MemError::IOWriteFailed);
-                LOGE("MemBackend::IOWrite error: failed to write to %p", address);
-                close(fd);
-                return -1;
-            }
-            close(fd);
-            return rbytes;
-        }
-    };
+    inline pid_t g_pid = 0;
+#if defined(kUSE_KITTYMEMORYEX)
+    inline KittyMemoryMgr g_mgr;       // RW + FastRW + ForceRW (pvm syscall)
 #endif
 } // namespace detail
 
 // ============================================================
-//  Mem — platform-agnostic, zero #if defined
-//
-//  read / write             = Fast (直接 memcpy, 零开销, 默认)
-//  safeRead / safeWrite     = Safe (KittyMemory, 遍历 maps)
+//  Init / Getpid
 // ============================================================
-class Mem {
-public:
-    Mem() = default;
-
-    static Mem* instance() {
-        static Mem g_instance;
-        return &g_instance;
+inline bool Init(const std::string& processName) {
+    ClearError();
+#if defined(kUSE_KITTYMEMORYEX)
+    detail::g_pid = getpid();
+    if (detail::g_pid < 1) {
+        SetError(MemError::NotInitialized);
+        LOGE("KT::Init error: failed to get pid: %d", detail::g_pid);
+        return false;
     }
-
-    bool init(const std::string& processName) {
-        return m_backend.init(processName);
+    if (!detail::g_mgr.initialize(detail::g_pid, EK_MEM_OP_SYSCALL, false)) {
+        SetError(MemError::NotInitialized);
+        LOGE("KT::Init error: failed to init KittyMemoryMgr");
+        return false;
     }
-
-    pid_t getpid() {
-        return m_backend.getpid();
-    }
-
-    // ---------- Fast (默认) ----------
-    inline bool read(uint64_t address, void* buffer, size_t len) {
-        return m_backend.fastRead(address, buffer, len);
-    }
-
-    inline bool write(uint64_t address, const void* data, size_t len) {
-        return m_backend.fastWrite(address, data, len);
-    }
-
-    // ---------- Safe ----------
-    inline bool safeRead(uint64_t address, void* buffer, size_t len) {
-        return m_backend.safeRead(address, buffer, len);
-    }
-
-    inline bool safeWrite(uint64_t address, void* buffer, size_t len) {
-        return m_backend.safeWrite(address, buffer, len);
-    }
-
-    ElfScanner createScanner(const std::string& name) {
-        return m_backend.createScanner(name);
-    }
-
-private:
-    detail::MemBackend m_backend;
-};
-
-#define MemIns Mem::instance()
-
-// ============================================================
-//  Free functions — platform-agnostic, zero #if defined
-//
-//  Read / Write             = Fast (直接 memcpy, 默认)
-//  SafeRead / SafeWrite     = Safe (KittyMemory, 遍历 maps)
-// ============================================================
-inline bool init(const std::string& processName) {
-    return MemIns->init(processName);
+    LOGI("KT::Init success, pid: %d", detail::g_pid);
+    return true;
+#else
+    detail::g_pid = getpid();
+    return true;
+#endif
 }
 
-inline pid_t getpid() {
-    return MemIns->getpid();
-}
+inline pid_t GetPid() { return detail::g_pid; }
 
-inline void elfScan(const std::string& elfName, ElfScanner& scanner) {
-    do { std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        scanner = MemIns->createScanner(elfName);
+// ============================================================
+//  ElfScanner
+// ============================================================
+inline void ElfScan(const std::string& elfName, ElfScanner& scanner) {
+    do {
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+#if defined(kUSE_KITTYMEMORYEX)
+        scanner = detail::g_mgr.elfScanner.findElf(elfName);
+#else
+        scanner = ElfScanner::findElf(elfName);
+#endif
     } while (!scanner.isValid());
-};
-
-// ---------- Fast (默认) ----------
-inline bool Read(uint64_t address, void *buffer, size_t len) {
-    return MemIns->read(address, buffer, len);
 }
 
-inline bool Write(uint64_t address, const void *data, size_t len) {
-    return MemIns->write(address, data, len);
+// ============================================================
+//  FastRW: 最快路径
+//  KittyMemory: memcpy           KittyMemoryEx: g_mgr pvm
+// ============================================================
+inline bool FastRead(uint64_t address, void* buffer, size_t len) {
+#if defined(kUSE_KITTYMEMORYEX)
+    size_t ret = detail::g_mgr.readMem(address, buffer, len);
+    if (ret != len) { SetError(MemError::ReadFailed); return false; }
+    return true;
+#else
+    std::memcpy(buffer, reinterpret_cast<const void*>(address), len);
+    return true;
+#endif
+}
+
+inline bool FastWrite(uint64_t address, const void* data, size_t len) {
+#if defined(kUSE_KITTYMEMORYEX)
+    size_t ret = detail::g_mgr.writeMem(address, const_cast<void*>(data), len);
+    if (ret != len) { SetError(MemError::WriteFailed); return false; }
+    return true;
+#else
+    std::memcpy(reinterpret_cast<void*>(address), data, len);
+    return true;
+#endif
+}
+
+// ============================================================
+//  RW: 默认读写
+//  KittyMemory: pvm syscall      KittyMemoryEx: g_mgr pvm
+// ============================================================
+inline bool Read(uint64_t address, void* buffer, size_t len) {
+#if defined(kUSE_KITTYMEMORYEX)
+    size_t ret = detail::g_mgr.readMem(address, buffer, len);
+    if (ret != len) { SetError(MemError::ReadFailed); return false; }
+    return true;
+#else
+    size_t ret = KittyMemory::syscallMemRead(static_cast<uintptr_t>(address), buffer, len);
+    if (ret != len) { SetError(MemError::ReadFailed); return false; }
+    return true;
+#endif
+}
+
+inline bool Write(uint64_t address, const void* data, size_t len) {
+#if defined(kUSE_KITTYMEMORYEX)
+    size_t ret = detail::g_mgr.writeMem(address, const_cast<void*>(data), len);
+    if (ret != len) { SetError(MemError::WriteFailed); return false; }
+    return true;
+#else
+    size_t ret = KittyMemory::syscallMemWrite(static_cast<uintptr_t>(address),
+                                              const_cast<void*>(data), len);
+    if (ret != len) { SetError(MemError::WriteFailed); return false; }
+    return true;
+#endif
+}
+
+// ============================================================
+//  MemProtect: 页对齐 mprotect 封装
+// ============================================================
+inline int MemProtect(uintptr_t address, size_t len, int protection) {
+    uintptr_t pageAddr = address & ~(uintptr_t)(sysconf(_SC_PAGESIZE) - 1);
+    size_t protLen = address + len - pageAddr;
+    return mprotect(reinterpret_cast<void*>(pageAddr), protLen, protection);
+}
+
+// ============================================================
+//  ForceRW: 强制读写（必要时 mprotect 后再 rw）
+// ============================================================
+inline bool ForceRead(uint64_t address, void* buffer, size_t len) {
+#if defined(kUSE_KITTYMEMORYEX)
+    auto map = KittyMemoryEx::getAddressMap(detail::g_pid, static_cast<uintptr_t>(address));
+    int origProt = -1;
+    if (map.isValid() && !map.readable) {
+        origProt = map.protection;
+        if (MemProtect(static_cast<uintptr_t>(address), len, origProt | PROT_READ) != 0) {
+            SetError(MemError::SyscallFailed); return false;
+        }
+    }
+    size_t ret = detail::g_mgr.readMem(address, buffer, len);
+    if (origProt >= 0) MemProtect(static_cast<uintptr_t>(address), len, origProt);
+    if (ret != len) { SetError(MemError::ReadFailed); return false; }
+    return true;
+#else
+    if (!KittyMemory::memRead(reinterpret_cast<const void*>(address), buffer, len)) {
+        SetError(MemError::ReadFailed);
+        return false;
+    }
+    return true;
+#endif
+}
+
+inline bool ForceWrite(uint64_t address, const void* data, size_t len) {
+#if defined(kUSE_KITTYMEMORYEX)
+    auto map = KittyMemoryEx::getAddressMap(detail::g_pid, static_cast<uintptr_t>(address));
+    int origProt = -1;
+    if (map.isValid() && !map.writeable) {
+        origProt = map.protection;
+        if (MemProtect(static_cast<uintptr_t>(address), len, origProt | PROT_WRITE) != 0) {
+            SetError(MemError::SyscallFailed); return false;
+        }
+    }
+    size_t ret = detail::g_mgr.writeMem(address, const_cast<void*>(data), len);
+    if (origProt >= 0) MemProtect(static_cast<uintptr_t>(address), len, origProt);
+    if (ret != len) { SetError(MemError::WriteFailed); return false; }
+    return true;
+#else
+    if (!KittyMemory::memWrite(reinterpret_cast<void*>(address), data, len)) {
+        SetError(MemError::WriteFailed);
+        return false;
+    }
+    return true;
+#endif
+}
+
+// ============================================================
+//  Template helpers — pointer chain read (共用实现)
+// ============================================================
+namespace detail {
+using RawReadFn = bool(*)(uint64_t, void*, size_t);
+
+template<RawReadFn ReadFn, typename Ret, typename T, typename... Offsets>
+inline Ret ChainRead(T base, Offsets... offsets) {
+    uint64_t address = (uint64_t)base;
+    if constexpr (sizeof...(offsets) == 0) {
+        Ret value{};
+        ReadFn(address, &value, sizeof(Ret));
+        return value;
+    } else {
+        std::array<uint64_t, sizeof...(offsets)> offset_array = {static_cast<uint64_t>(offsets)...};
+        for (size_t i = 0; i < sizeof...(offsets) - 1; ++i) {
+            uint64_t next = 0;
+            if (!ReadFn(address + offset_array[i], &next, sizeof(next)) || !IsValid(next))
+                return Ret{};
+            address = next;
+        }
+        Ret value{};
+        ReadFn(address + offset_array[sizeof...(offsets) - 1], &value, sizeof(Ret));
+        return value;
+    }
+}
+} // namespace detail
+
+// ============================================================
+//  Template overloads — FastRead / Read / ForceRead
+// ============================================================
+template<typename Ret, typename T, typename... Offsets>
+inline Ret FastRead(T base, Offsets... offsets) {
+    return detail::ChainRead<FastRead, Ret>(base, offsets...);
 }
 
 template<typename Ret, typename T, typename... Offsets>
 inline Ret Read(T base, Offsets... offsets) {
-    uint64_t address = (uint64_t)base;
-    if (sizeof...(offsets) == 0) {
-        Ret value{};
-        MemIns->read(address, &value, sizeof(Ret));
-        return value;
-    }
-    std::array<uint64_t, sizeof...(offsets)> offset_array = {static_cast<uint64_t>(offsets)...};
-    for (size_t i = 0; i < sizeof...(offsets) - 1; ++i) {
-        uint64_t next = 0;
-        MemIns->read(address + offset_array[i], &next, sizeof(next));
-        address = next;
-        if (!IsValid(address)) {
-            return Ret{};
-        }
-    }
-    Ret value{};
-    MemIns->read(address + offset_array[sizeof...(offsets) - 1], &value, sizeof(Ret));
-    return value;
+    return detail::ChainRead<Read, Ret>(base, offsets...);
+}
+
+template<typename Ret, typename T, typename... Offsets>
+inline Ret ForceRead(T base, Offsets... offsets) {
+    return detail::ChainRead<ForceRead, Ret>(base, offsets...);
+}
+
+// ============================================================
+//  Template overloads — FastWrite / Write / ForceWrite
+// ============================================================
+template<typename T>
+inline typename std::enable_if<
+    !std::is_convertible<T, std::string>::value &&
+    !std::is_convertible<T, std::vector<uint8_t>>::value,
+    bool>::type
+FastWrite(uintptr_t address, T value) {
+    return FastWrite(address, &value, sizeof(T));
 }
 
 template<typename T>
 inline typename std::enable_if<
     !std::is_convertible<T, std::string>::value &&
     !std::is_convertible<T, std::vector<uint8_t>>::value,
-    bool >::type
+    bool>::type
 Write(uintptr_t address, T value) {
     return Write(address, &value, sizeof(T));
 }
 
-inline bool conv_string_to_byte_array(const std::string& hexString, std::vector<uint8_t>& byteArray) {
+template<typename T>
+inline typename std::enable_if<
+    !std::is_convertible<T, std::string>::value &&
+    !std::is_convertible<T, std::vector<uint8_t>>::value,
+    bool>::type
+ForceWrite(uintptr_t address, T value) {
+    return ForceWrite(address, &value, sizeof(T));
+}
+
+// ============================================================
+//  Convenience — hex string / byte array write
+// ============================================================
+inline bool ConvStringToByteArray(const std::string& hexString, std::vector<uint8_t>& byteArray) {
     if (hexString.size() < 2 || hexString.size() % 2 != 0) return false;
-    for (int i = 0; i < hexString.size(); i += 2) {
+    for (size_t i = 0; i < hexString.size(); i += 2) {
         int byte = std::stoi(hexString.substr(i, 2), nullptr, 16);
         byteArray.push_back(static_cast<uint8_t>(byte));
     }
@@ -363,7 +332,7 @@ inline bool conv_string_to_byte_array(const std::string& hexString, std::vector<
 
 inline bool Write(uintptr_t address, const std::string& hexString) {
     std::vector<uint8_t> byteArray;
-    conv_string_to_byte_array(hexString, byteArray);
+    ConvStringToByteArray(hexString, byteArray);
     return Write(address, byteArray.data(), byteArray.size());
 }
 

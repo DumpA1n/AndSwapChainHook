@@ -1,9 +1,76 @@
 #include "IPointerHook.h"
 
 #include <sys/mman.h>
+#include <unistd.h>
+#include <cinttypes>
+#include <cstring>
+#include <cstdio>
 
-#include "KittyMemory/KittyMemory.hpp"
 #include "Logger.h"
+
+namespace {
+
+inline uintptr_t PageAlign(uintptr_t addr) {
+    static const uintptr_t pageSize = sysconf(_SC_PAGESIZE);
+    return addr & ~(pageSize - 1);
+}
+
+// 从 /proc/self/maps 获取地址所在页的保护权限，失败返回 -1
+inline int GetPageProt(uintptr_t addr) {
+    FILE* fp = fopen("/proc/self/maps", "r");
+    if (!fp) return -1;
+    char line[512];
+    int prot = -1;
+    while (fgets(line, sizeof(line), fp)) {
+        uintptr_t start, end;
+        char perms[5];
+        if (sscanf(line, "%" SCNxPTR "-%" SCNxPTR " %4s", &start, &end, perms) == 3) {
+            if (addr >= start && addr < end) {
+                prot = 0;
+                if (perms[0] == 'r') prot |= PROT_READ;
+                if (perms[1] == 'w') prot |= PROT_WRITE;
+                if (perms[2] == 'x') prot |= PROT_EXEC;
+                break;
+            }
+        }
+    }
+    fclose(fp);
+    return prot;
+}
+
+inline bool MemProtectRead(uintptr_t address, void* buffer, size_t len) {
+    int origProt = GetPageProt(address);
+    if (origProt < 0) return false;
+    if (origProt & PROT_READ) {
+        std::memcpy(buffer, reinterpret_cast<const void*>(address), len);
+        return true;
+    }
+    uintptr_t pageStart = PageAlign(address);
+    size_t totalSize = (address - pageStart) + len;
+    if (mprotect(reinterpret_cast<void*>(pageStart), totalSize, origProt | PROT_READ) != 0)
+        return false;
+    std::memcpy(buffer, reinterpret_cast<const void*>(address), len);
+    mprotect(reinterpret_cast<void*>(pageStart), totalSize, origProt);
+    return true;
+}
+
+inline bool MemProtectWrite(uintptr_t address, const void* data, size_t len) {
+    int origProt = GetPageProt(address);
+    if (origProt < 0) return false;
+    if (origProt & PROT_WRITE) {
+        std::memcpy(reinterpret_cast<void*>(address), data, len);
+        return true;
+    }
+    uintptr_t pageStart = PageAlign(address);
+    size_t totalSize = (address - pageStart) + len;
+    if (mprotect(reinterpret_cast<void*>(pageStart), totalSize, origProt | PROT_WRITE) != 0)
+        return false;
+    std::memcpy(reinterpret_cast<void*>(address), data, len);
+    mprotect(reinterpret_cast<void*>(pageStart), totalSize, origProt);
+    return true;
+}
+
+} // anonymous namespace
 
 #define MAKE_CRASH()     \
     __asm__ volatile (   \
@@ -41,7 +108,7 @@ void IPointerHook::Initialize()
         orig_func_addr_ = GetFuncAddrImpl();
     } else {
         uintptr_t temp = 0;
-        if (KittyMemory::memRead((void*)orig_ptr_addr_, &temp, sizeof(uintptr_t)) && temp != 0) {
+        if (MemProtectRead(orig_ptr_addr_, &temp, sizeof(uintptr_t)) && temp != 0) {
             orig_func_addr_ = temp;
         } else {
             LOGE("[%s] Failed to initialize: orig_func_addr_ is null", GetName().c_str());
@@ -113,8 +180,8 @@ void IPointerHook::InstallHook()
 
     g_Hacks_[index_].store(this, std::memory_order_release);
 
-    if (!KittyMemory::memWrite((void*)orig_ptr_addr_, &fake_func_addr_, sizeof(uintptr_t))) {
-        LOGE("[%s] InstallHook failed: memWrite error at %p", GetName().c_str(), (void*)orig_ptr_addr_);
+    if (!MemProtectWrite(orig_ptr_addr_, &fake_func_addr_, sizeof(uintptr_t))) {
+        LOGE("[%s] InstallHook failed: MemProtectWrite error at %p", GetName().c_str(), (void*)orig_ptr_addr_);
         return;
     }
 
@@ -130,8 +197,8 @@ void IPointerHook::InstallHook()
 void IPointerHook::RestoreHook()
 {
     if (installed_) {
-        if (!KittyMemory::memWrite((void*)orig_ptr_addr_, &orig_func_addr_, sizeof(uintptr_t))) {
-            LOGE("[%s] RestoreHook failed: memWrite error at %p", GetName().c_str(), (void*)orig_ptr_addr_);
+        if (!MemProtectWrite(orig_ptr_addr_, &orig_func_addr_, sizeof(uintptr_t))) {
+            LOGE("[%s] RestoreHook failed: MemProtectWrite error at %p", GetName().c_str(), (void*)orig_ptr_addr_);
         }
 
         installed_ = false;
@@ -143,8 +210,8 @@ void IPointerHook::RestoreHook()
 void IPointerHook::DestroyHook()
 {
     if (initialized_) {
-        if (!KittyMemory::memWrite((void*)orig_ptr_addr_, &orig_func_addr_, sizeof(uintptr_t))) {
-            LOGE("[%s] DestroyHook failed: memWrite error at %p", GetName().c_str(), (void*)orig_ptr_addr_);
+        if (!MemProtectWrite(orig_ptr_addr_, &orig_func_addr_, sizeof(uintptr_t))) {
+            LOGE("[%s] DestroyHook failed: MemProtectWrite error at %p", GetName().c_str(), (void*)orig_ptr_addr_);
         }
         x_munmap((void*)fake_func_addr_, 4096);
         if (index_ < MAX_HOOKS) {
