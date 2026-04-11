@@ -254,7 +254,6 @@ static EGLBoolean Hooked_eglSwapBuffers(EGLDisplay display, EGLSurface surface)
 
 /**
  * @brief eglSwapBuffersWithDamageKHR hook
- * Godot 等引擎可能调用此变体而非 eglSwapBuffers
  */
 static EGLBoolean Hooked_eglSwapBuffersWithDamageKHR(
     EGLDisplay display, EGLSurface surface, EGLint* rects, EGLint n_rects)
@@ -1019,36 +1018,6 @@ void Install()
 
     SCH_LOGI("[SwapChainHook] Installing hooks...");
 
-    // ====================================================================
-    // Dispatch Target Hook
-    //
-    // Godot 4 使用 VK_NO_PROTOTYPES，通过 vkGetDeviceProcAddr 获取函数指针
-    // 来调用 Vulkan 函数。所有函数指针指向 loader 内部的"dispatch target"，
-    // 而非 dlsym 返回的"trampoline"：
-    //
-    //   dlsym("vkQueuePresentKHR")
-    //     → api_gen.cpp 中的 trampoline（Godot 永远不会调用, hook无效）
-    //
-    //   vkGetDeviceProcAddr(dev, "vkQueuePresentKHR")
-    //     → swapchain.cpp 中的实现（Godot 缓存并每帧调用此指针）
-    //
-    // 解决方案：
-    //   1. 创建辅助 VkDevice（启用 swapchain 扩展）
-    //   2. 通过 vkGetDeviceProcAddr 解析 dispatch target 地址
-    //   3. DobbyHook 那个地址（修改 .text 段机器码）
-    //   4. 清理辅助设备（hook 不受影响，代码在 .text 永久存在）
-    //
-    // 同一个 ProcHook 函数对所有 VkDevice 返回相同地址，
-    // 所以 hook 辅助设备的 target == hook 游戏设备的 target。
-    // ====================================================================
-
-    void* libVk = dlopen("libvulkan.so", RTLD_NOW | RTLD_NOLOAD);
-    SCH_LOGI("[SwapChainHook] libvulkan.so=%p", libVk);
-
-    // --- 诊断: dlsym trampoline 地址（仅用于对比） ---
-    void* trampolineQP = libVk ? dlsym(libVk, "vkQueuePresentKHR") : nullptr;
-    SCH_LOGI("[SwapChainHook] dlsym(vkQueuePresentKHR) trampoline=%p", trampolineQP);
-
     // --- 1. 创建辅助 VkInstance + VkDevice ---
     VkInstance helperInst = VK_NULL_HANDLE;
     VkDevice helperDev = VK_NULL_HANDLE;
@@ -1120,14 +1089,7 @@ void Install()
 
         for (auto& h : devHooks)
         {
-            void* dispatch = (void*)vkGetDeviceProcAddr(helperDev, h.name);
-            void* trampoline = libVk ? dlsym(libVk, h.name) : nullptr;
-
-            SCH_LOGI("[SwapChainHook] %s: dispatch=%p  trampoline=%p  %s",
-                 h.name, dispatch, trampoline,
-                 (dispatch && dispatch != trampoline) ? "DIFFERENT!" : "same");
-
-            void* target = dispatch ? dispatch : trampoline;
+            void* target = (void*)vkGetDeviceProcAddr(helperDev, h.name);
             if (target)
             {
                 int ret = DobbyHook(target, h.hookFunc, h.origSlot);
@@ -1141,20 +1103,13 @@ void Install()
             }
             else
             {
-                SCH_LOGW("[SwapChainHook] %s: not found via dispatch or dlsym", h.name);
+                LOGE("[SwapChainHook] %s: vkGetDeviceProcAddr returned null", h.name);
             }
         }
 
         // vkCreateDevice 是 instance-level 函数，用 vkGetInstanceProcAddr
         {
-            void* dispatch = (void*)vkGetInstanceProcAddr(helperInst, "vkCreateDevice");
-            void* trampoline = libVk ? dlsym(libVk, "vkCreateDevice") : nullptr;
-
-            SCH_LOGI("[SwapChainHook] vkCreateDevice: dispatch=%p  trampoline=%p  %s",
-                 dispatch, trampoline,
-                 (dispatch && dispatch != trampoline) ? "DIFFERENT!" : "same");
-
-            void* target = dispatch ? dispatch : trampoline;
+            void* target = (void*)vkGetInstanceProcAddr(helperInst, "vkCreateDevice");
             if (target)
             {
                 int ret = DobbyHook(target, (void*)Hooked_vkCreateDevice, (void**)&g_OrigVkCreateDevice);
@@ -1170,36 +1125,7 @@ void Install()
     }
     else
     {
-        // Fallback: 无法创建辅助 VkDevice，退回 dlsym trampoline
-        // （大概率不起作用，但记录诊断信息）
-        SCH_LOGW("[SwapChainHook] Cannot create helper VkDevice! Falling back to dlsym trampolines");
-        if (libVk)
-        {
-            struct VkHookEntry { const char* name; void* hookFunc; void** origSlot; };
-            VkHookEntry fallbackHooks[] = {
-                { "vkQueuePresentKHR",     (void*)Hooked_vkQueuePresentKHR,     (void**)&g_OrigVkQueuePresent      },
-                { "vkCreateDevice",        (void*)Hooked_vkCreateDevice,        (void**)&g_OrigVkCreateDevice      },
-                { "vkDestroyDevice",       (void*)Hooked_vkDestroyDevice,       (void**)&g_OrigVkDestroyDevice     },
-                { "vkGetDeviceQueue",      (void*)Hooked_vkGetDeviceQueue,      (void**)&g_OrigVkGetDeviceQueue    },
-                { "vkCreateSwapchainKHR",  (void*)Hooked_vkCreateSwapchainKHR,  (void**)&g_OrigVkCreateSwapchain   },
-                { "vkDestroySwapchainKHR", (void*)Hooked_vkDestroySwapchainKHR, (void**)&g_OrigVkDestroySwapchain  },
-            };
-
-            for (auto& h : fallbackHooks)
-            {
-                void* sym = dlsym(libVk, h.name);
-                if (sym)
-                {
-                    int ret = DobbyHook(sym, h.hookFunc, h.origSlot);
-                    SCH_LOGI("[SwapChainHook] fallback dlsym %s=%p  DobbyHook=%d", h.name, sym, ret);
-                    if (ret == 0)
-                    {
-                        std::lock_guard<std::mutex> lk(g_HookedAddrsMutex);
-                        g_DobbyHookedAddrs.push_back(sym);
-                    }
-                }
-            }
-        }
+        LOGE("[SwapChainHook] Cannot create helper VkDevice, Vulkan hooks not installed");
     }
 
     // --- 3. 清理辅助设备 ---
@@ -1215,9 +1141,8 @@ void Install()
         vkDestroyInstance(helperInst, nullptr);
         SCH_LOGI("[SwapChainHook] helper instance destroyed");
     }
-    if (libVk) dlclose(libVk);
 
-    // === EGL hooks（以防游戏实际走 OpenGL） ===
+    // === EGL hooks ===
     {
         void* libEGL = dlopen("libEGL.so", RTLD_NOW | RTLD_NOLOAD);
         if (libEGL)
