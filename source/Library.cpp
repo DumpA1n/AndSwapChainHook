@@ -17,7 +17,7 @@ void main_thread()
 {
 	CrashHandler::Install();
 
-	KT::Init(getprogname());
+	KT::Init();
 
 	if (!Elf.scanAsync({
 			// "libc.so",

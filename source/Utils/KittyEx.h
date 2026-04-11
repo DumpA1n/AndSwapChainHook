@@ -11,7 +11,6 @@
 #endif
 #include "Logger.h"
 
-#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -91,10 +90,10 @@ namespace detail {
 // ============================================================
 //  Init / Getpid
 // ============================================================
-inline bool Init(const std::string& processName) {
+inline bool Init(const std::string& processName = "") {
     ClearError();
 #if defined(kUSE_KITTYMEMORYEX)
-    detail::g_pid = getpid();
+    detail::g_pid = processName.empty() ? getpid() : KittyMemoryEx::getProcessID(processName);
     if (detail::g_pid < 1) {
         SetError(MemError::NotInitialized);
         LOGE("KT::Init error: failed to get pid: %d", detail::g_pid);
@@ -338,45 +337,6 @@ inline bool Write(uintptr_t address, const std::string& hexString) {
 
 inline bool Write(uintptr_t address, const std::vector<uint8_t>& byteArray) {
     return Write(address, (void*)byteArray.data(), byteArray.size());
-}
-
-// ---------- Safe ----------
-inline bool SafeRead(uint64_t address, void *buffer, size_t len) {
-    return MemIns->safeRead(address, buffer, len);
-}
-
-inline bool SafeWrite(uint64_t address, void *buffer, size_t len) {
-    return MemIns->safeWrite(address, buffer, len);
-}
-
-template<typename Ret, typename T, typename... Offsets>
-inline Ret SafeRead(T base, Offsets... offsets) {
-    uint64_t address = (uint64_t)base;
-    if (sizeof...(offsets) == 0) {
-        Ret value{};
-        MemIns->safeRead(address, &value, sizeof(Ret));
-        return value;
-    }
-    std::array<uint64_t, sizeof...(offsets)> offset_array = {static_cast<uint64_t>(offsets)...};
-    for (size_t i = 0; i < sizeof...(offsets) - 1; ++i) {
-        uint64_t next = 0;
-        if (!MemIns->safeRead(address + offset_array[i], &next, sizeof(next)) || !IsValid(next)) {
-            return Ret{};
-        }
-        address = next;
-    }
-    Ret value{};
-    MemIns->safeRead(address + offset_array[sizeof...(offsets) - 1], &value, sizeof(Ret));
-    return value;
-}
-
-template<typename T>
-inline typename std::enable_if<
-    !std::is_convertible<T, std::string>::value &&
-    !std::is_convertible<T, std::vector<uint8_t>>::value,
-    bool >::type
-SafeWrite(uintptr_t address, T value) {
-    return SafeWrite(address, &value, sizeof(T));
 }
 
 }
