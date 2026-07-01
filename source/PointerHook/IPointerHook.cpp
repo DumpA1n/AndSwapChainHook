@@ -358,15 +358,6 @@ std::atomic<bool> g_self_test_passed{false};
 
 } // anonymous namespace
 
-#define MAKE_CRASH()     \
-    __asm__ volatile (   \
-        "mov x0, xzr;"   \
-        "mov x29, x0;"   \
-        "mov sp, x0;"    \
-        "br x0;"         \
-        : : :            \
-    );
-
 // asm/C++ bridge
 extern "C" uintptr_t _ph_dispatcher(RegContext* ctx, IPointerHook* hook) {
     return hook->OnCall(ctx);

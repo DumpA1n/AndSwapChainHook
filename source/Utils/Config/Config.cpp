@@ -30,8 +30,8 @@ const std::vector<Field>& GetFields() {
 #define CONFIG_NOSAVE(type, name, def)
 #define CONFIG_NOSAVE_ARR(type, name, n, ...)
 #include "ConfigFields.inl"
-#if __has_include("ConfigFieldsExt.inl")
-#include "ConfigFieldsExt.inl"
+#ifdef CONFIG_FIELDS_EXT
+#include CONFIG_FIELDS_EXT
 #endif
 #undef CONFIG_GROUP
 #undef CONFIG_FIELD
