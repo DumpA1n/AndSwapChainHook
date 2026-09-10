@@ -35,14 +35,14 @@
 namespace KT
 {
 
-// 清高位 tag/PAC 签名位，保留低 39 位 VA
+// Mask tag/PAC bits with a fixed 39-bit address assumption; this is not authentication.
 inline uintptr_t Strip(uintptr_t address) {
     return address & (uintptr_t)0x7fffffffff;
 }
 
-// 校验地址在合理 VA 区间，高位仅接受 0 或 Android tagged-heap (0xB4..)
-// 注意：ARM64 PAC 下函数指针/栈上 LR 高位是签名码（如走 backtrace 进 libc 时遇到的情形）
-//      先 Strip 再 IsValid，否则会被误判 !valid
+// Check the assumed address range and accepted high-bit patterns.
+// Signed function pointers and saved LR values may contain high bits.
+// Mask before range checks; the mask itself remains an architecture assumption.
 inline bool IsValid(uintptr_t address) {
     if (!address || address < 0x10000000)
         return false;
@@ -160,7 +160,7 @@ inline std::vector<ProcMap> GetAllMaps() {
 #endif
 }
 
-// FastRW: in-process 直接 memcpy / LDR；无 syscall，LDR 会 demand-fault 冷 page
+// FastRW uses in-process memcpy/LDR; ordinary demand paging still applies.
 inline bool FastRead(uint64_t address, void* buffer, size_t len) {
     std::memcpy(buffer, reinterpret_cast<const void*>(address), len);
     return true;
@@ -187,7 +187,7 @@ inline uintptr_t FindIdaPatternFirst(uintptr_t start, uintptr_t end, const std::
 #endif
 }
 
-// FindXxxFast: in-process 扫描；直接 LDR 步进，冷 page 自动 demand-fault
+// FindXxxFast scans in-process using direct loads; ordinary demand paging applies.
 inline uintptr_t FindDataFirstFast(uintptr_t start, uintptr_t end, const void* data, size_t size) {
     if (end <= start || !data || size == 0 || (end - start) < size) return 0;
     const uint8_t* hay    = reinterpret_cast<const uint8_t*>(start);
@@ -210,7 +210,7 @@ inline uintptr_t FindIdaPatternFirstFast(uintptr_t start, uintptr_t end, const s
         if (c == ' ') continue;
         if (c == '?') {
             bytes.push_back(0); mask.push_back(0);
-            // 支持单 '?' 或 "??"
+            // Accept a single question mark or a pair as a wildcard.
             if (i + 1 < plen && pattern[i + 1] == '?') ++i;
             continue;
         }
@@ -237,7 +237,7 @@ inline uintptr_t FindIdaPatternFirstFast(uintptr_t start, uintptr_t end, const s
     return 0;
 }
 
-// RW: 默认读写；走 process_vm_readv/writev syscall，跨进程兼容
+// RW uses process_vm_readv/writev and accepts a process identifier.
 inline bool Read(uint64_t address, void* buffer, size_t len) {
 #if defined(kUSE_KITTYMEMORYEX)
     size_t ret = detail::g_mgr.readMem(address, buffer, len);
@@ -263,7 +263,7 @@ inline bool Write(uint64_t address, const void* data, size_t len) {
 #endif
 }
 
-// ForceRW: /proc/<pid>/mem 路径
+// ForceRW uses /proc/<pid>/mem.
 inline bool ForceRead(uint64_t address, void* buffer, size_t len) {
 #if defined(kUSE_KITTYMEMORYEX)
     if (detail::g_io.processID() != detail::g_pid) {
@@ -297,7 +297,7 @@ inline bool ForceWrite(uint64_t address, const void* data, size_t len) {
 #endif
 }
 
-// 指针链读：base->[+o1]->[+o2]->...->[+on] 读 Ret，链中任一段无效返回零值
+// Follow a pointer chain and read Ret; return zero when a link is invalid.
 namespace detail {
 using RawReadFn = bool(*)(uint64_t, void*, size_t);
 
@@ -338,7 +338,7 @@ inline Ret ForceRead(T base, Offsets... offsets) {
     return detail::ChainRead<ForceRead, Ret>(base, offsets...);
 }
 
-// 整型/POD 写：FastWrite/Write/ForceWrite(addr, value)
+// Integer/POD writes: FastWrite/Write/ForceWrite(addr, value).
 template<typename T>
 inline typename std::enable_if<
     !std::is_convertible<T, std::string>::value &&
@@ -366,7 +366,7 @@ ForceWrite(uintptr_t address, T value) {
     return ForceWrite(address, &value, sizeof(T));
 }
 
-// hex string / byte array 写入
+// Write a hex string or byte array.
 inline bool ConvStringToByteArray(const std::string& hexString, std::vector<uint8_t>& byteArray) {
     if (hexString.size() < 2 || hexString.size() % 2 != 0) return false;
     for (size_t i = 0; i < hexString.size(); i += 2) {

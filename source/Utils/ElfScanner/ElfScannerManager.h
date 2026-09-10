@@ -7,8 +7,8 @@
 #include "Utils/KittyEx.h"
 
 // ============================================================
-//  X-macro 库注册表 — 新增库只需在此添加一行
-//  格式: ELF_LIB_ENTRY(枚举名, 访问方法名, "完整so文件名")
+// X-macro library registry.
+// Format: ELF_LIB_ENTRY(enum_name, accessor_name, "library.so").
 // ============================================================
 #define ELF_LIB_LIST                                                    \
     ELF_LIB_ENTRY(C,               c,               "libc.so")               \
@@ -25,7 +25,7 @@
 
 class ElfScannerManager {
 public:
-    // 由 X-macro 自动生成枚举
+    // Generate the enum from the registry.
     enum Lib : int {
 #define ELF_LIB_ENTRY(ENUM, FUNC, SO) LIB_##ENUM,
         ELF_LIB_LIST
@@ -42,13 +42,13 @@ public:
     ElfScannerManager& operator=(const ElfScannerManager&) = delete;
 
     /**
-     * 异步批量扫描多个库
-     * @param libraries 库名称列表（如 "libc.so", "libUE4.so"）
-     * @return 是否全部成功扫描
-     */
+ * Scan the requested libraries asynchronously. libraries contains shared-library names. The
+ * current implementation's success result does not validate unknown catalog entries.
+ *
+ */
     bool Scan(const std::set<std::string>& libraries);
 
-    // 由 X-macro 自动生成访问方法（O(1) 数组索引，无锁）
+    // Generate O(1) array-index accessors without locking.
 #define ELF_LIB_ENTRY(ENUM, FUNC, SO) \
     ElfScanner& FUNC() { return m_scanners[LIB_##ENUM]; }
     ELF_LIB_LIST
@@ -61,5 +61,5 @@ private:
     std::array<ElfScanner, LIB_COUNT> m_scanners{};
 };
 
-// 全局访问别名
+// Global access alias.
 inline ElfScannerManager& Elf = ElfScannerManager::GetInstance();

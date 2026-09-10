@@ -32,13 +32,13 @@ std::string ResourceManager::findSystemChineseFont() {
         "ZUKChinese.ttf"
     };
 
-    // 遍历字体目录
+    // Enumerate the font directory.
     for (const auto& dir : fontDirs) {
         if (!std::filesystem::exists(dir)) {
             continue;
         }
 
-        // 按优先级查找字体
+        // Search preferred fonts in order.
         for (const auto& fontName : chineseFonts) {
             std::string fontPath = dir + "/" + fontName;
             if (std::filesystem::exists(fontPath)) {
@@ -47,7 +47,7 @@ std::string ResourceManager::findSystemChineseFont() {
             }
         }
 
-        // 如果优先列表中没找到，收集所有符合条件的字体并按大小排序
+        // If no preferred font is found, sort matching fonts by file size.
         try {
             std::vector<std::pair<std::uintmax_t, std::string>> candidateFonts;
             
@@ -56,11 +56,11 @@ std::string ResourceManager::findSystemChineseFont() {
                     std::string filename = entry.path().filename().string();
                     std::string extension = entry.path().extension().string();
                     
-                    // 转换为小写比较
+                    // Compare lowercase names.
                     std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
                     std::transform(filename.begin(), filename.end(), filename.begin(), ::tolower);
                     
-                    // 查找包含中文相关关键词的字体
+                    // Match names associated with Chinese glyph coverage.
                     if ((extension == ".ttf" || extension == ".otf") &&
                         (filename.find("cjk") != std::string::npos ||
                          filename.find("hans") != std::string::npos ||
@@ -73,7 +73,7 @@ std::string ResourceManager::findSystemChineseFont() {
                 }
             }
             
-            // 按文件大小从大到小排序
+            // Sort by descending file size.
             if (!candidateFonts.empty()) {
                 std::sort(candidateFonts.begin(), candidateFonts.end(), 
                     [](const auto& a, const auto& b) { return a.first > b.first; });
@@ -95,16 +95,16 @@ std::string ResourceManager::findSystemChineseFont() {
 bool ResourceManager::initializeFonts(float fontSize) {
     ImGuiIO& io = ImGui::GetIO();
 
-    // 尝试从系统目录加载中文字体
+    // Try system fonts with Chinese glyph coverage.
     std::string systemFontPath = findSystemChineseFont();
     
     if (!systemFontPath.empty()) {
-        // 使用系统字体
+        // Use a system font.
         ImFontConfig fontConfig;
         fontConfig.OversampleH = 2;
         fontConfig.OversampleV = 2;
         fontConfig.PixelSnapH = true;
-        // 字体粗细调整: <1.0更细, 1.0正常, >1.0更粗 (建议范围 0.8-1.5)
+        // Font weight scale: below 1.0 is thinner, above 1.0 is thicker.
         fontConfig.RasterizerMultiply = 1.1f;
 
         m_zhFont = io.Fonts->AddFontFromFileTTF(
@@ -120,7 +120,7 @@ bool ResourceManager::initializeFonts(float fontSize) {
         }
     }
     
-    // 如果系统字体加载失败，尝试使用内嵌字体作为备用
+    // Use the embedded font if system-font loading fails.
     if (!m_zhFont) {
         FLOGW("Falling back to embedded font");
         // m_zhFont = io.Fonts->AddFontFromMemoryCompressedBase85TTF(Consolas_compressed_data_base85, 20.0f);
@@ -131,7 +131,7 @@ bool ResourceManager::initializeFonts(float fontSize) {
     
     IM_ASSERT(m_zhFont != nullptr);
 
-    // 加载图标字体
+    // Load the icon font.
     // static const ImWchar icons_ranges[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
     // ImFontConfig icons_config;
     // icons_config.MergeMode = true;

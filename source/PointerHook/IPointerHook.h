@@ -14,8 +14,8 @@ extern "C" {
 // asm/C++ ABI boundary. See ph_arm64_glue.s for the register-save contract.
 void          _ph_glue_entry();
 
-// CallOrigWithContext backends — shared body, two symbols so the C++ ABI
-// picks the return register (x0 vs d0) from the declared return type.
+// CallOrigWithContext backends share an assembly body with integer and double ABI declarations.
+// Float return currently uses the double declaration and requires a separate ABI fix.
 std::uint64_t _ph_call_orig_with_ctx_i(RegContext* ctx, std::uintptr_t func,
                                        std::size_t spill_bytes);
 double        _ph_call_orig_with_ctx_d(RegContext* ctx, std::uintptr_t func,

@@ -32,6 +32,6 @@ private:
     Language m_CurrentLanguage = Language::Chinese;
 };
 
-// 便捷宏
+// Convenience macros.
 #define TR(en, zh) LanguageManager::GetInstance().Get(en, zh)
 #define IS_CN() LanguageManager::GetInstance().IsChinese()

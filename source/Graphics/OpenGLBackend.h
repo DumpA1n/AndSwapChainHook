@@ -18,7 +18,7 @@ private:
     EGLSurface surface_ = EGL_NO_SURFACE;
     EGLContext context_ = EGL_NO_CONTEXT;
 
-    // eglSwapBuffersWithDamageKHR 替代 eglSwapBuffers，回避 AC 的符号名 hook
+    // Resolve the damage-swap extension; selecting it does not guarantee concealment.
     PFNEGLSWAPBUFFERSWITHDAMAGEKHRPROC swapBuffersFn_ = nullptr;
 
     int width_ = 0;

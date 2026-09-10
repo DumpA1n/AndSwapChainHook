@@ -40,11 +40,11 @@ bool OpenGLBackend::Init(ANativeWindow *window, int width, int height)
     surface_ = eglCreateWindowSurface(display_, egl_config, window, nullptr);
     eglMakeCurrent(display_, surface_, surface_, context_);
 
-    // ImGui OpenGL 后端初始化
+    // Initialize the ImGui OpenGL renderer.
     ImGui_ImplOpenGL3_Init("#version 300 es");
 
-    // 加载 eglSwapBuffersWithDamageKHR
-    // 使用扩展函数而非 eglSwapBuffers，避免 AC 按符号名 hook
+    // Load eglSwapBuffersWithDamageKHR.
+    // Select the damage-swap extension when available.
     const char *extensions = eglQueryString(display_, EGL_EXTENSIONS);
     if (extensions && strstr(extensions, "EGL_KHR_swap_buffers_with_damage"))
     {
@@ -77,7 +77,7 @@ void OpenGLBackend::EndFrame()
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-    // 使用 eglSwapBuffersWithDamageKHR（传入全屏区域）替代 eglSwapBuffers
+    // Present through eglSwapBuffersWithDamageKHR using the full-frame damage region.
     if (swapBuffersFn_)
     {
         EGLint rect[] = {0, 0, (EGLint)io.DisplaySize.x, (EGLint)io.DisplaySize.y};

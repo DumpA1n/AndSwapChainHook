@@ -3,11 +3,11 @@
 #include <jni.h>
 
 // ---------------------------------------------------------------------------
-// JniRuntime —— JavaVM / JNIEnv 访问层
+// JniRuntime: JavaVM and JNIEnv access.
 //
-// 通过 ELF 扫描 libart.so 的 JNI_GetCreatedJavaVMs 获得 VM，避免依赖
-// JNI_OnLoad 时被传入的 JavaVM*（注入早期不一定能拿到）。
-// GetJavaEnv 不主动 attach 当前线程；需要跨线程 JNI 操作的调用方应自行
+// Resolve JNI_GetCreatedJavaVMs from libart.so rather than depending on
+// a JavaVM supplied to JNI_OnLoad, which may be unavailable during early loading.
+// GetJavaEnv does not attach threads; callers performing cross-thread JNI must
 // AttachCurrentThread/DetachCurrentThread。
 // ---------------------------------------------------------------------------
 namespace AndroidPlatform
@@ -15,7 +15,7 @@ namespace AndroidPlatform
 
 JavaVM* GetJavaVM();
 
-// 当前线程的 JNIEnv*；线程未 attach 时返回 nullptr。
+// Return the current thread's JNIEnv, or nullptr if it is not attached.
 JNIEnv* GetJavaEnv();
 
 }

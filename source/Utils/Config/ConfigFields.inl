@@ -1,13 +1,13 @@
-// X-macro 字段表。增删字段改本文件即可, Schema 与序列化注册表自动同步。
+// X-macro field registry generates the schema and serialization registration.
 //
-//   CONFIG_GROUP(label)                    分组标签
-//   CONFIG_FIELD(type, name, default)      标量持久化字段
-//   CONFIG_ARR(type, name, N, ...)         数组持久化字段 ({...} 含逗号, 走 __VA_ARGS__)
-//   CONFIG_NOSAVE / CONFIG_NOSAVE_ARR      不进存档 (运行时开关)
+// CONFIG_GROUP(label): group label.
+// CONFIG_FIELD(type, name, default): persisted scalar.
+// CONFIG_ARR(type, name, N, ...): persisted array with variadic defaults.
+// CONFIG_NOSAVE / CONFIG_NOSAVE_ARR: runtime-only fields.
 //
-// 本文件无 include guard, 调用方负责 #define / #undef。
+// No include guard; callers define and undefine the expansion macros.
 
-// 自防御
+// Default macro definitions.
 #ifndef CONFIG_FIELD
 #define CONFIG_GROUP(label)
 #define CONFIG_FIELD(type, name, ...)

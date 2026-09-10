@@ -15,8 +15,8 @@ namespace
 DisplaySize s_cached{};
 bool        s_cacheReady = false;
 
-// 反射 activity.getSystemService(WINDOW_SERVICE).getDefaultDisplay().getRealSize(Point)
-// 成功返回 true 并填充 out；任何环节失败返回 false。
+// Reflect through WINDOW_SERVICE, getDefaultDisplay() and getRealSize(Point).
+// Populate out and return true on success; return false on any failure.
 bool ResolveDisplaySize(JNIEnv* env, jobject activity, DisplaySize& out)
 {
     if (!activity) return false;
@@ -59,7 +59,7 @@ bool ResolveDisplaySize(JNIEnv* env, jobject activity, DisplaySize& out)
     jint x = env->GetIntField(point, xField);
     jint y = env->GetIntField(point, yField);
 
-    // 横屏归一化
+    // Normalize to landscape.
     if (x >= y) { out.width = x; out.height = y; }
     else        { out.width = y; out.height = x; }
 

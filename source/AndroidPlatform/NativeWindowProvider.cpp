@@ -15,8 +15,8 @@ namespace
 
 ANativeWindow* s_cachedWindow = nullptr;
 
-// 通过反射 Activity → Window → DecorView → ViewRootImpl → mSurface 解析 ANativeWindow*。
-// 成功返回已 acquire 的 ANativeWindow*；任何环节失败返回 nullptr。
+// Resolve Activity -> Window -> DecorView -> ViewRootImpl -> mSurface.
+// Return an acquired ANativeWindow, or nullptr on failure.
 ANativeWindow* ResolveNativeWindow(JNIEnv* env, jobject activity)
 {
     if (!activity) return nullptr;
@@ -39,7 +39,7 @@ ANativeWindow* ResolveNativeWindow(JNIEnv* env, jobject activity)
     jobject decorView = env->CallObjectMethod(window, getDecorViewMethod);
     if (!decorView || env->ExceptionCheck()) { env->ExceptionClear(); return nullptr; }
 
-    // View.getViewRootImpl()（隐藏 API，所有 Android 版本均存在）
+    // View.getViewRootImpl() is a private framework API; compatibility needs validation.
     jclass viewClass = env->FindClass("android/view/View");
     if (!viewClass || env->ExceptionCheck()) { env->ExceptionClear(); return nullptr; }
 
@@ -58,7 +58,7 @@ ANativeWindow* ResolveNativeWindow(JNIEnv* env, jobject activity)
     jobject surface = env->GetObjectField(vri, surfaceField);
     if (!surface || env->ExceptionCheck()) { env->ExceptionClear(); return nullptr; }
 
-    // Surface.isValid() 检查
+    // Check Surface.isValid().
     jclass surfClass = env->GetObjectClass(surface);
     jmethodID isValidMethod = env->GetMethodID(surfClass, "isValid", "()Z");
     if (isValidMethod && !env->ExceptionCheck())

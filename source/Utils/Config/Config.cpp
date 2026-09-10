@@ -56,7 +56,7 @@ const std::unordered_map<std::string_view, const Field*>& FieldIndex() {
     return idx;
 }
 
-// 把数组 token "a,b,c" 写入 span<T>; 多余 token 丢弃, 不足保持原值
+// Parse comma-separated tokens into span<T>; ignore excess tokens and retain missing values.
 template <typename T>
 void ParseArrayInto(std::string_view value, std::span<T> dst) {
     size_t i = 0, start = 0;
@@ -64,7 +64,7 @@ void ParseArrayInto(std::string_view value, std::span<T> dst) {
         size_t comma = value.find(',', start);
         std::string_view tok = value.substr(start, comma == std::string_view::npos ? std::string_view::npos : comma - start);
         if (!tok.empty()) {
-            std::string s(tok);  // std::sto* 需要 NUL 结尾
+            std::string s(tok);  // std::sto* requires NUL termination.
             if constexpr (std::is_same_v<T, int>)        dst[i] = std::stoi(s);
             else if constexpr (std::is_same_v<T, float>) dst[i] = std::stof(s);
             ++i;

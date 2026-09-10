@@ -11,9 +11,9 @@ namespace
 
 jobject s_globalActivity = nullptr;
 
-// 反射 ActivityThread.mActivities 找到一个非 finishing 的 Activity。
-// 成功返回 LocalRef（位于调用方 PushLocalFrame 内）；失败返回 nullptr。
-// 任何 android.app.Activity 子类均接受，不限 NativeActivity。
+// Search ActivityThread.mActivities for a non-finishing Activity.
+// Return a LocalRef in the caller's local frame, or nullptr on failure.
+// Accept any android.app.Activity subclass.
 jobject ResolveAnyActivityLocal(JNIEnv* env)
 {
     // 1. ActivityThread.currentActivityThread()
@@ -44,15 +44,15 @@ jobject ResolveAnyActivityLocal(JNIEnv* env)
     jint size = env->CallIntMethod(activities, sizeMethod);
     if (size <= 0) return nullptr;
 
-    // Activity.isFinishing() —— 优先选非 finishing 的 Activity
+    // Prefer an Activity for which isFinishing() is false.
     jclass actClass = env->FindClass("android/app/Activity");
     jmethodID isFinishingMethod = (actClass && !env->ExceptionCheck())
         ? env->GetMethodID(actClass, "isFinishing", "()Z")
         : nullptr;
     if (env->ExceptionCheck()) env->ExceptionClear();
 
-    jobject firstActivity   = nullptr;  // 兜底：第一个非 null 的 Activity
-    jobject runningActivity = nullptr;  // 优先：第一个 !isFinishing() 的 Activity
+    jobject firstActivity   = nullptr;  // Fallback: first non-null Activity.
+    jobject runningActivity = nullptr;  // Prefer the first non-finishing Activity.
 
     for (jint i = 0; i < size; ++i)
     {

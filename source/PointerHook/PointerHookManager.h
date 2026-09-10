@@ -17,10 +17,10 @@
 #define PH_LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO,  kANDROID_LOG_TAG, __VA_ARGS__))
 #define PH_LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR, kANDROID_LOG_TAG, __VA_ARGS__))
 
-// Thread-safe via a single internal mutex held across map lookup + hook
-// state transition. No explicit destroy verb — Restore toggles off but
-// keeps the instance for trampoline reuse; the destructor walks the map
-// and restores every slot at process exit / dlclose.
+// One mutex serializes registry lookups and hook-state transitions.
+// Restore retains the instance for reuse. Destruction requests slot restoration,
+// but the mutex does not cover dispatch or establish callback quiescence.
+// Safe concurrent destruction and DSO unloading are not guaranteed.
 
 class PointerHookManager
 {

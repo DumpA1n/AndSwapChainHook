@@ -7,23 +7,23 @@
 
 #include "imgui/imgui.h"
 
-// 资源管理器 - 单例模式
+// Resource-manager singleton.
 class ResourceManager {
 public:
     static ResourceManager& GetInstance();
     
-    // 禁用拷贝和赋值
+    // Disable copying and assignment.
     ResourceManager(const ResourceManager&) = delete;
     ResourceManager& operator=(const ResourceManager&) = delete;
     
-    // 初始化字体资源
+    // Initialize font resources.
     bool initializeFonts(float fontSize);
     
-    // 获取字体
+    // Return the font.
     ImFont* getZhFont() const { return m_zhFont; }
     ImFont* getIconFont(int index) const;
     
-    // 纹理管理
+    // Texture management.
     // BaseTexData* loadTexture(IGraphics* graphics, const char* filepath);
     // void unloadTexture(IGraphics* graphics, BaseTexData* texture);
     // void clearAllTextures(IGraphics* graphics);
@@ -32,13 +32,13 @@ private:
     ResourceManager() = default;
     ~ResourceManager() = default;
     
-    // 从系统目录查找中文字体
+    // Find a system font with Chinese glyph coverage.
     std::string findSystemChineseFont();
     
-    // 字体资源
+    // Font resources.
     ImFont* m_zhFont = nullptr;
     ImFont* m_iconFonts[3] = {nullptr, nullptr, nullptr};
     
-    // 纹理资源
+    // Texture resources.
     // std::unordered_map<std::string, BaseTexData*> m_textures;
 };

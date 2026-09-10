@@ -10,8 +10,8 @@
 
 namespace Config {
 
-// 字段单点声明在 ConfigFields.inl, X-macro 同步生成 Schema 与序列化注册表。
-// 下游扩展: 在 include path 提供 ConfigFieldsExt.inl (X-macro 同语法) 即可并入 CFG。
+// ConfigFields.inl generates both the schema and serialization registry.
+// ConfigFieldsExt.inl on the include path extends CFG; all translation units must agree.
 struct Schema {
 #define CONFIG_GROUP(label)
 #define CONFIG_FIELD(type, name, def)            type name = def;

@@ -30,7 +30,7 @@ _ph_glue_entry:
     stp     x26, x27, [x17, #0xD0]
     stp     x28, x29, [x17, #0xE0]
 
-    add     x18, sp, #0x310             // orig SP (x18 is already saved)
+    add     x18, sp, #0x310             // orig SP; x18 remains repurposed across the C++ call (Android ABI limitation)
     stp     x30, x18, [x17, #0xF0]      // lr @+0xF0, orig sp @+0xF8
     str     x16, [x17, #0x100]          // nzcv @+0x100
 

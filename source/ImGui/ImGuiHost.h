@@ -8,21 +8,21 @@ enum class GraphicsAPI { OpenGL, Vulkan };
 
 enum class InjectionMode
 {
-    Overlay,     // 独立 overlay 窗口
+    Overlay,     // Independent overlay window.
     SwapHook,    // hook eglSwapBuffers / vkQueuePresentKHR
 };
 
 // ---------------------------------------------------------------------------
-// ImGuiHost —— ImGui runtime 在 host 进程内的统一 facade
+// ImGuiHost: host-process ImGui runtime facade.
 //
-// 调用方只面向此 namespace；底层由两条平行实现支撑：
-//   - Overlay  模式：自建 SurfaceView + GPU 上下文（IGraphicsBackend）
-//   - SwapHook 模式：劫持游戏 swap 函数（SwapChainHook）
+// Two implementations support this namespace:
+// Overlay owns a SurfaceView and GPU context through IGraphicsBackend.
+// SwapHook intercepts host presentation through SwapChainHook.
 //
-// 帧驱动语义：
-//   - SwapHook 由内部 swap hook 自驱，调用方无需 Tick
-//   - Overlay  由调用方在每帧的稳定脉冲源（如 UE PostRender）调用 Tick
-//   - 调用方可在两种模式下都无脑调 Tick：SwapHook 模式 Tick 为 no-op
+// Frame driving:
+// SwapHook is driven by presentation callbacks and does not require Tick.
+// Overlay requires Tick from a stable per-frame source.
+// Tick is a no-op in SwapHook mode.
 // ---------------------------------------------------------------------------
 namespace ImGuiHost
 {
@@ -32,30 +32,30 @@ struct InitOptions
     InjectionMode mode         = InjectionMode::Overlay;
     GraphicsAPI   preferredApi = GraphicsAPI::Vulkan;
 
-    // 每帧 ImGui 绘制回调（在 NewFrame 之后、Render 之前调用）
+    // Render callback invoked after NewFrame and before Render.
     std::function<void()> render;
 
-    // Overlay 模式所需：将一个任务投递到主线程（用于创建 SurfaceView）。
-    // SwapHook 模式不会调用此回调。
+    // Overlay requires a main-thread task poster to create its SurfaceView.
+    // SwapHook does not call this task poster.
     std::function<void(std::function<void()>)> postToMainThread;
 };
 
 bool Init(const InitOptions &opt);
 void Clean();
 
-// 每帧脉冲。Overlay 模式驱动一帧绘制；SwapHook 模式 no-op。
+// Drive one Overlay frame; no-op in SwapHook mode.
 void Tick();
 
 bool          IsInitialized();
 InjectionMode GetMode();
 
-// 统一逻辑显示尺寸（横屏）。
-//   SwapHook：返回 SwapChainHook 检测到的尺寸（处理过 preTransform）
-//   Overlay ：返回 io.DisplaySize，回退到 ScreenMetrics
+// Logical display size normalized to landscape.
+// SwapHook returns detected dimensions adjusted for preTransform.
+// Overlay returns io.DisplaySize with ScreenMetrics as fallback.
 ImVec2 GetDisplaySize();
 
-// 仅 Overlay 模式有意义；SwapHook 下 RequestSwitchBackend 为 no-op，
-// GetCurrentApi 返回内部记录值（自动检测前可能不准）。
+// Backend switching applies to Overlay; RequestSwitchBackend is a no-op in SwapHook.
+// GetCurrentApi returns the recorded value, which may precede API detection.
 void        RequestSwitchBackend(GraphicsAPI api);
 GraphicsAPI GetCurrentApi();
 

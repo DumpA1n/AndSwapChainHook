@@ -158,7 +158,7 @@ inline bool SelfMemWrite(uintptr_t address, const void* data, size_t len) {
     return true;
 }
 
-// Linker-reserved RX region in libdfmhook .text (see ph_trampoline_pool.s).
+// Linker-reserved RX region in this library (see ph_trampoline_pool.s).
 // n × 32 B slots, brk-prefilled, bumped monotonically, never recycled.
 
 extern "C" {
@@ -392,8 +392,8 @@ IPointerHook::IPointerHook() = default;
 
 IPointerHook::~IPointerHook()
 {
-    // Residual UAF: an in-flight caller that LDR'd trampoline_ before this
-    // restore will still reach OnCall on a partly-destroyed derived object.
+    // Calls already holding the trampoline can reach a partly destroyed object.
+    // Restore does not establish callback quiescence or safe object destruction.
     Restore();
 }
 

@@ -1,14 +1,14 @@
 /**
- * @file VulkanBackend.cpp
- * @brief Vulkan 渲染后端实现
+ * Vulkan implementation of IGraphicsBackend. Owns instance, surface, device and swapchain
+ * resources, drives ImGui through BeginFrame/EndFrame, and releases resources in Shutdown. Device
+ * execution and presentation synchronization require separate validation.
  *
- * 本文件实现了基于 Vulkan API 的图形渲染后端，核心流程包括：
- *   1. 创建 Vulkan 实例 / Surface / 设备 / 交换链 / 渲染通道 等基础设施
- *   2. 初始化 ImGui Vulkan 渲染后端
- *   3. 每帧通过 BeginFrame / EndFrame 完成渲染和呈现
- *   4. Shutdown 时安全释放所有 GPU 资源
  *
- * 可以与 OpenGLBackend 互换使用，均实现 IGraphicsBackend 接口。
+ *
+ *
+ *
+ *
+ *
  */
 
 #include "VulkanBackend.h"
@@ -26,10 +26,10 @@
 // ---------------------------------------------------------------------------
 
 /**
- * @brief Vulkan API 调用结果检查宏
+ * Log a non-success Vulkan result and return false. Use only inside bool-returning functions.
  *
- * 若 Vulkan 函数返回非 VK_SUCCESS，记录错误日志并从当前函数 return false。
- * 仅在返回 bool 的函数中使用。
+ *
+ *
  */
 #define VK_CHECK(expr)                                                     \
     do {                                                                   \
@@ -41,10 +41,10 @@
     } while (0)
 
 /**
- * @brief ImGui Vulkan 后端的错误回调
+ * Error callback supplied through ImGui_ImplVulkan_InitInfo::CheckVkResultFn.
  *
- * 传递给 ImGui_ImplVulkan_InitInfo::CheckVkResultFn，
- * ImGui 内部调用 Vulkan API 时若失败会通过此回调记录日志。
+ *
+ *
  */
 static void CheckVkResult(VkResult err)
 {
@@ -53,30 +53,30 @@ static void CheckVkResult(VkResult err)
 }
 
 // ===========================================================================
-// Init —— 整体初始化入口
+// Initialization entry point.
 // ===========================================================================
 
 /**
- * @brief 初始化整个 Vulkan 渲染管线
+ * Initialize the instance, surface, device, swapchain, render pass, framebuffers, command
+ * resources, synchronization and ImGui renderer in dependency order. On failure, invoke Shutdown.
+ * window is the native window; width and height are requested pixel dimensions.
  *
- * 按顺序调用 12 个子步骤初始化 Vulkan 英古融：
- *   Instance → Surface → PhysicalDevice → LogicalDevice → Swapchain
- *   → RenderPass → Framebuffers → CommandPool → CommandBuffers
- *   → SyncObjects → DescriptorPool → ImGui Vulkan 后端
  *
- * 任何一步失败均会调用 Shutdown() 回滚已创建的资源，避免泄漏。
  *
- * @param window  Android 原生窗口句柄
- * @param width   渲染宽度（像素）
- * @param height  渲染高度（像素）
- * @return true 初始化成功，false 失败（资源已回滚）
+ *
+ *
+ *
+ *
+ *
+ *
+ *
  */
 bool VulkanBackend::Init(ANativeWindow *window, int width, int height)
 {
     width_  = width;
     height_ = height;
 
-    // 链式调用：任何一步返回 false 即短路停止
+    // Stop at the first failed initialization stage.
     bool ok = CreateInstance()
            && CreateSurface(window)
            && SelectPhysicalDevice()
@@ -92,7 +92,7 @@ bool VulkanBackend::Init(ANativeWindow *window, int width, int height)
 
     if (!ok)
     {
-        Shutdown();  // 安全回滚已创建的资源
+        Shutdown();  // Release resources created before failure.
         return false;
     }
 
@@ -102,28 +102,28 @@ bool VulkanBackend::Init(ANativeWindow *window, int width, int height)
 }
 
 // ===========================================================================
-// Per-frame —— 每帧渲染循环
+// Per-frame rendering.
 // ===========================================================================
 
 /**
- * @brief 帧开始：同步 + 获取交换链图像 + ImGui NewFrame
+ * Wait for the current slot's fence, acquire a swapchain image and prepare ImGui. If acquisition
+ * fails, frameStarted_ remains false and EndFrame skips submission. A submission fence alone does
+ * not prove completion of a presentation wait.
  *
- * 流程：
- *   1. 等待当前帧对应的 Fence，确保 GPU 已完成上一次使用该帧槽位的渲染
- *   2. 从交换链获取下一张可用图像（通过 imageAvailableSemaphore 通知）
- *   3. 重置 Fence，标记帧已开始
- *   4. 调用 ImGui_ImplVulkan_NewFrame() 准备 ImGui 渲染状态
  *
- * 若获取图像失败，frameStarted_ 保持 false，EndFrame() 将跳过提交。
+ *
+ *
+ *
+ *
  */
 void VulkanBackend::BeginFrame()
 {
     frameStarted_ = false;
 
-    // 等待上一次使用该帧槽位的 GPU 工作完成
+    // Wait for the GPU work previously using this frame slot.
     vkWaitForFences(device_, 1, &inFlightFences_[currentFrame_], VK_TRUE, UINT64_MAX);
 
-    // 从交换链获取下一张可用图像索引
+    // Acquire the next swapchain image.
     VkResult result = vkAcquireNextImageKHR(
         device_, swapchain_, UINT64_MAX,
         imageAvailableSemaphores_[currentFrame_], VK_NULL_HANDLE, &acquiredImageIndex_);
@@ -131,30 +131,30 @@ void VulkanBackend::BeginFrame()
     if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
     {
         LOGE("[VulkanBackend] vkAcquireNextImageKHR failed: %d", (int)result);
-        return;  // frameStarted_ 仍为 false，EndFrame 会跳过
+        return;  // frameStarted_ remains false, so EndFrame skips submission.
     }
 
-    // 重置 Fence 以便本帧提交后重新变为 signaled
+    // Reset the fence for the next submission.
     vkResetFences(device_, 1, &inFlightFences_[currentFrame_]);
     frameStarted_ = true;
 
-    // 通知 ImGui Vulkan 后端新帧开始
+    // Prepare the ImGui Vulkan renderer for a new frame.
     ImGui_ImplVulkan_NewFrame();
 }
 
 /**
- * @brief 帧结束：录制命令 → 提交 → 呈现
+ * Record ImGui commands into a transparent-clearing render pass, submit with imageAvailable as a
+ * wait and renderFinished as a signal, then present and advance the frame slot. Presentation-
+ * completion semaphore reuse remains unresolved.
  *
- * 流程：
- *   1. 获取 ImGui 绘制数据（DrawData）
- *   2. 重置并开始录制命令缓冲
- *   3. 启动 RenderPass，清屏色为透明（用于叠加层）
- *   4. 调用 ImGui_ImplVulkan_RenderDrawData 将 UI 录制到命令缓冲
- *   5. 结束 RenderPass 和命令缓冲
- *   6. 提交命令缓冲到图形队列，等待 imageAvailable 信号量，
- *      完成后发出 renderFinished 信号量并标记 Fence
- *   7. 将渲染结果呈现到屏幕
- *   8. 推进帧索引 currentFrame_
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
  */
 void VulkanBackend::EndFrame()
 {
@@ -165,18 +165,18 @@ void VulkanBackend::EndFrame()
     if (!drawData)
         return;
 
-    // ------ 1. 录制命令缓冲 ------
+    // Record commands.
     VkCommandBuffer cmd = commandBuffers_[currentFrame_];
     vkResetCommandBuffer(cmd, 0);
 
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT; // 每帧重新录制
+    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT; // Re-record for each frame.
     vkBeginCommandBuffer(cmd, &beginInfo);
 
-    // ------ 2. 开始渲染通道，清屏为全透明（用作叠加层） ------
+    // Begin the render pass with transparent clear color.
     VkClearValue clearValue{};
-    clearValue.color = {{0.0f, 0.0f, 0.0f, 0.0f}}; // RGBA = (0,0,0,0) 透明
+    clearValue.color = {{0.0f, 0.0f, 0.0f, 0.0f}}; // Transparent RGBA = (0, 0, 0, 0).
 
     VkRenderPassBeginInfo rpBegin{};
     rpBegin.sType             = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -188,14 +188,14 @@ void VulkanBackend::EndFrame()
 
     vkCmdBeginRenderPass(cmd, &rpBegin, VK_SUBPASS_CONTENTS_INLINE);
 
-    // ------ 3. 将 ImGui 绘制数据录制到命令缓冲 ------
+    // Record ImGui draw data.
     ImGui_ImplVulkan_RenderDrawData(drawData, cmd);
 
     vkCmdEndRenderPass(cmd);
     vkEndCommandBuffer(cmd);
 
-    // ------ 4. 提交命令缓冲 ------
-    // 等待 imageAvailable 信号量在 COLOR_ATTACHMENT_OUTPUT 阶段
+    // Submit the command buffer.
+    // Wait for imageAvailable at COLOR_ATTACHMENT_OUTPUT.
     VkPipelineStageFlags waitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 
     VkSubmitInfo submitInfo{};
@@ -208,49 +208,49 @@ void VulkanBackend::EndFrame()
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores    = &renderFinishedSemaphores_[currentFrame_];
 
-    // 提交到图形队列，完成后标记 inFlightFence
+    // Submit to the graphics queue and signal inFlightFence on completion.
     vkQueueSubmit(graphicsQueue_, 1, &submitInfo, inFlightFences_[currentFrame_]);
 
-    // ------ 5. 呈现到屏幕 ------
+    // Present.
     VkPresentInfoKHR presentInfo{};
     presentInfo.sType              = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
     presentInfo.waitSemaphoreCount = 1;
-    presentInfo.pWaitSemaphores    = &renderFinishedSemaphores_[currentFrame_]; // 等待渲染完成
+    presentInfo.pWaitSemaphores    = &renderFinishedSemaphores_[currentFrame_]; // Wait for render completion.
     presentInfo.swapchainCount     = 1;
     presentInfo.pSwapchains        = &swapchain_;
     presentInfo.pImageIndices      = &acquiredImageIndex_;
 
     vkQueuePresentKHR(graphicsQueue_, &presentInfo);
 
-    // 推进帧索引，在 [0, MAX_FRAMES_IN_FLIGHT) 间循环
+    // Advance the frame slot modulo MAX_FRAMES_IN_FLIGHT.
     currentFrame_ = (currentFrame_ + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
 // ===========================================================================
-// Shutdown —— 安全释放所有 Vulkan 资源
+// Release Vulkan resources.
 // ===========================================================================
 
 /**
- * @brief 释放所有已创建的 Vulkan 资源
+ * Wait for device idle, shut down ImGui, destroy synchronization and swapchain resources, then
+ * release pools, device, surface and instance. Check handles before destruction. This ordering
+ * does not establish caller-side thread safety.
  *
- * 释放顺序与创建顺序相反，确保依赖关系正确：
- *   1. 等待 GPU 空闲
- *   2. 关闭 ImGui Vulkan 后端
- *   3. 销毁同步原语（Fence / Semaphore）
- *   4. 清理交换链相关资源
- *   5. 销毁描述符池、命令池、逻辑设备、Surface、Instance
  *
- * 每个资源在销毁前检查是否为 VK_NULL_HANDLE，避免重复释放。
+ *
+ *
+ *
+ *
+ *
  */
 void VulkanBackend::Shutdown()
 {
-    if (device_)                                                           // 等待 GPU 所有操作完成
+    if (device_)                                                           // Wait for device work to complete.
         vkDeviceWaitIdle(device_);
 
-    if (initialized_)                                                       // 关闭 ImGui Vulkan 后端
+    if (initialized_)                                                       // Shut down the ImGui Vulkan renderer.
         ImGui_ImplVulkan_Shutdown();
 
-    // 销毁同步原语（每帧一组 Fence + 2 个 Semaphore）
+    // Destroy each frame slot's fence and two semaphores.
     for (auto f : inFlightFences_)
         if (f) vkDestroyFence(device_, f, nullptr);
     for (auto s : imageAvailableSemaphores_)
@@ -261,9 +261,9 @@ void VulkanBackend::Shutdown()
     imageAvailableSemaphores_.clear();
     renderFinishedSemaphores_.clear();
 
-    CleanupSwapchain();                                                    // 清理交换链及关联资源
+    CleanupSwapchain();                                                    // Release the swapchain and associated resources.
 
-    // 销毁剩余核心对象（反序创建顺序）
+    // Release remaining objects in dependency order.
     if (descriptorPool_) { vkDestroyDescriptorPool(device_, descriptorPool_, nullptr); descriptorPool_ = VK_NULL_HANDLE; }
     if (commandPool_)    { vkDestroyCommandPool(device_, commandPool_, nullptr);       commandPool_    = VK_NULL_HANDLE; }
     if (device_)         { vkDestroyDevice(device_, nullptr);                          device_         = VK_NULL_HANDLE; }
@@ -282,15 +282,15 @@ bool VulkanBackend::IsReady() const
 }
 
 // ===========================================================================
-// 1. Instance —— 创建 Vulkan 实例
+// Create the Vulkan instance.
 // ===========================================================================
 
 /**
- * @brief 创建 Vulkan 实例
+ * Enable VK_KHR_surface and VK_KHR_android_surface and request Vulkan 1.0.
  *
- * 启用 VK_KHR_surface 和 VK_KHR_android_surface 扩展，
- * 这是在 Android 上创建渲染表面的必要条件。
- * 使用 Vulkan 1.0 API 版本以确保最广泛的设备兼容性。
+ *
+ *
+ *
  */
 bool VulkanBackend::CreateInstance()
 {
@@ -300,12 +300,12 @@ bool VulkanBackend::CreateInstance()
     appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
     appInfo.pEngineName        = "NoEngine";
     appInfo.engineVersion      = VK_MAKE_VERSION(1, 0, 0);
-    appInfo.apiVersion         = VK_API_VERSION_1_0;  // 使用 Vulkan 1.0 保证兼容性
+    appInfo.apiVersion         = VK_API_VERSION_1_0;  // Request Vulkan 1.0.
 
-    // Android 平台必须启用的两个表面扩展
+    // Required surface extensions.
     const char *extensions[] = {
-        VK_KHR_SURFACE_EXTENSION_NAME,          // 通用表面扩展
-        VK_KHR_ANDROID_SURFACE_EXTENSION_NAME,  // Android 专用表面扩展
+        VK_KHR_SURFACE_EXTENSION_NAME,          // Generic surface extension.
+        VK_KHR_ANDROID_SURFACE_EXTENSION_NAME,  // Android surface extension.
     };
 
     VkInstanceCreateInfo ci{};
@@ -320,16 +320,16 @@ bool VulkanBackend::CreateInstance()
 }
 
 // ===========================================================================
-// 2. Surface —— 创建 Android 渲染表面
+// Create the Android Vulkan surface.
 // ===========================================================================
 
 /**
- * @brief 从 Android 原生窗口创建 Vulkan 渲染表面
+ * Create VkSurfaceKHR from the supplied ANativeWindow.
  *
- * VkSurfaceKHR 是 Vulkan 与窗口系统之间的桥梁，
- * 交换链将图像呈现到这个表面上。
  *
- * @param window Android 原生窗口句柄
+ *
+ *
+ *
  */
 bool VulkanBackend::CreateSurface(ANativeWindow *window)
 {
@@ -343,19 +343,19 @@ bool VulkanBackend::CreateSurface(ANativeWindow *window)
 }
 
 // ===========================================================================
-// 3. Physical device —— 选择物理 GPU
+// Select a physical device.
 // ===========================================================================
 
 /**
- * @brief 枚举并选择合适的物理设备（GPU）
+ * Select the first device with a queue family supporting graphics and presentation to this
+ * surface, and with VK_KHR_swapchain support. Record the device and queue-family index.
  *
- * 选择条件：
- *   - 拥有支持图形操作的队列族（VK_QUEUE_GRAPHICS_BIT）
- *   - 该队列族同时支持呈现（present）到已创建的 Surface
- *   - 设备支持 VK_KHR_swapchain 扩展
  *
- * 找到第一个满足条件的设备即停止搜索，
- * 并记录 physicalDevice_ 和 queueFamily_。
+ *
+ *
+ *
+ *
+ *
  */
 bool VulkanBackend::SelectPhysicalDevice()
 {
@@ -368,7 +368,7 @@ bool VulkanBackend::SelectPhysicalDevice()
 
     for (auto dev : devices)
     {
-        // 遍历每个设备的队列族，查找同时支持 graphics + present 的队列
+        // Search queue families for combined graphics and presentation support.
         uint32_t qfCount = 0;
         vkGetPhysicalDeviceQueueFamilyProperties(dev, &qfCount, nullptr);
         std::vector<VkQueueFamilyProperties> qfProps(qfCount);
@@ -376,17 +376,17 @@ bool VulkanBackend::SelectPhysicalDevice()
 
         for (uint32_t i = 0; i < qfCount; ++i)
         {
-            // 检查该队列族是否支持图形操作
+            // Check graphics support.
             if (!(qfProps[i].queueFlags & VK_QUEUE_GRAPHICS_BIT))
                 continue;
 
-            // 检查该队列族是否支持 present 到 Surface
+            // Check presentation support for this surface.
             VkBool32 presentSupport = VK_FALSE;
             vkGetPhysicalDeviceSurfaceSupportKHR(dev, i, surface_, &presentSupport);
             if (!presentSupport)
                 continue;
 
-            // 检查设备是否支持 VK_KHR_swapchain 扩展（呈现的前置条件）
+            // Check VK_KHR_swapchain support.
             uint32_t extCount = 0;
             vkEnumerateDeviceExtensionProperties(dev, nullptr, &extCount, nullptr);
             std::vector<VkExtensionProperties> exts(extCount);
@@ -415,27 +415,27 @@ bool VulkanBackend::SelectPhysicalDevice()
 }
 
 // ===========================================================================
-// 4. Logical device —— 创建逻辑设备
+// Create the logical device.
 // ===========================================================================
 
 /**
- * @brief 创建 Vulkan 逻辑设备并获取图形队列
+ * Enable VK_KHR_swapchain and request one queue from the selected combined graphics/presentation
+ * family.
  *
- * 从已选定的物理设备创建逻辑设备，启用 VK_KHR_swapchain 扩展。
- * 仅请求一个队列，因为图形和呈现使用同一个队列族。
+ *
  */
 bool VulkanBackend::CreateLogicalDevice()
 {
-    float priority = 1.0f;  // 队列优先级（0.0 ~ 1.0）
+    float priority = 1.0f;  // Queue priority in [0.0, 1.0].
 
-    // 只需一个队列（图形 + 呈现共用）
+    // Use one queue for graphics and presentation.
     VkDeviceQueueCreateInfo qci{};
     qci.sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
     qci.queueFamilyIndex = queueFamily_;
     qci.queueCount       = 1;
     qci.pQueuePriorities = &priority;
 
-    const char *devExts[] = { VK_KHR_SWAPCHAIN_EXTENSION_NAME }; // 启用交换链扩展
+    const char *devExts[] = { VK_KHR_SWAPCHAIN_EXTENSION_NAME }; // Enable the swapchain extension.
 
     VkDeviceCreateInfo dci{};
     dci.sType                   = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -452,30 +452,30 @@ bool VulkanBackend::CreateLogicalDevice()
 }
 
 // ===========================================================================
-// 5. Swapchain —— 创建交换链
+// Create the swapchain.
 // ===========================================================================
 
 /**
- * @brief 创建交换链及其图像视图
+ * Choose the image format, supported extent, image count, composite alpha and present mode, then
+ * create image views. The requested dimensions are constrained by surface capabilities;
+ * minImageCount + 1 does not imply a fixed image count.
  *
- * 交换链是 Vulkan 与窗口系统之间的图像队列，配置过程包括：
- *   - 图像格式：优先选择 R8G8B8A8_UNORM
- *   - 分辨率：优先使用 Surface 当前尺寸，否则 clamp 到允许范围
- *   - 图像数量：minImageCount + 1（三重缓冲）
- *   - 合成 Alpha：优先 INHERIT，退而求其次（用于透明叠加层）
- *   - 呈现模式：优先 MAILBOX（低延迟），回退 FIFO（始终可用）
  *
- * 创建完成后还会为每张图像创建对应的 VkImageView。
  *
- * @param width   期望宽度
- * @param height  期望高度
+ *
+ *
+ *
+ *
+ *
+ *
+ *
  */
 bool VulkanBackend::CreateSwapchain(int width, int height)
 {
     VkSurfaceCapabilitiesKHR caps;
     VK_CHECK(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice_, surface_, &caps));
 
-    // ------ 选择图像格式：优先 R8G8B8A8_UNORM ------
+    // Prefer R8G8B8A8_UNORM.
     uint32_t fmtCount = 0;
     vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice_, surface_, &fmtCount, nullptr);
     std::vector<VkSurfaceFormatKHR> formats(fmtCount);
@@ -489,7 +489,7 @@ bool VulkanBackend::CreateSwapchain(int width, int height)
     }
     swapchainFormat_ = selectedFmt.format;
 
-    // ------ 确定交换链尺寸 ------
+    // Select the swapchain extent.
     if (caps.currentExtent.width != UINT32_MAX)
     {
         swapchainExtent_ = caps.currentExtent;
@@ -502,12 +502,12 @@ bool VulkanBackend::CreateSwapchain(int width, int height)
                                              caps.minImageExtent.height, caps.maxImageExtent.height);
     }
 
-    // ------ 图像数量：minImageCount + 1 实现三重缓冲 ------
+    // Request minImageCount + 1, subject to the surface maximum.
     imageCount_ = caps.minImageCount + 1;
     if (caps.maxImageCount > 0 && imageCount_ > caps.maxImageCount)
         imageCount_ = caps.maxImageCount;
 
-    // ------ 合成 Alpha 模式：用于透明叠加层渲染 ------
+    // Choose composite alpha for overlay rendering.
     VkCompositeAlphaFlagBitsKHR compositeAlpha = VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR;
     if (!(caps.supportedCompositeAlpha & VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR))
     {
@@ -519,7 +519,7 @@ bool VulkanBackend::CreateSwapchain(int width, int height)
             compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
     }
 
-    // ------ 呈现模式：优先 MAILBOX（三重缓冲低延迟），回退 FIFO ------
+    // Prefer MAILBOX; otherwise use FIFO.
     uint32_t pmCount = 0;
     vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice_, surface_, &pmCount, nullptr);
     std::vector<VkPresentModeKHR> presentModes(pmCount);
@@ -529,7 +529,7 @@ bool VulkanBackend::CreateSwapchain(int width, int height)
     for (auto m : presentModes)
         if (m == VK_PRESENT_MODE_MAILBOX_KHR) { presentMode = m; break; }
 
-    // ------ 创建交换链对象 ------
+    // Create the swapchain.
     VkSwapchainCreateInfoKHR sci{};
     sci.sType            = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
     sci.surface          = surface_;
@@ -537,22 +537,22 @@ bool VulkanBackend::CreateSwapchain(int width, int height)
     sci.imageFormat      = selectedFmt.format;
     sci.imageColorSpace  = selectedFmt.colorSpace;
     sci.imageExtent      = swapchainExtent_;
-    sci.imageArrayLayers = 1;                                  // 非立体渲染
-    sci.imageUsage       = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT; // 仅用作颜色附件
-    sci.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;           // 单队列族独占
+    sci.imageArrayLayers = 1;                                  // One image layer.
+    sci.imageUsage       = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT; // Color-attachment usage.
+    sci.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;           // Exclusive sharing for one queue family.
     sci.preTransform     = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
     sci.compositeAlpha   = compositeAlpha;
     sci.presentMode      = presentMode;
-    sci.clipped          = VK_TRUE;                             // 裁剪被遮挡像素
+    sci.clipped          = VK_TRUE;                             // Allow clipping of obscured pixels.
 
     VK_CHECK(vkCreateSwapchainKHR(device_, &sci, nullptr, &swapchain_));
 
-    // ------ 获取交换链图像句柄 ------
+    // Get swapchain image handles.
     vkGetSwapchainImagesKHR(device_, swapchain_, &imageCount_, nullptr);
     swapchainImages_.resize(imageCount_);
     vkGetSwapchainImagesKHR(device_, swapchain_, &imageCount_, swapchainImages_.data());
 
-    // ------ 为每张图像创建 ImageView（渲染通道需要） ------
+    // Create one image view per image.
     swapchainImageViews_.resize(imageCount_);
     for (uint32_t i = 0; i < imageCount_; ++i)
     {
@@ -574,31 +574,31 @@ bool VulkanBackend::CreateSwapchain(int width, int height)
 }
 
 // ===========================================================================
-// 6. Render pass —— 创建渲染通道
+// Create the render pass.
 // ===========================================================================
 
 /**
- * @brief 创建渲染通道
+ * Use one color attachment with CLEAR/STORE and UNDEFINED-to-PRESENT_SRC layout transition. The
+ * external subpass dependency uses COLOR_ATTACHMENT_OUTPUT. This does not replace required
+ * queue/presentation synchronization.
  *
- * 配置单个 color attachment：
- *   - loadOp = CLEAR：每帧开始时清屏
- *   - storeOp = STORE：渲染结果保留以便呈现
- *   - initialLayout = UNDEFINED → finalLayout = PRESENT_SRC
  *
- * 子通道依赖确保外部 → 子通道0 的过渡正确，
- * 即在 COLOR_ATTACHMENT_OUTPUT 阶段完成布局转换。
+ *
+ *
+ *
+ *
  */
 bool VulkanBackend::CreateRenderPass()
 {
     VkAttachmentDescription att{};
     att.format         = swapchainFormat_;
-    att.samples        = VK_SAMPLE_COUNT_1_BIT;         // 不使用多重采样
-    att.loadOp         = VK_ATTACHMENT_LOAD_OP_CLEAR;    // 帧开始时清除
-    att.storeOp        = VK_ATTACHMENT_STORE_OP_STORE;   // 帧结束后保存
+    att.samples        = VK_SAMPLE_COUNT_1_BIT;         // Single-sample rendering.
+    att.loadOp         = VK_ATTACHMENT_LOAD_OP_CLEAR;    // Clear on load.
+    att.storeOp        = VK_ATTACHMENT_STORE_OP_STORE;   // Store after rendering.
     att.stencilLoadOp  = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     att.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    att.initialLayout  = VK_IMAGE_LAYOUT_UNDEFINED;      // 不关心初始内容
-    att.finalLayout    = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR; // 渲染后直接可呈现
+    att.initialLayout  = VK_IMAGE_LAYOUT_UNDEFINED;      // Discard initial contents.
+    att.finalLayout    = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR; // Final layout for presentation.
 
     VkAttachmentReference ref{};
     ref.attachment = 0;
@@ -609,7 +609,7 @@ bool VulkanBackend::CreateRenderPass()
     subpass.colorAttachmentCount = 1;
     subpass.pColorAttachments    = &ref;
 
-    // 子通道依赖：确保外部→子通道0的布局转换在 COLOR_ATTACHMENT_OUTPUT 阶段完成
+    // External-to-subpass dependency at COLOR_ATTACHMENT_OUTPUT.
     VkSubpassDependency dep{};
     dep.srcSubpass    = VK_SUBPASS_EXTERNAL;
     dep.dstSubpass    = 0;
@@ -632,14 +632,14 @@ bool VulkanBackend::CreateRenderPass()
 }
 
 // ===========================================================================
-// 7. Framebuffers —— 创建帧缓冲
+// Create framebuffers.
 // ===========================================================================
 
 /**
- * @brief 为每张交换链图像创建帧缓冲
+ * Create one framebuffer per swapchain image view; acquiredImageIndex_ selects the frame target.
  *
- * 每个帧缓冲绑定一个交换链 ImageView，
- * 渲染时通过 acquiredImageIndex_ 选择对应的帧缓冲。
+ *
+ *
  */
 bool VulkanBackend::CreateFramebuffers()
 {
@@ -661,35 +661,35 @@ bool VulkanBackend::CreateFramebuffers()
 }
 
 // ===========================================================================
-// 8. Command pool —— 创建命令池
+// Create the command pool.
 // ===========================================================================
 
 /**
- * @brief 创建命令池
+ * RESET_COMMAND_BUFFER_BIT allows individual command buffers to be re-recorded without rebuilding
+ * the pool.
  *
- * 启用 RESET_COMMAND_BUFFER_BIT 允许单独重置每个命令缓冲，
- * 这样每帧可以重新录制而不必重建整个命令池。
+ *
  */
 bool VulkanBackend::CreateCommandPool()
 {
     VkCommandPoolCreateInfo cpci{};
     cpci.sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    cpci.flags            = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT; // 允许单独重置
-    cpci.queueFamilyIndex = queueFamily_;  // 绑定到图形队列族
+    cpci.flags            = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT; // Allow individual command-buffer reset.
+    cpci.queueFamilyIndex = queueFamily_;  // Use the graphics queue family.
 
     VK_CHECK(vkCreateCommandPool(device_, &cpci, nullptr, &commandPool_));
     return true;
 }
 
 // ===========================================================================
-// 9. Command buffers —— 分配命令缓冲
+// Allocate command buffers.
 // ===========================================================================
 
 /**
- * @brief 分配主要级命令缓冲
+ * Allocate one primary command buffer per frame slot for direct queue submission.
  *
- * 每帧一个命令缓冲，共 MAX_FRAMES_IN_FLIGHT 个。
- * PRIMARY 级别可直接提交到队列。
+ *
+ *
  */
 bool VulkanBackend::CreateCommandBuffers()
 {
@@ -706,16 +706,16 @@ bool VulkanBackend::CreateCommandBuffers()
 }
 
 // ===========================================================================
-// 10. Sync objects —— 创建同步原语
+// Create synchronization objects.
 // ===========================================================================
 
 /**
- * @brief 创建帧同步原语
+ * Each frame slot owns an initially signaled fence, image-available semaphore and render-finished
+ * semaphore. Submission-fence completion does not by itself make a presentation-wait semaphore
+ * reusable.
  *
- * 每帧槽位包含：
- *   - inFlightFence：CPU 等待 GPU 完成（初始为 signaled 状态以免第一帧死锁）
- *   - imageAvailableSemaphore：GPU 内部同步，交换链图像可用时触发
- *   - renderFinishedSemaphore：GPU 内部同步，渲染完成时触发，用于呈现等待
+ *
+ *
  */
 bool VulkanBackend::CreateSyncObjects()
 {
@@ -725,7 +725,7 @@ bool VulkanBackend::CreateSyncObjects()
 
     VkFenceCreateInfo fci{};
     fci.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-    fci.flags = VK_FENCE_CREATE_SIGNALED_BIT;  // 初始为 signaled，避免第一帧死锁
+    fci.flags = VK_FENCE_CREATE_SIGNALED_BIT;  // Initially signaled so the first frame can proceed.
 
     VkSemaphoreCreateInfo sci{};
     sci.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -740,15 +740,15 @@ bool VulkanBackend::CreateSyncObjects()
 }
 
 // ===========================================================================
-// 11. Descriptor pool —— 创建描述符池
+// Create the descriptor pool.
 // ===========================================================================
 
 /**
- * @brief 创建描述符池
+ * Allocate 16 COMBINED_IMAGE_SAMPLER descriptors and allow individual descriptor-set freeing.
+ * Callers must remain within the pool capacity.
  *
- * ImGui Vulkan 后端需要描述符集来绑定字体纹理等资源。
- * 配置 16 个 COMBINED_IMAGE_SAMPLER 描述符，足够 ImGui 使用。
- * 启用 FREE_DESCRIPTOR_SET_BIT 允许单独释放描述符集。
+ *
+ *
  */
 bool VulkanBackend::CreateDescriptorPool()
 {
@@ -768,18 +768,18 @@ bool VulkanBackend::CreateDescriptorPool()
 }
 
 // ===========================================================================
-// 12. ImGui Vulkan backend —— 初始化 ImGui 渲染后端
+// Initialize the ImGui Vulkan renderer.
 // ===========================================================================
 
 /**
- * @brief 初始化 ImGui Vulkan 渲染后端
+ * Pass the Vulkan objects to ImGui for pipeline, font and draw-command resources. The ImGui
+ * context must already exist.
  *
- * 将已创建的 Vulkan 对象传递给 ImGui，使其能够：
- *   - 创建内部管线、着色器
- *   - 上传字体纹理
- *   - 每帧录制 ImGui 绘制命令
  *
- * 调用前需确保 ImGui::CreateContext() 已完成。
+ *
+ *
+ *
+ *
  */
 bool VulkanBackend::InitImGuiVulkan()
 {
@@ -811,14 +811,14 @@ bool VulkanBackend::InitImGuiVulkan()
 
 // ---------------------------------------------------------------------------
 // ===========================================================================
-// Swapchain cleanup —— 清理交换链相关资源
+// Swapchain cleanup.
 // ===========================================================================
 
 /**
- * @brief 销毁交换链及其关联资源
+ * Destroy framebuffers, image views, render pass and swapchain in that order.
  *
- * 清理顺序：帧缓冲 → 图像视图 → 渲染通道 → 交换链。
- * 在 Shutdown 或重建交换链时调用。
+ *
+ *
  */
 void VulkanBackend::CleanupSwapchain()
 {

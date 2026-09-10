@@ -21,7 +21,7 @@ namespace ImGuiHost
 {
 
 // ===========================================================================
-// 共享状态
+// Shared state.
 // ===========================================================================
 namespace
 {
@@ -30,7 +30,7 @@ InjectionMode         g_Mode        = InjectionMode::Overlay;
 bool                  g_Initialized = false;
 std::function<void()> g_RenderCallback;
 
-// ── Overlay 模式状态 ───────────────────────────────────────────
+// Overlay state.
 std::unique_ptr<IGraphicsBackend> g_Backend;
 GraphicsAPI                       g_CurrentApi    = GraphicsAPI::Vulkan;
 
@@ -40,17 +40,17 @@ GraphicsAPI                       g_PendingApi    = GraphicsAPI::Vulkan;
 ANativeWindow                    *g_OverlayWindow = nullptr;
 ANativeWindow                    *g_PrevAppWindow = nullptr;
 
-// host Activity 上挂载的 overlay SurfaceView 的 GlobalRef，
-// 由 OverlayCreateSurfaceViewOnMainThread 在 UI 线程上初始化。
+// GlobalRef to the host Activity's overlay SurfaceView;
+// initialized on the UI thread by OverlayCreateSurfaceViewOnMainThread.
 jobject                           g_OverlaySurfaceView = nullptr;
 
 // ===========================================================================
-// Overlay SurfaceView —— 通过 JNI 在 host Activity 上 addView 一个独立 surface。
-// 全部为 ImGuiHost.cpp 私有：状态、JNI 反射、主线程入口；外部只见 ImGuiHost 公开 API。
+// Create an independent SurfaceView through WindowManager.addView.
+// State and JNI helpers are private to ImGuiHost.cpp.
 // ===========================================================================
 
 // LayoutParams：TYPE_APPLICATION（2），FLAG_NOT_FOCUSABLE | NOT_TOUCH_MODAL |
-// LAYOUT_NO_LIMITS | LAYOUT_IN_SCREEN | HARDWARE_ACCELERATED 等。
+// LAYOUT_NO_LIMITS, LAYOUT_IN_SCREEN and HARDWARE_ACCELERATED flags.
 jobject CreateOverlayLayoutParams(JNIEnv* env, int width, int height)
 {
     jclass lpClass = env->FindClass("android/view/WindowManager$LayoutParams");
@@ -69,7 +69,7 @@ jobject CreateOverlayLayoutParams(JNIEnv* env, int width, int height)
     return lp;
 }
 
-// 创建 SurfaceView 并通过 WindowManager.addView 挂上去；返回 GlobalRef。
+// Create a SurfaceView through WindowManager.addView and return a GlobalRef.
 jobject CreateAndAttachSurfaceView(JNIEnv* env, jobject activity, int width, int height)
 {
     // WindowManager
@@ -111,8 +111,8 @@ jobject CreateAndAttachSurfaceView(JNIEnv* env, jobject activity, int width, int
     return env->NewGlobalRef(sv);
 }
 
-// 必须在 UI 线程调用：创建 overlay SurfaceView 并把 GlobalRef 缓存到 g_OverlaySurfaceView。
-// 由 InitOptions::postToMainThread 投递。
+// UI thread only: create the overlay and cache its GlobalRef.
+// Posted through InitOptions::postToMainThread.
 void OverlayCreateSurfaceViewOnMainThread()
 {
     if (g_OverlaySurfaceView) return;
@@ -133,7 +133,7 @@ void OverlayCreateSurfaceViewOnMainThread()
          size.width, size.height, g_OverlaySurfaceView);
 }
 
-// 从 g_OverlaySurfaceView 取 ANativeWindow*（已 acquire；调用方负责 release）。
+// Acquire ANativeWindow from g_OverlaySurfaceView; the caller must release it.
 ANativeWindow* AcquireOverlayWindow()
 {
     if (!g_OverlaySurfaceView) return nullptr;
@@ -160,7 +160,7 @@ ANativeWindow* AcquireOverlayWindow()
 }
 
 // ===========================================================================
-// Overlay backend 创建/销毁
+// Overlay backend creation and destruction.
 // ===========================================================================
 std::unique_ptr<IGraphicsBackend> CreateBackend(GraphicsAPI api)
 {
@@ -179,8 +179,8 @@ bool OverlayInitBackend(ANativeWindow *window, GraphicsAPI api)
 
     ANativeWindow_acquire(window);
 
-    // ImGui 平台后端（context/style/font 之前的部分）
-    // ImGui_ImplAndroid_Init 应绑到游戏窗口（输入坐标参考），不是 overlay 窗口
+    // Android platform backend initialization.
+    // Bind the Android backend to the host input window, not the overlay window.
     ANativeWindow* platformWindow = AndroidPlatform::GetNativeWindow();
     ImGuiSetup::EnsureContext(platformWindow ? platformWindow : window);
 
@@ -216,7 +216,7 @@ void OverlayTeardownBackend()
 }
 
 // ===========================================================================
-// Overlay 帧驱动
+// Overlay frame driving.
 // ===========================================================================
 void OverlayDrawFrame()
 {
@@ -232,7 +232,7 @@ void OverlayDrawFrame()
     if (g_RenderCallback)
         g_RenderCallback();
 
-    // 软键盘绘制需在 ImGui::Render 之前
+    // Draw the software keyboard before ImGui::Render.
     ImGuiSoftKeyboard::Draw();
 
     ImGui::Render();
@@ -244,7 +244,7 @@ void OverlayTick()
 {
     ANativeWindow* appWindow = AndroidPlatform::GetNativeWindow();
 
-    // 1. 窗口变化：清理旧资源，等待下一帧重建
+    // Window change: release resources and rebuild on a later frame.
     if (g_PrevAppWindow && appWindow && appWindow != g_PrevAppWindow)
     {
         OverlayTeardownBackend();
@@ -252,7 +252,7 @@ void OverlayTick()
         g_PrevAppWindow = nullptr;
     }
 
-    // 2. 后端切换：清理后按 pendingApi 重建
+    // Backend change: release resources and rebuild with pendingApi.
     if (g_PendingSwitch)
     {
         OverlayTeardownBackend();
@@ -261,7 +261,7 @@ void OverlayTick()
         g_PendingSwitch = false;
     }
 
-    // 3. SurfaceView 尚未在主线程创建完成 → 等
+    // Wait until the UI thread has created the SurfaceView.
     if (!g_OverlayWindow)
     {
         if (!g_OverlaySurfaceView)
@@ -280,14 +280,14 @@ void OverlayTick()
         }
     }
 
-    // 4. 绘制
+    // Draw the frame.
     OverlayDrawFrame();
 }
 
 } // anonymous namespace
 
 // ===========================================================================
-// 公开 API
+// Public API.
 // ===========================================================================
 
 bool Init(const InitOptions &opt)
@@ -311,14 +311,14 @@ bool Init(const InitOptions &opt)
         return true;
     }
 
-    // Overlay 模式硬依赖 host 进程里有 Activity（要 Activity 引用 addView SurfaceView）
+    // Overlay requires a host Activity to attach its SurfaceView.
     if (!AndroidPlatform::GetActivity())
     {
         LOGE("[ImGuiHost] Overlay mode requires an Activity, aborting Init");
         return false;
     }
 
-    // Overlay：把 SurfaceView 创建投递到主线程
+    // Post SurfaceView creation to the main thread.
     if (!opt.postToMainThread)
     {
         LOGE("[ImGuiHost] Overlay mode requires postToMainThread");
@@ -360,7 +360,7 @@ void Tick()
     if (!g_Initialized)
         return;
 
-    // SwapHook 模式由 swap hook 自驱，外部脉冲为 no-op
+    // SwapHook drives its own frames; external Tick is a no-op.
     if (g_Mode == InjectionMode::SwapHook)
         return;
 

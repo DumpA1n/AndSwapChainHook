@@ -22,12 +22,12 @@ void main_thread()
 	KT::Init();
 
 	if (!Elf.Scan({
-			// "libc.so",
-			// "libUE4.so", // For Unreal Engine 4
-			// "libvulkan.so",
+
+
+
 			"libinput.so", // For InputEventHook
 			"libart.so", // For GetJavaVM()
-			// "libandroid_runtime.so",
+
 		}))
 	{
 		LOGE("Failed to scan necessary libraries.");
@@ -141,9 +141,9 @@ __attribute__((constructor)) void ctor()
 
 	CrashHandler::Install();
 
-	// Enable if not use AndKittyInjector
-	// if (!g_Initialized.exchange(true))
-	// 	std::thread(main_thread).detach();
+
+
+
 }
 
 __attribute__((destructor)) void dtor() { LOGI("dtor"); }

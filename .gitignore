@@ -8,4 +8,8 @@ cmake-build-release-system/
 
 .claude/
 
-docs/
+/docs/*
+!/docs/research-scope.md
+!/docs/lab-guide.md
+!/docs/data-handling.md
+!/docs/repository-metadata.md

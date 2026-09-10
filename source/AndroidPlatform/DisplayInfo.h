@@ -1,23 +1,23 @@
 #pragma once
 
 // ---------------------------------------------------------------------------
-// DisplayInfo —— host 进程的屏幕尺寸
+// DisplayInfo: host display dimensions.
 //
-// 通过 ActivityHost 拿到 Activity，反射
+// Resolve the Activity through ActivityHost and use reflection to
 //   activity.getSystemService(WINDOW_SERVICE).getDefaultDisplay().getRealSize(point)
-// 取得物理像素尺寸。结果按横屏方向规范化（width >= height）并缓存到进程结束。
+// read physical pixels; normalize to landscape and cache for process lifetime.
 // ---------------------------------------------------------------------------
 namespace AndroidPlatform
 {
 
 struct DisplaySize
 {
-    int width;   // 横屏方向，物理像素
+    int width;   // Physical pixels in landscape orientation.
     int height;
 };
 
-// 返回 host 进程的物理屏幕尺寸（横屏归一化）。
-// 失败（无 Activity / JNI 异常）时返回 {0, 0}。
+// Return host display dimensions normalized to landscape.
+// Return {0, 0} when the Activity is unavailable or JNI fails.
 DisplaySize GetDisplaySize();
 
 }

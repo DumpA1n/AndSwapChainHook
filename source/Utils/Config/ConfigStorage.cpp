@@ -155,7 +155,7 @@ void AutoLoadOnStartup() {
         return;
     }
 
-    // 直接赋值, 不走 SetActiveName 以避免在加载前覆盖 last-active 标记文件
+    // Assign directly to avoid overwriting the last-active marker before loading.
     s_ActiveName = lastName;
     Load(configPath);
 

@@ -32,7 +32,7 @@
 #include "imgui/imgui.h"
 
 // ===========================================================================
-// 调试日志开关：设为 0 关闭 SwapChainHook 的详细调试日志（LOGE 始终保留）
+// Set to 0 to disable detailed SwapChainHook diagnostics; LOGE remains enabled.
 // ===========================================================================
 #define SWAPCHAIN_DEBUG_LOG 1
 
@@ -45,7 +45,7 @@
 #endif
 
 // ===========================================================================
-// 内部状态
+// Internal state.
 // ===========================================================================
 
 static std::atomic<bool>           g_Installed{false};
@@ -57,7 +57,7 @@ static int                         g_Height = 0;
 static bool                        g_VkInitialized = false;
 
 // ---------------------------------------------------------------------------
-// OpenGL ES 路径
+// OpenGL ES path.
 // ---------------------------------------------------------------------------
 
 static EGLBoolean (*g_OrigEglSwapBuffers)(EGLDisplay, EGLSurface) = nullptr;
@@ -67,17 +67,17 @@ static ANativeWindow* g_ImGuiWindow = nullptr;
 static EGLContext g_ImGuiEglContext = EGL_NO_CONTEXT;
 
 /**
- * @brief 在游戏的 EGL Context 上初始化 ImGui（仅首次调用）
+ * Initialize ImGui using the host EGL context on first use.
  */
 static bool InitImGuiOnGameContext(EGLDisplay display, EGLSurface surface)
 {
-    // 获取 Surface 尺寸
+    // Query the surface dimensions.
     EGLint w = 0, h = 0;
     eglQuerySurface(display, surface, EGL_WIDTH, &w);
     eglQuerySurface(display, surface, EGL_HEIGHT, &h);
     SCH_LOGI("[SwapChainHook] eglQuerySurface returned %dx%d", w, h);
 
-    // 回退：从 ANativeWindow 获取尺寸
+    // Use ANativeWindow dimensions as fallback.
     ANativeWindow* nativeWindow = AndroidPlatform::GetNativeWindow();
     if ((w <= 0 || h <= 0) && nativeWindow)
     {
@@ -104,10 +104,10 @@ static bool InitImGuiOnGameContext(EGLDisplay display, EGLSurface surface)
     ImGuiSetup::EnsureContext(initWindow);
     ImGui::GetIO().DisplaySize = ImVec2((float)w, (float)h);
 
-    // OpenGL 渲染后端（复用游戏 Context）
+    // Reuse the host OpenGL context.
     ImGui_ImplOpenGL3_Init("#version 300 es");
 
-    // 字体
+    // Fonts.
     ResourceManager::GetInstance().initializeFonts(30.0f);
 
     g_GlesInitialized = true;
@@ -120,20 +120,20 @@ static bool InitImGuiOnGameContext(EGLDisplay display, EGLSurface surface)
 }
 
 /**
- * @brief eglSwapBuffers hook
+ * eglSwapBuffers hook: save the GL state handled below, render ImGui into framebuffer 0, restore
+ * that state and call the original function. Complete host-state preservation requires runtime
+ * validation.
  *
- * 在游戏调用 eglSwapBuffers 提交帧之前：
- *   1. 保存完整 GL 状态
- *   2. 渲染 ImGui 到游戏的默认帧缓冲区（FBO 0）
- *   3. 恢复 GL 状态
- *   4. 调用原始 eglSwapBuffers
+ *
+ *
+ *
  */
 static EGLBoolean Hooked_eglSwapBuffers(EGLDisplay display, EGLSurface surface)
 {
     if (eglGetCurrentContext() == EGL_NO_CONTEXT)
         return g_OrigEglSwapBuffers(display, surface);
 
-    // Vulkan 已接管渲染，不再在 EGL 上绘制 ImGui
+    // Skip EGL rendering while Vulkan owns ImGui rendering.
     if (g_VkInitialized)
         return g_OrigEglSwapBuffers(display, surface);
 
@@ -147,7 +147,7 @@ static EGLBoolean Hooked_eglSwapBuffers(EGLDisplay display, EGLSurface surface)
     if (!currentWindow)
         return g_OrigEglSwapBuffers(display, surface);
 
-    // ANativeWindow 或 EGL Context 变化后需重新初始化 ImGui
+    // Reinitialize when ANativeWindow or EGL context changes.
     EGLContext currentCtx = eglGetCurrentContext();
     if (g_GlesInitialized && (currentWindow != g_ImGuiWindow || currentCtx != g_ImGuiEglContext))
     {
@@ -163,24 +163,24 @@ static EGLBoolean Hooked_eglSwapBuffers(EGLDisplay display, EGLSurface surface)
             return g_OrigEglSwapBuffers(display, surface);
     }
 
-    // --- 查询 EGL surface 实际尺寸 ---
+    // Query actual EGL surface dimensions.
     EGLint sw = 0, sh = 0;
     eglQuerySurface(display, surface, EGL_WIDTH, &sw);
     eglQuerySurface(display, surface, EGL_HEIGHT, &sh);
 
-    // --- ImGui 渲染帧 ---
+    // ImGui frame.
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplAndroid_NewFrame();
 
-    // 通过 DisplayFramebufferScale 计算 ImGui 渲染后端真实帧缓冲分辨率。
+    // Use DisplayFramebufferScale to map logical coordinates to framebuffer pixels.
     {
         ImGuiIO &ioUpdate = ImGui::GetIO();
-        // DisplaySize 保持 ANativeWindow 尺寸（与触摸坐标一致）
+        // Keep DisplaySize in the ANativeWindow coordinate space used by input.
         float dispW = ioUpdate.DisplaySize.x;
         float dispH = ioUpdate.DisplaySize.y;
         g_Width  = (int)dispW;
         g_Height = (int)dispH;
-        // 设置 framebuffer scale: EGL surface 尺寸 / 显示尺寸
+        // Framebuffer scale is EGL surface extent divided by logical display extent.
         if (sw > 0 && sh > 0 && dispW > 0 && dispH > 0)
         {
             ioUpdate.DisplayFramebufferScale = ImVec2((float)sw / dispW, (float)sh / dispH);
@@ -196,7 +196,7 @@ static EGLBoolean Hooked_eglSwapBuffers(EGLDisplay display, EGLSurface surface)
     ImGuiSoftKeyboard::Draw();
     ImGui::Render();
 
-    // --- 保存游戏的 GL 状态 ---
+    // Save host GL state.
     GLint prevFBO = 0;
     glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFBO);
     GLint prevViewport[4];
@@ -208,29 +208,29 @@ static EGLBoolean Hooked_eglSwapBuffers(EGLDisplay display, EGLSurface surface)
     glGetIntegerv(GL_BLEND_SRC_ALPHA, &prevBlendSrcA);
     glGetIntegerv(GL_BLEND_DST_ALPHA, &prevBlendDstA);
 
-    // 渲染到游戏的默认帧缓冲区（FBO 0）
-    // 注意：不做 glClear，保留游戏已有画面内容
+    // Render into the host's default framebuffer, FBO 0.
+    // Do not clear the host frame contents.
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    // viewport 使用 EGL surface 实际分辨率（framebuffer 尺寸）
+    // Set viewport from the actual EGL surface extent.
     ImGuiIO &io = ImGui::GetIO();
     int fbW = (int)(io.DisplaySize.x * io.DisplayFramebufferScale.x);
     int fbH = (int)(io.DisplaySize.y * io.DisplayFramebufferScale.y);
     glViewport(0, 0, fbW, fbH);
 
-    // 开启混合，ImGui 绘制叠加在游戏画面之上
+    // Enable alpha blending for the overlay.
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-    // --- 恢复游戏的 GL 状态 ---
+    // Restore host GL state.
     glBindFramebuffer(GL_FRAMEBUFFER, prevFBO);
     glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
     if (prevBlend) glEnable(GL_BLEND); else glDisable(GL_BLEND);
     glBlendFuncSeparate(prevBlendSrcRGB, prevBlendDstRGB, prevBlendSrcA, prevBlendDstA);
 
-    // --- 调用原始 eglSwapBuffers ---
+    // Call the original eglSwapBuffers.
     return g_OrigEglSwapBuffers(display, surface);
 }
 
@@ -243,7 +243,7 @@ static EGLBoolean Hooked_eglSwapBuffersWithDamageKHR(
     if (eglGetCurrentContext() == EGL_NO_CONTEXT)
         return g_OrigEglSwapBuffersWithDamage(display, surface, rects, n_rects);
 
-    // Vulkan 已接管渲染，不再在 EGL 上绘制 ImGui
+    // Skip EGL rendering while Vulkan owns ImGui rendering.
     if (g_VkInitialized)
         return g_OrigEglSwapBuffersWithDamage(display, surface, rects, n_rects);
 
@@ -330,10 +330,10 @@ static EGLBoolean Hooked_eglSwapBuffersWithDamageKHR(
 }
 
 // ---------------------------------------------------------------------------
-// Vulkan 路径
+// Vulkan path.
 // ---------------------------------------------------------------------------
 
-// Vulkan 函数指针
+// Vulkan function pointers.
 static PFN_vkQueuePresentKHR       g_OrigVkQueuePresent      = nullptr;
 static PFN_vkCreateDevice          g_OrigVkCreateDevice      = nullptr;
 static PFN_vkDestroyDevice         g_OrigVkDestroyDevice     = nullptr;
@@ -341,17 +341,17 @@ static PFN_vkGetDeviceQueue        g_OrigVkGetDeviceQueue    = nullptr;
 static PFN_vkCreateSwapchainKHR    g_OrigVkCreateSwapchain   = nullptr;
 static PFN_vkDestroySwapchainKHR   g_OrigVkDestroySwapchain  = nullptr;
 
-// 记录所有通过 DobbyHook 安装的地址，用于 Uninstall 时 DobbyDestroy
+// Record Vulkan Dobby hook addresses for restoration; EGL installations are not all registered.
 static std::mutex                  g_HookedAddrsMutex;
 static std::vector<void*>          g_DobbyHookedAddrs;
 
-// 捕获的 Vulkan 对象
+// Captured Vulkan objects.
 static VkPhysicalDevice g_VkPhysDev     = VK_NULL_HANDLE;
 static VkDevice         g_VkDevice      = VK_NULL_HANDLE;
 static VkQueue          g_VkQueue       = VK_NULL_HANDLE;
 static uint32_t         g_VkQueueFamily = UINT32_MAX;
 
-// Vulkan ImGui 渲染资源
+// ImGui Vulkan rendering resources.
 static VkRenderPass      g_VkRenderPass      = VK_NULL_HANDLE;
 static VkCommandPool     g_VkCommandPool     = VK_NULL_HANDLE;
 static VkDescriptorPool  g_VkDescriptorPool  = VK_NULL_HANDLE;
@@ -364,11 +364,11 @@ static std::vector<VkCommandBuffer>  g_VkCommandBuffers;
 static std::vector<VkFence>          g_VkFences;
 
 static VkFormat   g_VkSwapFormat = VK_FORMAT_UNDEFINED;
-static VkExtent2D g_VkSwapExtent = {};  // 交换链实际尺寸（可能是竖屏）
+static VkExtent2D g_VkSwapExtent = {};  // Actual swapchain extent, which may be portrait.
 static VkSurfaceTransformFlagBitsKHR g_VkPreTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
 
 /**
- * @brief 判断 preTransform 是否包含 90°/270° 旋转
+ * Whether preTransform includes a 90- or 270-degree rotation.
  */
 static bool IsRotated90or270(VkSurfaceTransformFlagBitsKHR transform)
 {
@@ -377,27 +377,27 @@ static bool IsRotated90or270(VkSurfaceTransformFlagBitsKHR transform)
 }
 
 /**
- * @brief 旋转 ImGui DrawData 的顶点和裁剪矩形
+ * Rotate vertices and clip rectangles in DisplaySize coordinates. For 90 degrees, (x, y) maps to
+ * (dispH - y, x); for 270 degrees, it maps to (y, dispW - x). FramebufferScale then maps the
+ * rotated logical extent to swapchain pixels.
  *
- * 游戏使用 preTransform 旋转时，交换链图像是竖屏方向，
- * 但 ImGui 按横屏布局生成顶点。需要将横屏坐标映射到竖屏帧缓冲区。
  *
- * ROTATE_90 (90° CW):
- *   横屏 (x, y) → 竖屏 (dispH - y, x)
- *   裁剪矩形 (x1,y1,x2,y2) → (dispH - y2, x1, dispH - y1, x2)
  *
- * ROTATE_270 (270° CW = 90° CCW):
- *   横屏 (x, y) → 竖屏 (y, dispW - x)
- *   裁剪矩形 (x1,y1,x2,y2) → (y1, dispW - x2, y2, dispW - x1)
  *
- * 注意：旋转使用 DisplaySize（顶点实际坐标范围），而非 fbExtent（交换链像素）。
- * 旋转后通过 FramebufferScale 将 rotated-display 坐标映射到交换链帧缓冲像素。
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
  */
 static void RotateImDrawData(ImDrawData *drawData,
                              VkSurfaceTransformFlagBitsKHR transform,
                              VkExtent2D fbExtent)
 {
-    // 顶点坐标所在的 DisplaySize 空间
+    // Vertex coordinates use DisplaySize space.
     float dispW = drawData->DisplaySize.x;
     float dispH = drawData->DisplaySize.y;
 
@@ -407,7 +407,7 @@ static void RotateImDrawData(ImDrawData *drawData,
     if (!is90 && !is270)
         return;
 
-    // 旋转所有顶点（使用 DisplaySize 坐标域）
+    // Rotate vertices in logical display coordinates.
     for (int n = 0; n < drawData->CmdListsCount; n++)
     {
         ImDrawList *cmdList = drawData->CmdLists[n];
@@ -428,7 +428,7 @@ static void RotateImDrawData(ImDrawData *drawData,
             }
         }
 
-        // 旋转裁剪/剪裁矩形
+        // Rotate clip rectangles.
         for (int i = 0; i < cmdList->CmdBuffer.Size; i++)
         {
             ImDrawCmd &cmd = cmdList->CmdBuffer[i];
@@ -447,10 +447,10 @@ static void RotateImDrawData(ImDrawData *drawData,
         }
     }
 
-    // 旋转后：顶点坐标范围从 (dispW × dispH) 变为 (dispH × dispW)
-    // 通过 FramebufferScale 将 rotated-display 坐标映射到实际交换链帧缓冲像素
-    float rotW = dispH;  // 旋转后的显示宽度
-    float rotH = dispW;  // 旋转后的显示高度
+    // Rotation exchanges the logical width and height.
+    // Map rotated logical coordinates to framebuffer pixels with FramebufferScale.
+    float rotW = dispH;  // Rotated logical width.
+    float rotH = dispW;  // Rotated logical height.
     float fbW  = (float)fbExtent.width;
     float fbH  = (float)fbExtent.height;
 
@@ -460,7 +460,7 @@ static void RotateImDrawData(ImDrawData *drawData,
 }
 
 /**
- * @brief 清理 Vulkan ImGui 渲染资源
+ * Release ImGui Vulkan resources.
  */
 static void CleanupVkResources()
 {
@@ -496,20 +496,20 @@ static void CleanupVkResources()
 }
 
 /**
- * @brief 为 Vulkan 交换链创建 ImGui 资源（RenderPass、Framebuffer 等）
+ * Create render-pass and framebuffer resources. LOAD_OP_LOAD preserves host image contents for
+ * overlay drawing.
  *
- * RenderPass 使用 LOAD_OP_LOAD 保留游戏原有画面，ImGui 叠加渲染其上。
  */
 static bool CreateVkImGuiResources()
 {
     if (g_VkDevice == VK_NULL_HANDLE || g_VkSwapImages.empty())
         return false;
 
-    // -- RenderPass: 保留游戏画面（LOAD_OP_LOAD），ImGui 叠加 --
+    // Load the existing host frame for overlay rendering.
     VkAttachmentDescription attachment{};
     attachment.format         = g_VkSwapFormat;
     attachment.samples        = VK_SAMPLE_COUNT_1_BIT;
-    attachment.loadOp         = VK_ATTACHMENT_LOAD_OP_LOAD;     // 保留游戏帧
+    attachment.loadOp         = VK_ATTACHMENT_LOAD_OP_LOAD;     // Preserve host frame contents.
     attachment.storeOp        = VK_ATTACHMENT_STORE_OP_STORE;
     attachment.stencilLoadOp  = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -613,7 +613,7 @@ static bool CreateVkImGuiResources()
         return false;
     }
 
-    // -- Fence（每张图像一个，用于等待上一次该 cmd 完成） --
+    // One fence per image tracks completion of its command buffer.
     g_VkFences.resize(imageCount);
     VkFenceCreateInfo fenceInfo{};
     fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
@@ -628,7 +628,7 @@ static bool CreateVkImGuiResources()
         }
     }
 
-    // -- DescriptorPool（ImGui 字体纹理等） --
+    // Descriptor pool for ImGui textures.
     VkDescriptorPoolSize poolSizes[] = {
         { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 16 },
     };
@@ -651,12 +651,12 @@ static bool CreateVkImGuiResources()
 }
 
 /**
- * @brief 初始化 ImGui Vulkan 后端
+ * Initialize the ImGui Vulkan renderer.
  */
 static bool InitImGuiVulkan()
 {
-    // 确定逻辑显示尺寸（始终为横屏）
-    // 当 preTransform 包含 90°/270° 旋转时，imageExtent 是竖屏尺寸，需要交换
+    // Select logical dimensions normalized to landscape.
+    // Exchange dimensions for 90- or 270-degree preTransform.
     uint32_t displayW = g_VkSwapExtent.width;
     uint32_t displayH = g_VkSwapExtent.height;
     if (IsRotated90or270(g_VkPreTransform))
@@ -676,9 +676,9 @@ static bool InitImGuiVulkan()
     ImGuiSetup::EnsureContext(vkWindow);
     ImGui::GetIO().DisplaySize = ImVec2((float)displayW, (float)displayH);
 
-    // Vulkan 渲染后端
+    // Vulkan renderer.
     ImGui_ImplVulkan_InitInfo initInfo{};
-    initInfo.Instance        = VK_NULL_HANDLE; // 不需要，ImGui 不自行创建资源
+    initInfo.Instance        = VK_NULL_HANDLE; // This configuration does not request additional dynamic-rendering resources.
     initInfo.PhysicalDevice  = g_VkPhysDev;
     initInfo.Device          = g_VkDevice;
     initInfo.QueueFamily     = g_VkQueueFamily;
@@ -698,10 +698,10 @@ static bool InitImGuiVulkan()
         return false;
     }
 
-    // 字体
+    // Fonts.
     ResourceManager::GetInstance().initializeFonts(30.0f);
 
-    // 对外报告横屏尺寸
+    // Report landscape dimensions.
     g_Width = (int)displayW;
     g_Height = (int)displayH;
     g_VkInitialized = true;
@@ -717,7 +717,7 @@ static bool InitImGuiVulkan()
 // ---------------------------------------------------------------------------
 
 /**
- * @brief vkCreateDevice hook — 捕获 VkPhysicalDevice / VkDevice / 队列族
+ * vkCreateDevice hook captures the physical/logical device and queue family.
  */
 static VkResult VKAPI_CALL Hooked_vkCreateDevice(
     VkPhysicalDevice physicalDevice,
@@ -731,7 +731,7 @@ static VkResult VKAPI_CALL Hooked_vkCreateDevice(
         g_VkPhysDev = physicalDevice;
         g_VkDevice  = *pDevice;
 
-        // 从 DeviceCreateInfo 获取图形队列族索引
+        // Select the graphics queue family from DeviceCreateInfo.
         if (pCreateInfo && pCreateInfo->queueCreateInfoCount > 0)
         {
             g_VkQueueFamily = pCreateInfo->pQueueCreateInfos[0].queueFamilyIndex;
@@ -744,7 +744,7 @@ static VkResult VKAPI_CALL Hooked_vkCreateDevice(
 }
 
 /**
- * @brief vkGetDeviceQueue hook — 捕获图形队列
+ * vkGetDeviceQueue hook captures the graphics queue.
  */
 static void VKAPI_CALL Hooked_vkGetDeviceQueue(
     VkDevice device, uint32_t queueFamilyIndex, uint32_t queueIndex, VkQueue *pQueue)
@@ -758,7 +758,7 @@ static void VKAPI_CALL Hooked_vkGetDeviceQueue(
 }
 
 /**
- * @brief vkCreateSwapchainKHR hook — 捕获交换链信息并创建渲染资源
+ * vkCreateSwapchainKHR hook captures swapchain information and creates rendering resources.
  */
 static VkResult VKAPI_CALL Hooked_vkCreateSwapchainKHR(
     VkDevice device,
@@ -766,7 +766,7 @@ static VkResult VKAPI_CALL Hooked_vkCreateSwapchainKHR(
     const VkAllocationCallbacks *pAllocator,
     VkSwapchainKHR *pSwapchain)
 {
-    // 先清理旧资源（交换链重建时，或 EGL→Vulkan 切换时）
+    // Release resources before swapchain recreation or an EGL-to-Vulkan transition.
     if (g_VkInitialized)
     {
         CleanupVkResources();
@@ -774,7 +774,7 @@ static VkResult VKAPI_CALL Hooked_vkCreateSwapchainKHR(
     }
     else if (g_GlesInitialized)
     {
-        // 游戏从 EGL 切换到 Vulkan，先清理 EGL ImGui
+        // Release EGL ImGui resources before activating Vulkan.
         SCH_LOGI("[SwapChainHook/Vk] EGL→Vulkan transition, cleaning up EGL ImGui");
         g_ImGuiReady.store(false);
         ImGui_ImplOpenGL3_Shutdown();
@@ -793,7 +793,7 @@ static VkResult VKAPI_CALL Hooked_vkCreateSwapchainKHR(
     g_VkSwapExtent   = pCreateInfo->imageExtent;
     g_VkPreTransform = (VkSurfaceTransformFlagBitsKHR)pCreateInfo->preTransform;
 
-    // 获取交换链图像
+    // Get swapchain images.
     uint32_t imageCount = 0;
     vkGetSwapchainImagesKHR(device, *pSwapchain, &imageCount, nullptr);
     g_VkSwapImages.resize(imageCount);
@@ -802,7 +802,7 @@ static VkResult VKAPI_CALL Hooked_vkCreateSwapchainKHR(
     SCH_LOGI("[SwapChainHook/Vk] Swapchain created  %ux%u  images=%u  format=%d",
          g_VkSwapExtent.width, g_VkSwapExtent.height, imageCount, (int)g_VkSwapFormat);
 
-    // 创建 ImGui 渲染资源
+    // Create ImGui rendering resources.
     if (g_VkDevice != VK_NULL_HANDLE && g_VkQueue != VK_NULL_HANDLE)
     {
         if (CreateVkImGuiResources())
@@ -813,7 +813,7 @@ static VkResult VKAPI_CALL Hooked_vkCreateSwapchainKHR(
 }
 
 /**
- * @brief vkDestroySwapchainKHR hook — 清理渲染资源
+ * vkDestroySwapchainKHR hook releases rendering resources.
  */
 static void VKAPI_CALL Hooked_vkDestroySwapchainKHR(
     VkDevice device, VkSwapchainKHR swapchain, const VkAllocationCallbacks *pAllocator)
@@ -828,7 +828,7 @@ static void VKAPI_CALL Hooked_vkDestroySwapchainKHR(
 }
 
 /**
- * @brief vkDestroyDevice hook — 完全清理
+ * vkDestroyDevice hook releases device-associated state.
  */
 static void VKAPI_CALL Hooked_vkDestroyDevice(
     VkDevice device, const VkAllocationCallbacks *pAllocator)
@@ -848,13 +848,13 @@ static void VKAPI_CALL Hooked_vkDestroyDevice(
 }
 
 /**
- * @brief vkQueuePresentKHR hook — ImGui 渲染注入点
+ * vkQueuePresentKHR hook records and submits ImGui after waiting on the host's present
+ * semaphores. The current path lacks a complete overlay-to-present signal chain and mutates
+ * caller-owned present data.
  *
- * 在游戏调用 present 前：
- *   1. 等待该图像对应的 fence
- *   2. 录制 ImGui 渲染命令到命令缓冲
- *   3. 提交命令缓冲（等待游戏的 renderFinished 信号量）
- *   4. 调用原始 vkQueuePresentKHR
+ *
+ *
+ *
  */
 static VkResult VKAPI_CALL Hooked_vkQueuePresentKHR(
     VkQueue queue, const VkPresentInfoKHR *pPresentInfo)
@@ -865,7 +865,7 @@ static VkResult VKAPI_CALL Hooked_vkQueuePresentKHR(
     if (!g_VkInitialized)
         return g_OrigVkQueuePresent(queue, pPresentInfo);
 
-    // 找到我们跟踪的交换链
+    // Find the tracked swapchain.
     for (uint32_t sc = 0; sc < pPresentInfo->swapchainCount; sc++)
     {
         if (pPresentInfo->pSwapchains[sc] != g_VkSwapchain)
@@ -875,11 +875,11 @@ static VkResult VKAPI_CALL Hooked_vkQueuePresentKHR(
         if (imageIndex >= g_VkCommandBuffers.size())
             continue;
 
-        // 等待上一次使用该命令缓冲的 GPU 工作完成
+        // Wait for the command buffer's previous GPU work.
         vkWaitForFences(g_VkDevice, 1, &g_VkFences[imageIndex], VK_TRUE, UINT64_MAX);
         vkResetFences(g_VkDevice, 1, &g_VkFences[imageIndex]);
 
-        // --- ImGui 新帧 ---
+        // Begin an ImGui frame.
         ImGui_ImplVulkan_NewFrame();
         ImGui_ImplAndroid_NewFrame();
 
@@ -899,11 +899,11 @@ static VkResult VKAPI_CALL Hooked_vkQueuePresentKHR(
 
         ImGui::Render();
 
-        // --- 旋转 ImGui 绘制数据以匹配帧缓冲区方向 ---
+        // Rotate draw data to the framebuffer orientation.
         if (IsRotated90or270(g_VkPreTransform))
             RotateImDrawData(ImGui::GetDrawData(), g_VkPreTransform, g_VkSwapExtent);
 
-        // --- 录制命令缓冲 ---
+        // Record commands.
         VkCommandBuffer cmd = g_VkCommandBuffers[imageIndex];
         vkResetCommandBuffer(cmd, 0);
 
@@ -923,7 +923,7 @@ static VkResult VKAPI_CALL Hooked_vkQueuePresentKHR(
         vkCmdEndRenderPass(cmd);
         vkEndCommandBuffer(cmd);
 
-        // --- 提交：等待游戏的 present 信号量 ---
+        // Submit after waiting on host present semaphores.
         VkPipelineStageFlags waitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 
         VkSubmitInfo submitInfo{};
@@ -931,20 +931,20 @@ static VkResult VKAPI_CALL Hooked_vkQueuePresentKHR(
         submitInfo.commandBufferCount = 1;
         submitInfo.pCommandBuffers    = &cmd;
 
-        // 如果游戏有 wait semaphore，我们也等待它
-        // 这确保游戏渲染完成后再叠加 ImGui
+        // Use the host wait semaphores for the overlay submission.
+        // These waits order overlay rendering after host rendering.
         if (pPresentInfo->waitSemaphoreCount > 0 && pPresentInfo->pWaitSemaphores)
         {
             submitInfo.waitSemaphoreCount = pPresentInfo->waitSemaphoreCount;
             submitInfo.pWaitSemaphores    = pPresentInfo->pWaitSemaphores;
-            // 为每个 wait semaphore 提供一个 wait stage
+            // Supply one destination stage for each wait semaphore.
             std::vector<VkPipelineStageFlags> waitStages(pPresentInfo->waitSemaphoreCount, waitStage);
             submitInfo.pWaitDstStageMask  = waitStages.data();
 
             vkQueueSubmit(queue, 1, &submitInfo, g_VkFences[imageIndex]);
 
-            // 重要：清除 present 的 wait semaphore，因为我们已经消费了它们
-            // 需要修改 PresentInfo（const_cast 安全，因为仅本帧使用）
+            // Current limitation: host waits are cleared without an overlay-to-present replacement signal.
+            // Current limitation: this const_cast mutates caller-owned PresentInfo.
             auto *mutablePresent = const_cast<VkPresentInfoKHR*>(pPresentInfo);
             mutablePresent->waitSemaphoreCount = 0;
             mutablePresent->pWaitSemaphores    = nullptr;
@@ -954,14 +954,14 @@ static VkResult VKAPI_CALL Hooked_vkQueuePresentKHR(
             vkQueueSubmit(queue, 1, &submitInfo, g_VkFences[imageIndex]);
         }
 
-        break; // 仅处理第一个匹配的交换链
+        break; // Handle only the first matching swapchain.
     }
 
     return g_OrigVkQueuePresent(queue, pPresentInfo);
 }
 
 // ===========================================================================
-// 公开接口
+// Public interface.
 // ===========================================================================
 
 namespace SwapChainHook
@@ -974,7 +974,7 @@ void Install()
 
     SCH_LOGI("[SwapChainHook] Installing hooks...");
 
-    // --- 1. 创建辅助 VkInstance + VkDevice ---
+    // Create a helper instance and device.
     VkInstance helperInst = VK_NULL_HANDLE;
     VkDevice helperDev = VK_NULL_HANDLE;
     VkPhysicalDevice helperPhysDev = VK_NULL_HANDLE;
@@ -995,7 +995,7 @@ void Install()
         helperPhysDev = pds[0];
         SCH_LOGI("[SwapChainHook] helper physDev=%p (%u total)", helperPhysDev, pdCount);
 
-        // 查找图形队列族
+        // Find a graphics queue family.
         uint32_t qfCount = 0;
         vkGetPhysicalDeviceQueueFamilyProperties(helperPhysDev, &qfCount, nullptr);
         std::vector<VkQueueFamilyProperties> qfProps(qfCount);
@@ -1018,7 +1018,7 @@ void Install()
         qCI.queueCount = 1;
         qCI.pQueuePriorities = &prio;
 
-        // 启用 swapchain 扩展，否则 vkGetDeviceProcAddr("vkQueuePresentKHR") 返回 null
+        // Enable VK_KHR_swapchain to resolve vkQueuePresentKHR.
         const char* exts[] = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
         VkDeviceCreateInfo devCI{};
         devCI.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -1031,7 +1031,7 @@ void Install()
         SCH_LOGI("[SwapChainHook] helper vkCreateDevice=%d  dev=%p", (int)r, helperDev);
     } while (false);
 
-    // --- 2. 通过 vkGetDeviceProcAddr 解析 dispatch target 并 hook ---
+    // Resolve dispatch targets through vkGetDeviceProcAddr and install hooks.
     if (helperDev)
     {
         struct VkHookEntry { const char* name; void* hookFunc; void** origSlot; };
@@ -1063,7 +1063,7 @@ void Install()
             }
         }
 
-        // vkCreateDevice 是 instance-level 函数，用 vkGetInstanceProcAddr
+        // Resolve instance-level vkCreateDevice with vkGetInstanceProcAddr.
         {
             void* target = (void*)vkGetInstanceProcAddr(helperInst, "vkCreateDevice");
             if (target)
@@ -1084,9 +1084,9 @@ void Install()
         LOGE("[SwapChainHook] Cannot create helper VkDevice, Vulkan hooks not installed");
     }
 
-    // --- 3. 清理辅助设备 ---
-    // DobbyHook 修改 .text 段的机器码，不依赖 VkDevice 生命周期
-    // 注意：此时 Hooked_vkDestroyDevice 已安装，但 device != g_VkDevice，安全通过
+    // Destroy the helper device.
+    // Dobby patches executable instructions; the patch is independent of helper-device lifetime.
+    // The destruction hook passes through when device differs from g_VkDevice.
     if (helperDev)
     {
         vkDestroyDevice(helperDev, nullptr);
@@ -1141,7 +1141,7 @@ void Uninstall()
     g_OrigEglSwapBuffers = nullptr;
     g_OrigEglSwapBuffersWithDamage = nullptr;
 
-    // 清理 ImGui
+    // Clean up ImGui.
     if (g_VkInitialized)
         CleanupVkResources();
 

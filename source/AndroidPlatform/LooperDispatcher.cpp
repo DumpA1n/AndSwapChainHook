@@ -40,11 +40,11 @@ int LooperDispatcher::looper_callback(int fd, int /*events*/, void* data)
 {
     auto* self = static_cast<LooperDispatcher*>(data);
 
-    // 消费 eventfd 计数
+    // Consume the eventfd count.
     uint64_t val;
     read(fd, &val, sizeof(val));
 
-    // 取出所有待执行任务
+    // Drain pending tasks.
     std::queue<std::function<void()>> pending;
     {
         std::lock_guard lock(self->mtx_);
@@ -57,7 +57,7 @@ int LooperDispatcher::looper_callback(int fd, int /*events*/, void* data)
         pending.pop();
     }
 
-    return 1; // 继续监听
+    return 1; // Keep listening.
 }
 
 void LooperDispatcher::post(std::function<void()> task)

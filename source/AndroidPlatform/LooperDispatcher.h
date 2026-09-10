@@ -14,10 +14,10 @@ public:
     LooperDispatcher(const LooperDispatcher &) = delete;
     LooperDispatcher &operator=(const LooperDispatcher &) = delete;
 
-    // 在当前线程调用，绑定到当前线程的 ALooper
+    // Call on the thread whose ALooper will own the dispatcher.
     void init();
 
-    // 从任意线程 post 一个任务到其它线程
+    // Post a task from any thread to the dispatcher thread.
     void post(std::function<void()> task);
 
     void cleanup();

@@ -1,34 +1,34 @@
 #pragma once
 
 // =============================================================================
-//  Logger —— 单文件，三套调用接口
+// Logger provides three call interfaces.
 //
-//  A) printf 基底（裸 __android_log_print，不进 BufferedLog；logd 限流可丢）：
+// A) printf wrappers call __android_log_print directly; logd can drop messages.
 //        LOGI / LOGD / LOGW / LOGE / LOGF
-//        LOGD 自带 [文件名(行号) 函数名] 前缀，文件名走 __FILE_NAME__（编译期）
+// LOGD prefixes the source file, line and function using __FILE_NAME__.
 //
-//  B) Category 体系（推荐用于生产日志，BufferedLog 主线 + 可选副线文件，无损）：
-//        DECLARE_LOG_CATEGORY      (LogTemp, "Temp");           // 仅主时间线
-//        DECLARE_LOG_CATEGORY_FILE (LogVM,   "VM", "AceVM");    // 主线 + 副线
+// B) Categories use BufferedLog with optional per-tag files; writes are fallible.
+// DECLARE_LOG_CATEGORY(LogTemp, "Temp"); // Main timeline only.
+// DECLARE_LOG_CATEGORY_FILE(LogVM, "VM", "AceVM"); // Timeline and per-tag file.
 //
-//        // 对象方法（默认）：
+// Object methods:
 //        LogVM.Info  ("loaded {} symbols", n);
 //        LogVM.Debug ("step={} pc={:#x}", op, pc);
-//        LogVM.FatalSync("crash code={}", code);   // 立即落盘
+// LogVM.FatalSync("crash code={}", code); // Request immediate flush.
 //
-//        // 宏（热路径需要 args 编译期裁剪时用）：
+// Macros can compile out expensive argument evaluation.
 //        LOG_DEBUG     (LogVM, "step={}", op);
 //        LOG_FATAL_SYNC(LogVM, "crash {}", code);
 //
-//  C) FLOG*（兼容层；新代码请用 B）
+// C) FLOG compatibility interface.
 //
-//  级别：Debug / Info / Warn / Error / Fatal —— 用 ANDROID_LOG_* 数值传递
-//  kNO_DEBUG_LOG 定义后，所有 Debug 路径整段被 if constexpr 裁掉
+// Levels use ANDROID_LOG_* numeric values.
+// kNO_DEBUG_LOG discards Debug method bodies with if constexpr.
 //
-//  后端组件（细节，正常不需要直接调用）：
-//      BufferedLog::Emit/Flush       —— 主时间线缓冲 + 文件轮转
-//      class LogFile, GetLogFile     —— 副线 per-tag 文件
-//      FormatedTime / FormatedTimeShort —— 时间戳 helper
+// Backend components:
+// BufferedLog::Emit/Flush: timeline buffering and rotation.
+// LogFile and GetLogFile: per-tag files.
+// FormatedTime and FormatedTimeShort: timestamp helpers.
 // =============================================================================
 
 #include <algorithm>
@@ -55,8 +55,8 @@
 #ifdef kANDROID_LOG
 #include <android/log.h>
 #else
-// 非 Android：复刻 Android 的 prio 常量，让 Category API 跨平台编译。
-// 数值与 android/log.h 中 android_LogPriority 一致。
+// Define Android priority constants for non-Android compilation.
+// Values match android_LogPriority in android/log.h.
 #define ANDROID_LOG_DEBUG 3
 #define ANDROID_LOG_INFO  4
 #define ANDROID_LOG_WARN  5
@@ -73,7 +73,7 @@
 #endif
 
 // =============================================================================
-//  时间戳 helper
+// Timestamp helpers.
 // =============================================================================
 inline std::string FormatedTime()
 {
@@ -100,8 +100,8 @@ inline std::string FormatedTimeShort()
 }
 
 // =============================================================================
-//  LogFile：副线 per-tag 文件（Category 的 file_tag、CrashHandler 等使用）
-//  std::ios::app 模式让每次 write 自动落到末尾，无须 seek。
+// LogFile provides per-tag files for categories and crash reports.
+// Append mode writes at the end of the file without explicit seeking.
 // =============================================================================
 class LogFile {
 public:
@@ -149,19 +149,19 @@ inline LogFile* GetLogFile(const std::string& dir)
 }
 
 // =============================================================================
-//  BufferedLog：Category 主时间线后端
+// BufferedLog: category timeline backend.
 //
-//  - 单互斥锁串行化对 buffer / FILE* 的访问
-//  - 达到 kFlushThreshold（16 KB）才 fwrite + fflush，让大批连续日志走一次系统调用
-//  - logd 写在 mutex 释放后，不阻塞其他生产者；它是 best-effort，可丢
-//  - 单文件超过 kPerFileMaxBytes（32 MB）滚到 _002 / _003 …；同会话最多
-//    kMaxFilesPerSession 份；超出后停止落盘，logd 仍走
-//  - 启动时执行一次目录清理：保留最新 kRetainTotalFiles 份 Logger_*.log
-//  - State 为函数局部 static，首次 Emit 时初始化；atexit 注册一次 Flush 兜底
-//  - 路径：/sdcard/Android/data/<pkg>/cache/<PROJECT>/Logger/Logger_<ts>_<seq>.log
+// One mutex protects the buffer and file handle.
+// Flush at kFlushThreshold (16 KB) to batch writes.
+// Write to logd after unlocking; delivery is best effort.
+// Rotate at kPerFileMaxBytes (32 MB), retaining at most
+// kMaxFilesPerSession files; file output stops at the cap while logd continues.
+// Startup cleanup retains the newest kRetainTotalFiles Logger_*.log files.
+// Initialize State on first Emit; register an exit flush once.
+// Path: /sdcard/Android/data/<pkg>/cache/<PROJECT>/Logger/Logger_<ts>_<seq>.log.
 //
-//  全部 inline 在 header 里；具名 detail::State 配合 inline 函数局部 static，
-//  确保跨 TU 共享同一个 State 实例（C++17 ODR 保证）。
+// Inline functions and their named State type share storage across
+// translation units under the C++ inline-definition rules.
 // =============================================================================
 namespace BufferedLog {
 namespace detail {
@@ -188,7 +188,7 @@ inline char PrioChar(int prio)
 #endif
 }
 
-// "[I 12:34:56.123] " — 时间戳精确到毫秒，便于排序与对齐 logcat
+// Millisecond timestamp for ordering and logcat correlation.
 inline size_t WritePrefix(char* out, size_t cap, int prio)
 {
     using namespace std::chrono;
@@ -208,13 +208,13 @@ class State
 public:
     static State& Instance()
     {
-        static State* inst = new State();  // 进程级泄漏，避免析构序问题
+        static State* inst = new State();  // Retained for process lifetime to avoid static-destruction ordering hazards.
         return *inst;
     }
 
     void Emit(int prio, std::string_view msg)
     {
-        // 1) 内存缓冲（lossless 路径）
+        // Append to the memory buffer.
         {
             std::lock_guard<std::mutex> lk(mu_);
 
@@ -230,7 +230,7 @@ public:
                 FlushLocked();
         }
 
-        // 2) logd best-effort（不持锁，避免拖慢其他生产者）
+        // Best-effort logd write outside the mutex.
 #ifdef kANDROID_LOG
         __android_log_print(prio, kANDROID_LOG_TAG, "%.*s",
                             static_cast<int>(msg.size()), msg.data());
@@ -370,11 +370,11 @@ inline void Flush()
 }  // namespace BufferedLog
 
 // =============================================================================
-//  LogHelper：FLOG* / Category 用的工具
+// LogHelper utilities for FLOG and categories.
 // =============================================================================
 namespace LogHelper {
 
-// 副线文件 / 非 Android 退化路径用：把 Android prio 映射到单字母前缀。
+// Map Android priorities to letters for per-tag files and non-Android output.
 inline char prioChar(int prio) {
     switch (prio) {
         case ANDROID_LOG_DEBUG: return 'D';
@@ -386,7 +386,7 @@ inline char prioChar(int prio) {
     }
 }
 
-// Debug 级的编译期裁剪开关。kNO_DEBUG_LOG 定义后，Debug 调用整段被 if constexpr 干掉。
+// kNO_DEBUG_LOG discards Debug method bodies at compile time.
 constexpr bool isCompiledOut(int prio) {
 #ifdef kNO_DEBUG_LOG
     return prio == ANDROID_LOG_DEBUG;
@@ -396,7 +396,7 @@ constexpr bool isCompiledOut(int prio) {
 #endif
 }
 
-// FLOG* 后端
+// FLOG backend.
 inline void emitStr(int prio, const char* msg) {
 #ifdef kANDROID_LOG
     BufferedLog::Emit(prio, std::string_view(msg));
@@ -405,14 +405,14 @@ inline void emitStr(int prio, const char* msg) {
 #endif
 }
 
-// 类别（UE 风格 + 对象方法）
+// Category object interface.
 //
-//  - name：行前缀里的标签，例如主时间线会出现 "[I 12:34:56.123] [VM] ..."
-//  - file_tag：非空时同时把消息 Append 到 GetLogFile(file_tag) 指向的副线文件
-//      （日期戳 + 级别名 + 消息），用于离线分析；为空时仅进主时间线
+// name supplies the tag in each timeline prefix.
+// A nonempty file_tag also appends through GetLogFile(file_tag).
+// Per-tag output includes timestamp, priority and message.
 //
-//  运行时字符串：写成 LogVM.Info("{}", runtime_str)，因为
-//  std::format_string 需要 consteval 字面量。
+// Pass runtime strings as LogVM.Info("{}", runtime_str), because
+// std::format_string requires a compile-time format string.
 struct Category;
 
 inline void emitCategory(const Category& cat, int prio, bool sync, const std::string& msg);
@@ -446,7 +446,7 @@ struct Category {
 };
 
 inline void emitCategory(const Category& cat, int prio, bool sync, const std::string& msg) {
-    // 1) 主时间线（无损路径）
+    // Write to the main timeline.
 #ifdef kANDROID_LOG
     auto line = std::format("[{}] {}", cat.name, msg);
     BufferedLog::Emit(prio, line);
@@ -454,13 +454,13 @@ inline void emitCategory(const Category& cat, int prio, bool sync, const std::st
     printf("%c: [%s] %s\n", prioChar(prio), cat.name, msg.c_str());
 #endif
 
-    // 2) 副线文件（仅显式声明 file_tag 的 category 才走）
+    // Write to the optional per-tag file.
     if (cat.file_tag) {
         GetLogFile(cat.file_tag)->Append("{}    [{}] {}\n",
             FormatedTime(), prioChar(prio), msg);
     }
 
-    // 3) 强制刷盘（崩溃前最后一句）
+    // Request a synchronous flush.
     if (sync) {
         BufferedLog::Flush();
     }
@@ -469,12 +469,12 @@ inline void emitCategory(const Category& cat, int prio, bool sync, const std::st
 }  // namespace LogHelper
 
 // =============================================================================
-//  printf 基底 —— 直接展开为裸 __android_log_print，不进 BufferedLog
-//  logd 限流可丢；要无损请走 Category（LogXxx.Info / LOG_INFO 等）
+// printf wrappers call __android_log_print directly, bypassing BufferedLog.
+// logd can drop messages; category buffering is also subject to file-write failures.
 //
-//  LOGD 的 [文件名(行号) 函数名] 前缀走编译器内建：
-//    __FILE_NAME__ 由 clang/gcc 在编译期算出 basename，运行时零开销
-//    （NDK clang ≥ 9 / GCC ≥ 12 都支持）
+// LOGD source prefixes use compiler builtins.
+// __FILE_NAME__ supplies the basename at compile time.
+// Requires a compiler with __FILE_NAME__ support.
 // =============================================================================
 #ifdef kANDROID_LOG
 
@@ -489,7 +489,7 @@ inline void emitCategory(const Category& cat, int prio, bool sync, const std::st
 #define LOGE(fmt, ...) __android_log_print(ANDROID_LOG_ERROR, kANDROID_LOG_TAG, fmt, ##__VA_ARGS__)
 #define LOGF(fmt, ...) __android_log_print(ANDROID_LOG_FATAL, kANDROID_LOG_TAG, fmt, ##__VA_ARGS__)
 
-#else  // !kANDROID_LOG —— 退化为 stdout
+#else  // Without kANDROID_LOG, write to stdout.
 
 #ifndef kNO_DEBUG_LOG
 #define LOGD(fmt, ...) printf("D: [%s(%d) %s] " fmt "\n", __FILE_NAME__, __LINE__, __FUNCTION__, ##__VA_ARGS__)
@@ -504,8 +504,8 @@ inline void emitCategory(const Category& cat, int prio, bool sync, const std::st
 #endif  // kANDROID_LOG
 
 // =============================================================================
-//  FLOG*（兼容层；新代码请用 Category 对象方法 LogXxx.Info(...) 等）
-//  现有 ~137 处 FLOG* 调用维持工作；后续按模块分批迁移到 Category 方法。
+// FLOG compatibility interface; categories also provide object methods.
+
 // =============================================================================
 #ifndef kNO_DEBUG_LOG
 #define FLOGD(fmt, ...) LogHelper::emitStr(ANDROID_LOG_DEBUG, std::format(fmt, ##__VA_ARGS__).c_str())
@@ -519,29 +519,29 @@ inline void emitCategory(const Category& cat, int prio, bool sync, const std::st
 #define FLOGF(fmt, ...) LogHelper::emitStr(ANDROID_LOG_FATAL, std::format(fmt, ##__VA_ARGS__).c_str())
 
 // =============================================================================
-//  类别声明 + 调用接口（对象方法 + 宏，两套并存）
+// Category declarations and calls: object and macro interfaces.
 //
-//  声明：
-//      DECLARE_LOG_CATEGORY      (LogTemp, "Temp");           // 仅主时间线
-//      DECLARE_LOG_CATEGORY_FILE (LogVM,   "VM", "AceVM");    // 主线 + 副线文件
+// Declarations:
+// DECLARE_LOG_CATEGORY(LogTemp, "Temp"); // Main timeline only.
+// DECLARE_LOG_CATEGORY_FILE(LogVM, "VM", "AceVM"); // Also write a per-tag file.
 //
-//  调用 —— 选其一即可，两者后端一致：
+// Both call interfaces use the same backend.
 //
-//    A) 对象方法（推荐，简洁）
+// Object methods:
 //       LogVM.Debug ("step={} pc={:#x}", op, pc);
 //       LogVM.Info  ("loaded {} symbols", n);
 //       LogVM.Error ("fatal {}", x);
-//       LogVM.FatalSync("crash code={}", code);   // 写完立即 Flush
+// LogVM.FatalSync("crash code={}", code); // Flush after writing.
 //
-//    B) 宏（热路径 / args 评估代价大时用，编译期完全裁剪 args）
+// Macros can discard argument evaluation at compile time.
 //       LOG_DEBUG(LogVM, "step={} pc={:#x}", op, pc);
 //       LOG_FATAL_SYNC(LogVM, "crash code={}", code);
 //
-//  差异：
-//    - kNO_DEBUG_LOG 定义后，两者的 Debug 路径都被 if constexpr 干掉。
-//    - 宏版本：args 表达式在 if constexpr 的 discarded branch 内，
-//      不会被求值（runtime 0 cost）。
-//    - 对象版：args 在进入方法前就求值，方法体只是空 return。
+// Argument evaluation differs:
+// kNO_DEBUG_LOG discards Debug backend calls in both interfaces.
+// Macro arguments are inside the discarded if constexpr branch,
+// so they are not evaluated.
+// Object-method arguments are evaluated before entering the empty method.
 // =============================================================================
 #define DECLARE_LOG_CATEGORY(VarName, NameStr) \
     inline constexpr ::LogHelper::Category VarName{ NameStr, nullptr }
@@ -549,7 +549,7 @@ inline void emitCategory(const Category& cat, int prio, bool sync, const std::st
 #define DECLARE_LOG_CATEGORY_FILE(VarName, NameStr, FileTag) \
     inline constexpr ::LogHelper::Category VarName{ NameStr, FileTag }
 
-// 内部派发宏：把 args 关在 if constexpr 里，Debug 在 kNO_DEBUG_LOG 时整段消失
+// Keep arguments inside if constexpr to discard disabled Debug evaluation.
 #define LOG_INTERNAL_DISPATCH_(Cat, Prio, Sync, Fmt, ...) \
     do { \
         if constexpr (!::LogHelper::isCompiledOut(Prio)) { \

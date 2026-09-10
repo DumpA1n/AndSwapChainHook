@@ -8,7 +8,7 @@
 #include "Utils/Logger.h"
 #include "Utils/KittyEx.h"
 
-// 由 X-macro 自动生成查找表
+// Generate the lookup table from the registry.
 static constexpr struct { std::string_view soName; int index; } kLibTable[] = {
 #define ELF_LIB_ENTRY(ENUM, FUNC, SO) { SO, ElfScannerManager::LIB_##ENUM },
     ELF_LIB_LIST

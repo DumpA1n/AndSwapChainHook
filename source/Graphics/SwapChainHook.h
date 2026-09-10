@@ -9,20 +9,20 @@
 #include <vulkan/vulkan.h>
 
 // ---------------------------------------------------------------------------
-// SwapChainHook — 通过 hook 游戏的渲染提交函数注入 ImGui
+// SwapChainHook draws ImGui through host presentation hooks.
 //
-// 原理：
-//   拦截 eglSwapBuffers（OpenGL ES）或 vkQueuePresentKHR（Vulkan），
-//   在游戏帧提交前将 ImGui 绘制到游戏自身的帧缓冲区。
+// Presentation path:
+// Intercept eglSwapBuffers or vkQueuePresentKHR
+// and draw into the host framebuffer before presentation.
 //
-// 优势（相比独立 Overlay 窗口）：
-//   - 不创建额外 SurfaceView / ANativeWindow
-//   - 不增加 EGL Context / Vulkan Instance
-//   - 不产生多余 GPU fd / ION 映射 / SurfaceFlinger 图层
-//   - 对 WindowManagerGlobal 枚举完全透明
-//   - dumpsys SurfaceFlinger 看不到额外 layer
+// Host-resource reuse:
+// No separate overlay SurfaceView or ANativeWindow is created by this path.
+// The host EGL context or Vulkan device is reused.
+// GPU rendering resources are still allocated for ImGui.
+// This path does not create a separate WindowManager window.
+// It does not create a separate SurfaceFlinger layer.
 //
-// 用法（在 main_thread 中）：
+// Invocation from the initialization worker:
 //   SwapChainHook::SetRenderCallback([]() {
 //       UE_Hack::GetInstance().RenderMenu();
 //       ...
@@ -33,20 +33,20 @@
 namespace SwapChainHook
 {
 
-/// 安装 eglSwapBuffers 和 vkQueuePresentKHR 的 hook
-/// 哪个先被调用就以该 API 初始化 ImGui
+/// Install EGL and Vulkan presentation hooks.
+/// The first intercepted graphics API initializes ImGui.
 void Install();
 
-/// 卸载所有 hook，清理 ImGui 资源
+/// Request hook removal and ImGui cleanup; EGL restoration is currently incomplete.
 void Uninstall();
 
-/// 是否已完成 ImGui 初始化（首次 hook 触发后）
+/// Whether ImGui initialization has completed after a hook callback.
 bool IsInitialized();
 
-/// 设置每帧 ImGui 绘制回调（线程安全，可在 hook 安装前后调用）
+/// Set the frame callback under a lock; callback reads are not consistently synchronized.
 void SetRenderCallback(std::function<void()> callback);
 
-/// 获取检测到的游戏屏幕宽高（从 EGLSurface / VkSwapchain 取得）
+/// Return detected host dimensions from EGLSurface or VkSwapchain.
 int GetWidth();
 int GetHeight();
 

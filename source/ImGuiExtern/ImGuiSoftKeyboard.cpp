@@ -6,28 +6,28 @@ namespace ImGuiSoftKeyboard
 {
 
 // ---------------------------------------------------------------------------
-// 状态
+// State.
 // ---------------------------------------------------------------------------
 static bool g_ForceShow  = false;
 static bool g_ForceState = false;
 static bool g_Visible    = false;
 static bool g_Shift      = false;
 static bool g_Caps       = false;
-static bool g_Symbols    = false;   // 符号层
-static int  g_PressedKey = -1;      // 当前帧被按下的按键索引 (用于高亮)
+static bool g_Symbols    = false;   // Symbol layer.
+static int  g_PressedKey = -1;      // Pressed-key index for highlighting.
 
 // ---------------------------------------------------------------------------
-// 键盘布局定义
+// Keyboard layout.
 // ---------------------------------------------------------------------------
 
 struct KeyDef {
-    const char* label;       // 显示文本
-    const char* shiftLabel;  // Shift 时显示
-    float       widthScale;  // 相对于普通键的宽度倍数
+    const char* label;       // Display label.
+    const char* shiftLabel;  // Shift label.
+    float       widthScale;  // Width relative to a standard key.
     enum Action { Char, Backspace, Enter, Shift, Space, Symbols, Tab, Left, Right, Hide } action;
 };
 
-// 字母层
+// Letter layer.
 static const KeyDef g_RowsAlpha[][12] = {
     // Row 0: number row
     { {"1","!",1,KeyDef::Char}, {"2","@",1,KeyDef::Char}, {"3","#",1,KeyDef::Char}, {"4","$",1,KeyDef::Char}, {"5","%",1,KeyDef::Char},
@@ -56,7 +56,7 @@ static const KeyDef g_RowsAlpha[][12] = {
       {nullptr,nullptr,0,KeyDef::Char} },
 };
 
-// 符号层
+// Symbol layer.
 static const KeyDef g_RowsSymbols[][12] = {
     // Row 0
     { {"~",nullptr,1,KeyDef::Char}, {"`",nullptr,1,KeyDef::Char}, {"|",nullptr,1,KeyDef::Char}, {"\\",nullptr,1,KeyDef::Char},
@@ -91,7 +91,7 @@ static const KeyDef g_RowsSymbols[][12] = {
 constexpr int kRowCount = 5;
 
 // ---------------------------------------------------------------------------
-// 辅助
+// Helpers.
 // ---------------------------------------------------------------------------
 
 static bool IsUpper()
@@ -158,7 +158,7 @@ static void ProcessKey(const KeyDef& key)
     }
 }
 
-/// 检测屏幕坐标是否在矩形内
+/// Whether a screen coordinate lies inside the rectangle.
 static bool HitTest(const ImVec2& pos, const ImVec2& rectMin, const ImVec2& rectMax)
 {
     return pos.x >= rectMin.x && pos.x < rectMax.x &&
@@ -166,7 +166,7 @@ static bool HitTest(const ImVec2& pos, const ImVec2& rectMin, const ImVec2& rect
 }
 
 // ---------------------------------------------------------------------------
-// 键盘区域计算（复用）
+// Shared keyboard-region calculation.
 // ---------------------------------------------------------------------------
 static void GetKeyboardRect(const ImGuiIO& io, float& outY, float& outH)
 {
@@ -175,10 +175,10 @@ static void GetKeyboardRect(const ImGuiIO& io, float& outY, float& outH)
 }
 
 // ---------------------------------------------------------------------------
-// 公共接口
+// Public interface.
 // ---------------------------------------------------------------------------
 
-// 记录本帧是否有点击落在键盘区域（PreUpdate 设置，Draw 读取）
+// PreUpdate records a keyboard-area click for Draw.
 static bool  g_ClickInKeyboard = false;
 static ImVec2 g_ClickMousePos   = ImVec2(0, 0);
 
@@ -186,7 +186,7 @@ void PreUpdate()
 {
     ImGuiIO& io = ImGui::GetIO();
 
-    // ── 可见性锁存 ──────────────────────────────────────────────
+    // Latched visibility.
     if (g_ForceState)
     {
         g_Visible = g_ForceShow;
@@ -199,7 +199,7 @@ void PreUpdate()
         }
         else if (g_Visible && !io.WantTextInput)
         {
-            // 仅当用户点击了键盘区域之外时才关闭
+            // Close only when the user clicks outside the keyboard.
             if (io.MouseClicked[0])
             {
                 float kbY, kbH;
@@ -222,7 +222,7 @@ void PreUpdate()
     if (!g_Visible)
         return;
 
-    // ── 在用户 UI 之前拦截键盘区域的鼠标事件 ─────────────────────
+    // Intercept keyboard-area pointer events before user UI.
     float kbY, kbH;
     GetKeyboardRect(io, kbY, kbH);
     bool inKbArea = HitTest(io.MousePos, ImVec2(0, kbY), ImVec2(io.DisplaySize.x, io.DisplaySize.y));
@@ -245,7 +245,7 @@ void Draw()
 
     ImGuiIO& io = ImGui::GetIO();
 
-    // ── 键盘布局计算 ────────────────────────────────────────────
+    // Compute keyboard layout.
     float screenW = io.DisplaySize.x;
     float kbY, kbHeight;
     GetKeyboardRect(io, kbY, kbHeight);
@@ -257,14 +257,14 @@ void Draw()
 
     float rowHeight = (kbHeight - padding * 2 - keySpacing * (kRowCount - 1)) / kRowCount;
 
-    // 使用 PreUpdate 中记录的点击状态
+    // Use the click state recorded by PreUpdate.
     bool clickInKeyboard = g_ClickInKeyboard;
     ImVec2 mousePos = g_ClickMousePos;
 
-    // ── 使用前景 DrawList 绘制（不创建 ImGui 窗口，不抢焦点）─────
+    // Use the foreground DrawList without creating a focus-taking ImGui window.
     ImDrawList* drawList = ImGui::GetForegroundDrawList();
 
-    // 背景
+    // Background.
     ImU32 bgColor = IM_COL32(38, 38, 38, 242);
     drawList->AddRectFilled(ImVec2(0, kbY), ImVec2(screenW, screenH), bgColor);
 
@@ -273,7 +273,7 @@ void Draw()
 
     for (int r = 0; r < kRowCount; r++)
     {
-        // 计算本行按键数和总宽度倍数
+        // Count keys and relative widths in this row.
         float totalScale = 0;
         int keyCount = 0;
         for (int k = 0; rows[r][k].label != nullptr; k++)
@@ -296,10 +296,10 @@ void Draw()
             ImVec2 btnMin(curX, curY);
             ImVec2 btnMax(curX + btnW, curY + rowHeight);
 
-            // 点击检测
+            // Hit testing.
             bool isClicked = clickInKeyboard && HitTest(mousePos, btnMin, btnMax);
 
-            // 按键颜色
+            // Key color.
             bool isSpecial = (key.action != KeyDef::Char && key.action != KeyDef::Space);
             bool isShiftActive = (key.action == KeyDef::Shift && (g_Shift || g_Caps));
 
@@ -313,10 +313,10 @@ void Draw()
             else
                 btnColor = IM_COL32(55, 55, 60, 255);
 
-            // 绘制按键背景（圆角矩形）
+            // Draw rounded key backgrounds.
             drawList->AddRectFilled(btnMin, btnMax, btnColor, 6.0f);
 
-            // 绘制按键文字
+            // Draw key labels.
             const char* displayText = key.label;
             if (key.action == KeyDef::Char && IsUpper() && key.shiftLabel)
                 displayText = key.shiftLabel;
@@ -331,14 +331,14 @@ void Draw()
                 drawList->AddText(textPos, IM_COL32(255, 255, 255, 255), displayText);
             }
 
-            // 处理点击
+            // Process the click.
             if (isClicked)
             {
                 g_PressedKey = globalKeyIdx;
 
                 if (key.action == KeyDef::Enter)
                 {
-                    // Enter/OK: 关闭键盘
+                    // Enter/OK closes the keyboard.
                     g_Visible = false;
                 }
 

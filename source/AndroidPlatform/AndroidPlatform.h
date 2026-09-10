@@ -1,12 +1,12 @@
 #pragma once
 
 // ---------------------------------------------------------------------------
-// AndroidPlatform —— host 进程平台访问汇总头
+// AndroidPlatform: host platform access headers.
 //
 //   - JniRuntime.h          : GetJavaVM / GetJavaEnv
 //   - ActivityHost.h        : GetActivity （Java Activity GlobalRef）
 //   - NativeWindowProvider.h: GetNativeWindow （ANativeWindow*）
-//   - DisplayInfo.h         : GetDisplaySize （物理屏幕尺寸）
+// DisplayInfo.h: GetDisplaySize in physical pixels.
 // ---------------------------------------------------------------------------
 
 #include "JniRuntime.h"

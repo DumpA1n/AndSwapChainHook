@@ -3,30 +3,30 @@
 #include "imgui/imgui.h"
 
 // ---------------------------------------------------------------------------
-// ImGuiSoftKeyboard — ImGui 内置软键盘
+// ImGuiSoftKeyboard: ImGui software keyboard.
 //
-// 当 ImGui 需要文本输入时（io.WantTextInput == true），自动渲染一个
-// 全功能 QWERTY 键盘面板，直接通过 io.AddInputCharacter() 注入字符。
-// 完全不依赖 Android IME 框架，适用于注入/overlay 场景。
+// When io.WantTextInput is set, render a
+// QWERTY keyboard and deliver characters with io.AddInputCharacter().
+// This keyboard does not use the Android IME framework.
 //
-// 用法：
-//   // 每帧在 ImGui::Render() 之前调用：
+// Usage:
+// Call each frame before ImGui::Render().
 //   ImGuiSoftKeyboard::Draw();
 // ---------------------------------------------------------------------------
 
 namespace ImGuiSoftKeyboard
 {
 
-/// 每帧在 NewFrame() 之后、用户 UI 之前调用：拦截键盘区域的鼠标事件
+/// Call after NewFrame and before user UI to intercept pointer events over the keyboard.
 void PreUpdate();
 
-/// 每帧在用户 UI 之后、Render() 之前调用：渲染键盘 + 处理按键
+/// Call after user UI and before Render to draw the keyboard and process keys.
 void Draw();
 
-/// 强制显示/隐藏（覆盖自动行为）
+/// Override automatic visibility.
 void ForceShow(bool show);
 
-/// 是否当前可见
+/// Whether the keyboard is visible.
 bool IsVisible();
 
 } // namespace ImGuiSoftKeyboard
