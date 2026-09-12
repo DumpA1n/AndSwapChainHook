@@ -104,7 +104,10 @@ void MemoryContracts()
         mmap(nullptr, page * 2, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
     CHECK(mapping != MAP_FAILED);
     *static_cast<unsigned char *>(mapping) = 42;
+    Memory::ProcessReader invalidProcess;
+    CHECK(invalidProcess.Open(0).error == Memory::Error::InvalidArgument);
     Memory::ProcessReader process;
+    CHECK(process.Open(getpid()));
     CHECK(process.Open());
     CHECK(mprotect(static_cast<char *>(mapping) + page, page, PROT_READ) == 0);
     CHECK(process.RefreshMappings());

@@ -7,6 +7,7 @@
 #include <memory>
 #include <span>
 #include <string>
+#include <sys/types.h>
 #include <vector>
 
 namespace AndSwapChainHook::Memory
@@ -55,7 +56,8 @@ struct Mapping
 };
 
 // Single owner: Open and RefreshMappings must not run concurrently with reads.
-// Opens only this process. It never changes dumpability or page permissions.
+// The explicit PID overload opens an already-readable procfs view. It never
+// attaches, changes dumpability, changes page permissions or elevates privilege.
 // Mapping checks are advisory snapshots: pread still reports concurrent unmapping.
 class ProcessReader final : public Reader
 {
@@ -65,6 +67,7 @@ class ProcessReader final : public Reader
     ProcessReader(const ProcessReader &) = delete;
     ProcessReader &operator=(const ProcessReader &) = delete;
     ReadResult Open();
+    ReadResult Open(pid_t pid);
     ReadResult Read(std::uintptr_t address, std::span<std::byte> destination) const override;
     ReadResult RefreshMappings();
     const std::vector<Mapping> &Mappings() const noexcept
@@ -74,6 +77,7 @@ class ProcessReader final : public Reader
 
   private:
     int fd_ = -1;
+    pid_t pid_ = -1;
     std::vector<Mapping> mappings_;
 };
 

@@ -8,6 +8,7 @@
 #include <utility>
 #if defined(__linux__)
 #include <fcntl.h>
+#include <string>
 #include <unistd.h>
 #endif
 
@@ -34,15 +35,28 @@ ProcessReader::~ProcessReader()
 ReadResult ProcessReader::Open()
 {
 #if defined(__linux__)
+    return Open(getpid());
+#else
+    return {Error::UnsupportedPlatform};
+#endif
+}
+ReadResult ProcessReader::Open(pid_t pid)
+{
+#if defined(__linux__)
     if (fd_ >= 0)
         return {Error::None};
-    const int descriptor = open("/proc/self/mem", O_RDONLY | O_CLOEXEC);
+    if (pid <= 0)
+        return {Error::InvalidArgument};
+    const std::string path = "/proc/" + std::to_string(pid) + "/mem";
+    const int descriptor = open(path.c_str(), O_RDONLY | O_CLOEXEC);
     if (descriptor < 0)
         return {SystemError(errno), 0, errno};
+    pid_ = pid;
     auto result = RefreshMappings();
     if (!result)
     {
         close(descriptor);
+        pid_ = -1;
         return result;
     }
     fd_ = descriptor;
@@ -54,7 +68,10 @@ ReadResult ProcessReader::Open()
 ReadResult ProcessReader::RefreshMappings()
 {
 #if defined(__linux__)
-    FILE *file = fopen("/proc/self/maps", "re");
+    if (pid_ <= 0)
+        return {Error::InvalidArgument};
+    const std::string path = "/proc/" + std::to_string(pid_) + "/maps";
+    FILE *file = fopen(path.c_str(), "re");
     if (!file)
         return {SystemError(errno), 0, errno};
     std::vector<Mapping> next;
