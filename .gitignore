@@ -13,3 +13,5 @@ cmake-build-release-system/
 !/docs/lab-guide.md
 !/docs/data-handling.md
 !/docs/repository-metadata.md
+!/docs/ci.md
+!/docs/profiler.md

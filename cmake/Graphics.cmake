@@ -1,0 +1,10 @@
+if(NOT TARGET Dobby::Dobby)
+    add_subdirectory(cmake/dobby)
+endif()
+get_target_property(dobby_contract Dobby::Dobby ANDSWAPCHAIN_DOBBY_CONTRACT_VERSION)
+if(NOT dobby_contract STREQUAL "1")
+    message(FATAL_ERROR "Graphics requires Dobby::Dobby with ANDSWAPCHAIN_DOBBY_CONTRACT_VERSION=1; see cmake/dobby/README.md.")
+endif()
+andswapchain_component(AndSwapChainHookGraphics Graphics source/Graphics/SwapChainHook.cpp)
+target_link_libraries(AndSwapChainHookGraphics PUBLIC AndSwapChainHookInstrumentation EGL PRIVATE
+    Dobby::Dobby dl log)

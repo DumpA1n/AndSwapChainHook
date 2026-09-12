@@ -1,0 +1,88 @@
+include(FetchContent)
+
+function(andswapchain_analysis_dependencies)
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+    set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+    set(CMAKE_POLICY_DEFAULT_CMP0126 NEW)
+    if(POLICY CMP0135)
+        cmake_policy(SET CMP0135 NEW)
+    endif()
+    if(ANDSWAPCHAIN_BUILD_DISASSEMBLER AND NOT TARGET Capstone::Capstone)
+        set(CAPSTONE_ARCHITECTURE_DEFAULT OFF)
+        set(CAPSTONE_AARCH64_SUPPORT ON)
+        set(CAPSTONE_BUILD_STATIC_LIBS ON)
+        set(CAPSTONE_BUILD_SHARED_LIBS OFF)
+        set(CAPSTONE_BUILD_MACOS_THIN ON)
+        set(CAPSTONE_BUILD_LEGACY_TESTS OFF)
+        set(CAPSTONE_BUILD_CSTOOL OFF)
+        set(CAPSTONE_BUILD_CSTEST OFF)
+        set(CAPSTONE_INSTALL OFF)
+        FetchContent_Declare(andswapchain_capstone
+            URL https://codeload.github.com/capstone-engine/capstone/tar.gz/08a06aa38d093f99d83643dacde74cba0495d9e3
+            URL_HASH SHA256=a6ee963af147e567308bad37dca584dbcd9c4208857d2bb8894b445950d354ba
+            SOURCE_SUBDIR andswapchain-no-upstream-build)
+        FetchContent_MakeAvailable(andswapchain_capstone)
+        set(andswapchain_parent_version "${PROJECT_VERSION}")
+        set(PROJECT_VERSION 6.0.0)
+        add_subdirectory("${andswapchain_capstone_SOURCE_DIR}" "${andswapchain_capstone_BINARY_DIR}" EXCLUDE_FROM_ALL)
+        set(PROJECT_VERSION "${andswapchain_parent_version}")
+        set_target_properties(fuzz_disasm PROPERTIES EXCLUDE_FROM_ALL TRUE)
+        set_target_properties(capstone_static PROPERTIES EXPORT_NAME Capstone OUTPUT_NAME andswapchain_capstone)
+        target_compile_options(capstone PRIVATE $<$<CONFIG:Release>:-g>)
+        target_include_directories(capstone_static INTERFACE $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+        add_library(Capstone::Capstone ALIAS capstone_static)
+        install(TARGETS capstone_static EXPORT AndSwapChainCapstoneTargets ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+        install(DIRECTORY "${andswapchain_capstone_SOURCE_DIR}/include/capstone" DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+        install(EXPORT AndSwapChainCapstoneTargets FILE CapstoneTargets.cmake NAMESPACE Capstone:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Capstone)
+        configure_package_config_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/analysis/CapstoneConfig.cmake.in"
+            "${CMAKE_CURRENT_BINARY_DIR}/CapstoneConfig.cmake" INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Capstone)
+        write_basic_package_version_file("${CMAKE_CURRENT_BINARY_DIR}/CapstoneConfigVersion.cmake" VERSION 6.0.0 COMPATIBILITY SameMajorVersion)
+        install(FILES "${CMAKE_CURRENT_BINARY_DIR}/CapstoneConfig.cmake" "${CMAKE_CURRENT_BINARY_DIR}/CapstoneConfigVersion.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Capstone)
+        install(DIRECTORY "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/analysis/licenses/capstone" DESTINATION ${CMAKE_INSTALL_DATADIR}/licenses/AndSwapChainHook)
+    endif()
+    if(ANDSWAPCHAIN_BUILD_ASSEMBLER AND NOT TARGET Keystone::Keystone)
+        set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
+        set(LLVM_TARGETS_TO_BUILD AArch64)
+        set(LLVM_DEFAULT_TARGET_TRIPLE aarch64-linux-android)
+        if(ANDROID)
+            set(LLVM_HOST_TRIPLE aarch64-linux-android)
+        endif()
+        set(LLVM_INCLUDE_TESTS OFF)
+        set(LLVM_BUILD_TOOLS OFF)
+        set(LLVM_ENABLE_TERMINFO OFF)
+        set(LLVM_ENABLE_ZLIB OFF)
+        set(LLVM_ENABLE_TIMESTAMPS OFF)
+        set(LLVM_ENABLE_BACKTRACES OFF)
+        set(LLVM_ENABLE_CRASH_OVERRIDES OFF)
+        set(BUILD_LIBS_ONLY ON)
+        set(BUILD_SHARED_LIBS OFF)
+        FetchContent_Declare(andswapchain_keystone
+            URL https://codeload.github.com/keystone-engine/keystone/tar.gz/dc7932ef2b2c4a793836caec6ecab485005139d6
+            URL_HASH SHA256=23aac537d6a596b1b9a597219fd30ee0c3a0955336b3d20df408aed432b9bcf8
+            SOURCE_SUBDIR andswapchain-no-upstream-build
+            PATCH_COMMAND ${CMAKE_COMMAND} -DSOURCE_DIR=<SOURCE_DIR>
+                -P "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/analysis/patches/KeystoneCompatibility.cmake")
+        FetchContent_MakeAvailable(andswapchain_keystone)
+        execute_process(COMMAND ${CMAKE_COMMAND} -DSOURCE_DIR=${andswapchain_keystone_SOURCE_DIR}
+            -P "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/analysis/patches/KeystoneCompatibility.cmake"
+            COMMAND_ERROR_IS_FATAL ANY)
+        add_subdirectory("${andswapchain_keystone_SOURCE_DIR}" "${andswapchain_keystone_BINARY_DIR}" EXCLUDE_FROM_ALL)
+        set_target_properties(keystone PROPERTIES CXX_STANDARD 14 CXX_STANDARD_REQUIRED YES
+            POSITION_INDEPENDENT_CODE YES EXPORT_NAME Keystone OUTPUT_NAME andswapchain_keystone)
+        target_compile_options(keystone PRIVATE $<$<CONFIG:Release>:-g>)
+        target_include_directories(keystone PUBLIC
+            $<BUILD_INTERFACE:${andswapchain_keystone_SOURCE_DIR}/include>
+            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+        add_library(Keystone::Keystone ALIAS keystone)
+        install(TARGETS keystone EXPORT AndSwapChainKeystoneTargets ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+        install(DIRECTORY "${andswapchain_keystone_SOURCE_DIR}/include/keystone" DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+        install(EXPORT AndSwapChainKeystoneTargets FILE KeystoneTargets.cmake NAMESPACE Keystone:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Keystone)
+        configure_package_config_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/analysis/KeystoneConfig.cmake.in"
+            "${CMAKE_CURRENT_BINARY_DIR}/KeystoneConfig.cmake" INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Keystone)
+        write_basic_package_version_file("${CMAKE_CURRENT_BINARY_DIR}/KeystoneConfigVersion.cmake" VERSION 0.9.2 COMPATIBILITY SameMajorVersion)
+        install(FILES "${CMAKE_CURRENT_BINARY_DIR}/KeystoneConfig.cmake" "${CMAKE_CURRENT_BINARY_DIR}/KeystoneConfigVersion.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Keystone)
+        install(DIRECTORY "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/analysis/licenses/keystone" DESTINATION ${CMAKE_INSTALL_DATADIR}/licenses/AndSwapChainHook)
+        install(FILES "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/analysis/patches/KeystoneCompatibility.cmake" DESTINATION ${CMAKE_INSTALL_DATADIR}/licenses/AndSwapChainHook/keystone)
+    endif()
+endfunction()
+andswapchain_analysis_dependencies()

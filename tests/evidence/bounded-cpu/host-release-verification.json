@@ -1,0 +1,355 @@
+{
+  "schema": 1,
+  "configuration": "host-release",
+  "status": "passed",
+  "failure": null,
+  "source_hashes": {
+    "CMakeLists.txt": "4854f5037969f07968910c5aaf27bb3018fd68693cfa94c50351f71cc4d5afaa",
+    "CMakePresets.json": "5ec9a0b22e1e1d78fd945799ebddc802a49fb033e55b78cad7cfbe1538ca91d8",
+    "README.md": "525c50710616b02b626b1a0ad186425ef0bf593653130806402271d5f08956e7",
+    "THIRD_PARTY_NOTICES.md": "f2eaabe18dd0dd7caed31cd71e33ad518224e0ea067ee4a524ed2348a98e89ba",
+    "cmake/AnalysisDependencies.cmake": "c006bcf562b1c52eb53d10f727a2cb7a050ba8039037838dacbadee61d00fef5",
+    "cmake/AndSwapChainHookConfig.cmake.in": "4bcaed1283f51ae4484c9262c40028fbb299d3d68bc1be1f37be740d30278f85",
+    "cmake/analysis/CapstoneConfig.cmake.in": "cb765115a1558696f0dc7c6bda8f88541cac7225b4cc230a372c86b09aa84162",
+    "cmake/analysis/KeystoneConfig.cmake.in": "0718ef9559a399ab8754def2345ee0f217ad553296a433a857fcf67c84d33044",
+    "cmake/analysis/licenses/capstone/LICENSE.TXT": "65e9ed46a59976eda8f5bd1ea79a680dea38dd299c760bc9a8d87a764ef5029b",
+    "cmake/analysis/licenses/capstone/LICENSE_BSD_3_CLAUSE.txt": "5a93d5831e1297ab10fe643e1a631e83be392896da14ee2951285a79012df69d",
+    "cmake/analysis/licenses/capstone/LICENSE_LLVM.TXT": "dfdca2d7fdbabfd937f9dc41b7f61647b0e6cb1f9ee767ecb4520f979ebe91da",
+    "cmake/analysis/licenses/keystone/COPYING": "ab15fd526bd8dd18a9e77ebc139656bf4d33e97fc7238cd11bf60e2b9b8666c6",
+    "cmake/analysis/licenses/keystone/EXCEPTIONS-CLIENT": "2e3ba49ed5363ecbdf4bc8b6d2b886c772cdc0b321fb1e6e137098fc2dd5968e",
+    "cmake/analysis/licenses/keystone/LICENSE-COM.TXT": "51330f413cbe607a1f1dc9e73c78c040f9423230d2b7ef98c84c1bd4c54af055",
+    "cmake/analysis/licenses/keystone/llvm/LICENSE.TXT": "721cb11de618fcf9bbb7d25a389207bf2227357e6694bc326ab32a6699f9b951",
+    "cmake/analysis/licenses/keystone/llvm/include/llvm/Support/LICENSE.TXT": "a012d664e4e01df52a65b2eeafdfb8aeb856fec0e6c372265d01b0109c3f5e2a",
+    "cmake/analysis/licenses/keystone/llvm/keystone/LICENSE": "258ec4a974b62937005323ee22fb641f5f3dfe7ed99911c99d4178025b98be06",
+    "cmake/analysis/licenses/keystone/llvm/lib/Support/COPYRIGHT.regex": "0424e57d4303164dc59a8509c20dae0518b853692e5c2b0e98b11816fdbc97c7",
+    "cmake/analysis/licenses/keystone/llvm/lib/Target/ARM/LICENSE.TXT": "28cbd5f6dac844fc3d94e879dba83c3ca87328ece8e0d388284f8cec6a042a97",
+    "cmake/analysis/patches/KeystoneCompatibility.cmake": "b91f9af606a1d529a1d2b7049ccc8aa6b3259d3d494cec7bb002c52784f71cc9",
+    "include/AndSwapChainHook/Assembler.h": "bfdd4d41e60851635db9b14ff5df5e5dac7eed2e02f3394f6df808db3bd10906",
+    "include/AndSwapChainHook/CallbackGate.h": "2b82316ae112e7caea3191f05ba5890dadb70b1c9d7ed9094fa96c71a38b8922",
+    "include/AndSwapChainHook/CrashRecorder.h": "5f2f8d6079a3aaac220b7249f779509c2be09cf0721275562205bbea60aa2fd0",
+    "include/AndSwapChainHook/Disassembler.h": "33928b3082d4f1ac1fcf1919abdb7db5966cc3a2bae64090620a8f5ab29c5229",
+    "include/AndSwapChainHook/HookTransaction.h": "34cb66e0b8be492bd430d8b165e88f7c26e852020d9baec02317a177fb900b1a",
+    "include/AndSwapChainHook/Memory.h": "aa7268dd6c6ea17b32df4ac5ab72f2713f91f0a4ed888d2e3ae86bb8766c7dac",
+    "include/AndSwapChainHook/Profiler.h": "68329bf69d05410d310c9d4b3e913953e343884c678ea03e86554a529c5f416d",
+    "include/AndSwapChainHook/Runtime.h": "fea8f3d57eca6db1f29e7c5e6331c811f1b035b8dacb0268709d23c3a3a27753",
+    "source/Analysis/Runtime.cpp": "c0276f382a812d45bef1809d24035e821d254499e8854e0a803febe4da371d49",
+    "source/Analysis/Scan.cpp": "a975ba6d880f54c03834fa7428203da294748215460a9ff2795556f58a157d4e",
+    "source/Assemble/Assembler.cpp": "b8af5dad13265e7fe7a85972f536bf4543c501a407d179ad2b49e0202ecfc550",
+    "source/Assemble/Disassembler.cpp": "dd2979d1b9d7e87c6fda723c5c2f7278a38c329798ecfa766a98dc528fb3bba4",
+    "source/Diagnostics/CrashRecorder.cpp": "09946a856f5571574ded51826e188d4a1591ee07fd2a66673bc84758121df26d",
+    "source/Diagnostics/Profiler.cpp": "c76540dfe6df2be33345c05faebf793325021044b757214e5a0c23175bdbb9eb",
+    "source/Instrumentation/HookTransaction.cpp": "e138d1f7e43ce49fef5f92efcf0fb98a592c685a132afb0ff3d9d49421dcda5d",
+    "source/Memory/Memory.cpp": "b13e3e63c08b8ef204aa3be867a2283ea15860f1cb4ef58cd1e16b226ac6e2bb",
+    "tests/assemble_contracts.cpp": "7e238edb5da14a74eb4d2feaa3bc3b1ea8d6cee5335a9d09c3eca414c8940a42",
+    "tests/assemble_roundtrip.cpp": "0d730f0c29a40c75d7c145b37555cf83bed88355c30fbe3ac63e180e826b5f27",
+    "tests/assembler_roundtrip.cpp": "50fa5cc74fbeafec5caf250f623f01470d67821276ca87693cc67d4eabe8f2f1",
+    "tests/contracts.cpp": "241ae2cc5f3f1262c3bac20193684256d08c8d5fe515acc00783c9633689fbbb",
+    "tests/crash_record.cpp": "afa1d41dfe3f57a190b2008710463ab1cf15945270fdacb437df6901a72ed4fd",
+    "tests/disassembler_roundtrip.cpp": "5aa7067d826383962ba2560c9bfec20c219fcb2480116320057e67d27b433379",
+    "tests/profiler.cpp": "3e17e3624ffcb1766e958053bc5dfb8bfb70f4ebb01f9cdce871e92e97a9b761",
+    "tests/runtime_header.c": "3fb8d1bba43a308947174fa9acf6be5cd17068bdaea3b4f6c1f3441e094604ac"
+  },
+  "source_consistent": true,
+  "scope": "Owned bounded Memory/Analysis, Profiler, CrashRecorder and Assemble CPU fixtures; contracts.cpp also exercises its fake backend transaction and callback gate. No Graphics, Overlay, InputEvent, Dobby, Vulkan or hook installation execution.",
+  "options": [
+    "-DCMAKE_BUILD_TYPE=Release",
+    "-DBUILD_TESTING=ON",
+    "-DANDSWAPCHAIN_BUILD_ASSEMBLE=ON",
+    "-DANDSWAPCHAIN_BUILD_CRASH_RECORDER=ON",
+    "-DANDSWAPCHAIN_ENABLE_SANITIZERS=OFF",
+    "-DANDSWAPCHAIN_BUILD_ANDROID=OFF",
+    "-DANDSWAPCHAIN_BUILD_GRAPHICS=OFF",
+    "-DANDSWAPCHAIN_BUILD_OVERLAY=OFF",
+    "-DANDSWAPCHAIN_BUILD_POINTER_ADAPTER=OFF"
+  ],
+  "checks": [
+    {
+      "name": "configure",
+      "command": [
+        "cmake",
+        "-S",
+        "/Users/ddd/Developer/AndSwapChainHook",
+        "-B",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release",
+        "-G",
+        "Ninja",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DBUILD_TESTING=ON",
+        "-DANDSWAPCHAIN_BUILD_ASSEMBLE=ON",
+        "-DANDSWAPCHAIN_BUILD_CRASH_RECORDER=ON",
+        "-DANDSWAPCHAIN_ENABLE_SANITIZERS=OFF",
+        "-DANDSWAPCHAIN_BUILD_ANDROID=OFF",
+        "-DANDSWAPCHAIN_BUILD_GRAPHICS=OFF",
+        "-DANDSWAPCHAIN_BUILD_OVERLAY=OFF",
+        "-DANDSWAPCHAIN_BUILD_POINTER_ADAPTER=OFF"
+      ],
+      "exit_code": 0,
+      "seconds": 84.979,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/configure.log",
+      "log_sha256": "77fe03ba9c5798424548c5670709fc433f68035c0a84773b1c0c24fa12c10660"
+    },
+    {
+      "name": "build",
+      "command": [
+        "cmake",
+        "--build",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release",
+        "--parallel",
+        "2",
+        "--target",
+        "andswapchain_contract_tests",
+        "andswapchain_profiler_tests",
+        "andswapchain_crash_record_test",
+        "andswapchain_assembler_roundtrip",
+        "andswapchain_disassembler_roundtrip",
+        "andswapchain_assemble_roundtrip",
+        "andswapchain_assemble_contracts",
+        "andswapchain_header_Memory",
+        "andswapchain_header_Runtime",
+        "andswapchain_header_CrashRecorder",
+        "andswapchain_header_Profiler",
+        "andswapchain_header_Assembler",
+        "andswapchain_header_Disassembler",
+        "andswapchain_header_HookTransaction",
+        "andswapchain_header_CallbackGate",
+        "andswapchain_c_header"
+      ],
+      "exit_code": 0,
+      "seconds": 41.572,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/build.log",
+      "log_sha256": "923c79a5b8201ef5429034587d225aabde5523269c7df671acc5ee166d66cc97"
+    },
+    {
+      "name": "runtime",
+      "command": [
+        "ctest",
+        "--test-dir",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release",
+        "-V",
+        "--no-tests=error",
+        "-R",
+        "^andswapchain_(contracts|profiler|crash_record|assembler_roundtrip|disassembler_roundtrip|assemble_roundtrip|assemble_contracts)$"
+      ],
+      "exit_code": 0,
+      "seconds": 4.202,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/runtime.log",
+      "log_sha256": "4e369b40d198749b1b9ac622790a2adbb6f6e34294bf3ac72169b9fe9e8d40a2"
+    },
+    {
+      "name": "andswapchain_contract_tests-uuid",
+      "command": [
+        "dwarfdump",
+        "--uuid",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_contract_tests"
+      ],
+      "exit_code": 0,
+      "seconds": 0.028,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_contract_tests-uuid.log",
+      "log_sha256": "cd1d330332c913d2423d78ac8f333250d587b626248294d4b8a5292c215ab85c"
+    },
+    {
+      "name": "andswapchain_profiler_tests-uuid",
+      "command": [
+        "dwarfdump",
+        "--uuid",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_profiler_tests"
+      ],
+      "exit_code": 0,
+      "seconds": 0.014,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_profiler_tests-uuid.log",
+      "log_sha256": "4d3c68aaedaa83897b9441189ea41b401358819923008c00bf0179b82cf9a0a1"
+    },
+    {
+      "name": "andswapchain_crash_record_test-uuid",
+      "command": [
+        "dwarfdump",
+        "--uuid",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_crash_record_test"
+      ],
+      "exit_code": 0,
+      "seconds": 0.011,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_crash_record_test-uuid.log",
+      "log_sha256": "7e49fe85edc325737ecb698106015467a6d41cf61f5e8f4386e77c72421ec35d"
+    },
+    {
+      "name": "andswapchain_assembler_roundtrip-uuid",
+      "command": [
+        "dwarfdump",
+        "--uuid",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_assembler_roundtrip"
+      ],
+      "exit_code": 0,
+      "seconds": 0.014,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_assembler_roundtrip-uuid.log",
+      "log_sha256": "98fd72280143974c9c650907703a977f9dc5467da788b39b0baccc2fe827448f"
+    },
+    {
+      "name": "andswapchain_disassembler_roundtrip-uuid",
+      "command": [
+        "dwarfdump",
+        "--uuid",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_disassembler_roundtrip"
+      ],
+      "exit_code": 0,
+      "seconds": 0.024,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_disassembler_roundtrip-uuid.log",
+      "log_sha256": "1849a8f31ad5ab6f6140e3101f7cbe37ad5ce788ce39d91dfca58b8848ec2f73"
+    },
+    {
+      "name": "andswapchain_assemble_roundtrip-uuid",
+      "command": [
+        "dwarfdump",
+        "--uuid",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_assemble_roundtrip"
+      ],
+      "exit_code": 0,
+      "seconds": 0.016,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_assemble_roundtrip-uuid.log",
+      "log_sha256": "9b61e6f6f158d822c8195e86ca1da2465cd7d401c96fe585a6d3152930fb6cef"
+    },
+    {
+      "name": "andswapchain_assemble_contracts-uuid",
+      "command": [
+        "dwarfdump",
+        "--uuid",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_assemble_contracts"
+      ],
+      "exit_code": 0,
+      "seconds": 0.012,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_assemble_contracts-uuid.log",
+      "log_sha256": "870fc93f088a6e4a45bb99714038ff87bb6961c73100783ad1d017ac8b787f79"
+    }
+  ],
+  "executions": [
+    {
+      "fixture": "andswapchain_contract_tests",
+      "status": "passed",
+      "sha256": "f417bd4da411733bd0a804c922bcbc955f0e48104fb3f97e5c5eeebb9a58ce56",
+      "uuid": "UUID: 9D197EDF-044E-3BFD-9DD9-664EC4A95D30 (arm64) /Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_contract_tests"
+    },
+    {
+      "fixture": "andswapchain_profiler_tests",
+      "status": "passed",
+      "sha256": "e618c2bad8c0cdf93cbd05dcc5a84269b5037ac6398a9ec00b6ca1ff05f19ed8",
+      "uuid": "UUID: F27AD90D-F99D-3D9C-A9A8-C654BFC314C7 (arm64) /Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_profiler_tests"
+    },
+    {
+      "fixture": "andswapchain_crash_record_test",
+      "status": "passed",
+      "sha256": "20e6ea1922e093e44df534e48d302e9416f28aeb1c98782bf714fc0d5a22dfba",
+      "uuid": "UUID: 7827D07D-9D44-3241-8EC7-67A61816B172 (arm64) /Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_crash_record_test"
+    },
+    {
+      "fixture": "andswapchain_assembler_roundtrip",
+      "status": "passed",
+      "sha256": "afb559dae419cb987df5b92d7f31ab2e48c950802e1dc33296e751eb1ef005e5",
+      "uuid": "UUID: 5F230FD8-02CF-344C-9573-4EBC9544248C (arm64) /Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_assembler_roundtrip"
+    },
+    {
+      "fixture": "andswapchain_disassembler_roundtrip",
+      "status": "passed",
+      "sha256": "4082c73e438823e9aa34b2a0ff5dffaeaf6ad25982a705ba39027d6c558e85a1",
+      "uuid": "UUID: CE0BC636-9368-3D9B-851A-9BD183958222 (arm64) /Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_disassembler_roundtrip"
+    },
+    {
+      "fixture": "andswapchain_assemble_roundtrip",
+      "status": "passed",
+      "sha256": "2aac470b1f7bb6ed34dd52aa92d2786fd1c0e585bc112704505ab69f13c5b967",
+      "uuid": "UUID: A0DCB6AC-8379-332A-9C7A-5B17861FCEDE (arm64) /Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_assemble_roundtrip"
+    },
+    {
+      "fixture": "andswapchain_assemble_contracts",
+      "status": "passed",
+      "sha256": "68bd17b8d9763f2dd532c62dac3d894b09de786b0d2df07f577191517d78323a",
+      "uuid": "UUID: BDC4EFB4-C612-3BB9-849B-50A86B3A21AA (arm64) /Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_assemble_contracts"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_contract_tests",
+      "sha256": "f417bd4da411733bd0a804c922bcbc955f0e48104fb3f97e5c5eeebb9a58ce56",
+      "bytes": 113064
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_profiler_tests",
+      "sha256": "e618c2bad8c0cdf93cbd05dcc5a84269b5037ac6398a9ec00b6ca1ff05f19ed8",
+      "bytes": 111304
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_crash_record_test",
+      "sha256": "20e6ea1922e093e44df534e48d302e9416f28aeb1c98782bf714fc0d5a22dfba",
+      "bytes": 55680
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_assembler_roundtrip",
+      "sha256": "afb559dae419cb987df5b92d7f31ab2e48c950802e1dc33296e751eb1ef005e5",
+      "bytes": 1624224
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_disassembler_roundtrip",
+      "sha256": "4082c73e438823e9aa34b2a0ff5dffaeaf6ad25982a705ba39027d6c558e85a1",
+      "bytes": 4807392
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_assemble_roundtrip",
+      "sha256": "2aac470b1f7bb6ed34dd52aa92d2786fd1c0e585bc112704505ab69f13c5b967",
+      "bytes": 6379392
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_assemble_contracts",
+      "sha256": "68bd17b8d9763f2dd532c62dac3d894b09de786b0d2df07f577191517d78323a",
+      "bytes": 87264
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/libAndSwapChainHookMemory.a",
+      "sha256": "8bc56e913d4c588c8cdcabd35543b3de9bb61ef045f153a0382964ffd7ee3df4",
+      "bytes": 132528
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/libAndSwapChainHookCrashRecorder.a",
+      "sha256": "af6e7eeac894f2fd5e9b9b973913193edad87c4247b02d32699e590553f663af",
+      "bytes": 68600
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/libAndSwapChainHookDisassembler.a",
+      "sha256": "acca68493dd6a7ede2def676ae71935608b95e97e920fd8fb5bca7a42e12badd",
+      "bytes": 323080
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/libAndSwapChainHookAnalysis.a",
+      "sha256": "df888eb95eaa9a13be2632855850b5c474220943cb6f71e94c4880057a483792",
+      "bytes": 458528
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/libAndSwapChainHookProfiler.a",
+      "sha256": "37d1122c7d18cb47249e54423ad727346a82ea0694f1c3c1765cedda5f18f4b4",
+      "bytes": 205232
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/libAndSwapChainHookInstrumentation.a",
+      "sha256": "a4269df8f99b4a26cfeb45dc1449ca806454b16bc924803554ab70beea716e6e",
+      "bytes": 42368
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/libAndSwapChainHookAssembler.a",
+      "sha256": "73fe1482c7b98315262099e96f2d7b724e46c3eb4fcd13bfcbcfba130cac6785",
+      "bytes": 130504
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/CMakeCache.txt",
+      "sha256": "2549cba1ab385cb39e1560b27b2eadd9003bba1f47fb8e2691b712222891c01e",
+      "bytes": 39340
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/build.ninja",
+      "sha256": "3a69d9a0f18ff78c6ee0789884f4d139b9b189e46c8670833fa6e4d039495f0c",
+      "bytes": 516872
+    }
+  ],
+  "ndk": null,
+  "limitations": [
+    "Host Memory::LocalReader reports UnsupportedPlatform on macOS; mapped process reads execute only in Android fixtures.",
+    "Host ASan/UBSan only, leak detection disabled because the current macOS runtime does not support LSan.",
+    "Generated assembly is inspected as bytes and never executed."
+  ]
+}

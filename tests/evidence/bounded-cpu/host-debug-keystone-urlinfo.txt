@@ -1,0 +1,12 @@
+# This is a generated file and its contents are an internal implementation detail.
+# The download step will be re-executed if anything in this file changes.
+# No other meaning or use of this file is supported.
+
+method=url
+command=/opt/homebrew/bin/cmake;-DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE;-P;/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-debug/_deps/andswapchain_keystone-subbuild/andswapchain_keystone-populate-prefix/src/andswapchain_keystone-populate-stamp/download-andswapchain_keystone-populate.cmake;COMMAND;/opt/homebrew/bin/cmake;-DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE;-P;/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-debug/_deps/andswapchain_keystone-subbuild/andswapchain_keystone-populate-prefix/src/andswapchain_keystone-populate-stamp/verify-andswapchain_keystone-populate.cmake;COMMAND;/opt/homebrew/bin/cmake;-DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE;-P;/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-debug/_deps/andswapchain_keystone-subbuild/andswapchain_keystone-populate-prefix/src/andswapchain_keystone-populate-stamp/extract-andswapchain_keystone-populate.cmake
+source_dir=/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-debug/_deps/andswapchain_keystone-src
+work_dir=/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-debug/_deps
+url(s)=https://codeload.github.com/keystone-engine/keystone/tar.gz/dc7932ef2b2c4a793836caec6ecab485005139d6
+hash=SHA256=23aac537d6a596b1b9a597219fd30ee0c3a0955336b3d20df408aed432b9bcf8
+      no_extract=
+

@@ -1,0 +1,12 @@
+# This is a generated file and its contents are an internal implementation detail.
+# The download step will be re-executed if anything in this file changes.
+# No other meaning or use of this file is supported.
+
+method=url
+command=/opt/homebrew/bin/cmake;-DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE;-P;/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/_deps/andswapchain_capstone-subbuild/andswapchain_capstone-populate-prefix/src/andswapchain_capstone-populate-stamp/download-andswapchain_capstone-populate.cmake;COMMAND;/opt/homebrew/bin/cmake;-DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE;-P;/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/_deps/andswapchain_capstone-subbuild/andswapchain_capstone-populate-prefix/src/andswapchain_capstone-populate-stamp/verify-andswapchain_capstone-populate.cmake;COMMAND;/opt/homebrew/bin/cmake;-DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE;-P;/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/_deps/andswapchain_capstone-subbuild/andswapchain_capstone-populate-prefix/src/andswapchain_capstone-populate-stamp/extract-andswapchain_capstone-populate.cmake
+source_dir=/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/_deps/andswapchain_capstone-src
+work_dir=/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/_deps
+url(s)=https://codeload.github.com/capstone-engine/capstone/tar.gz/08a06aa38d093f99d83643dacde74cba0495d9e3
+hash=SHA256=a6ee963af147e567308bad37dca584dbcd9c4208857d2bb8894b445950d354ba
+      no_extract=
+

@@ -1,28 +1,21 @@
 # Research scope
 
-AndSwapChainHook is intended for general Android analysis and instrumentation on owned or explicitly authorized systems. This document defines intended research and maintenance scope. The source does not enforce target authorization, and repository visibility or a package profile is not evidence of permission.
+AndSwapChainHook supplies bounded process analysis, explicit EGL instrumentation and a normal-framework SurfaceView provider for owned or explicitly authorized applications. Target permission is supplied by the operator; package names, repository visibility and JNI reserved values do not authenticate a target.
 
-## Capability inventory
+## Current operation boundaries
 
-Source anchors: [Library.cpp](../source/Library.cpp), [SwapChainHook.cpp](../source/Graphics/SwapChainHook.cpp), [InputEventHook.cpp](../source/InputEvent/InputEventHook.cpp).
+Loading the analysis DSO is inert. `ASC_Initialize` explicitly opens only the current process's read channel. `ASC_Start` accepts an address range, copied pattern, byte/match budgets and deadline. Cancellation and stop are explicit. Read failures are observable and do not trigger dumpability changes, permission modification or a stronger backend.
 
-| Capability | Implementation or entry | Side effects and limits |
-|---|---|---|
-| Presentation hooks | EGL/Vulkan installation and callbacks | Modifies host control flow; restoration and synchronization defects remain |
-| Independent overlay | ImGuiHost, NativeWindowProvider, graphics backends | JNI/window and GPU resources require lifecycle control; standalone driving is incomplete |
-| Input interception | InputEventHook | Uses private interfaces and observes app input; threading and acknowledgment are not fully validated |
-| Memory and ELF utilities | KittyEx, ElfScanner, PointerHook copy | Reads and writes native memory; can change protections or dumpability |
-| Load/start | Constructor and JNI_OnLoad | Installs process signal handlers; key 1337 starts a detached worker and is not authentication |
-| Concealment helpers | HookUtils.h and external injector interface | Presence does not establish invocation; external injector exposes memory-backed loading, hiding and watching |
+Optional EGL installation modifies executable instructions through Dobby. Installation requires ownership of target bytes, page permissions and mapping lifetime, plus external entry quiescence. Owned presentation entry tables are explicit; system exports with PAC/BTI entries are unsupported. Restoration additionally requires retirement of all acquired replacement/original trampoline addresses; stopping callbacks is a weaker operation than restoring patches or unloading the DSO. The host Vulkan provider reports unsupported.
 
-“Source present” means code is in the checkout. “Built” means a specific target compiled and linked. “Executed” requires a recorded runtime test with a target identity. These states are not interchangeable.
+The optional SurfaceView provider receives the Activity and current UI-thread JNIEnv explicitly. It uses WindowManager.addView/removeViewImmediate and retains framework ownership records. Window leases prevent resource release while a renderer still uses a generation. It neither discovers third-party Activities nor implements SurfaceFlinger concealment.
 
-## Research boundary
+Optional CrashRecorder writes bounded binary signal records to an explicitly supplied sink. Installation, old dispositions, sink retention and alternate stacks have explicit ownership; it does not recover arbitrary engine execution.
 
-A test record should identify the owner or authorization basis, exact application/build and device, permitted operations, output directory, data disclosure limits and stop condition. Third-party package names alone do not satisfy that record. The current inventory does not assert permission for any third-party application.
+Retained legacy input, UI, configuration and native utility sources are outside advertised CMake components and still require the remaining refactor. Their presence is not evidence that their lifecycle or API contracts are verified.
 
-Maintained research examples should use owned fixtures. Unauthorized access, credential theft, data exfiltration, destructive activity, and bypassing protective controls on systems outside an authorized assessment are outside the intended maintenance scope. Existing dual-use functionality is disclosed above; this statement does not remove or disable it.
+## Evidence scope
 
-## Current gaps
+The owned native fixtures use only their own memory, EGL context and process. The APK `com.andswapchain.owned` is built from repository test sources. No third-party application is inspected by these fixtures. A separate runtime record is required for any additional target, operation, device or output scope.
 
-[README](../README.md) lists unresolved correctness and lifecycle defects. Runtime target restrictions, inert loading, safe shutdown, complete export controls and a versioned owned-app demonstration are development goals where absent, not current guarantees. The repository has no claimed CVP/TAC approval or software security certificate.
+Source implementation, compilation, device execution and unavailable validation are distinct states. The repository does not claim CVP/TAC approval, software certification or authorization for a third-party application.

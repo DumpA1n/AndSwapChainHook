@@ -1,0 +1,97 @@
+name: Build and public consumers
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  host:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        preset: [host-debug, host-release, host-sanitized]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          submodules: false
+          persist-credentials: false
+      - name: Configure
+        run: cmake --preset ${{ matrix.preset }}
+      - name: Build default targets and public headers
+        run: cmake --build --preset ${{ matrix.preset }} --parallel 4
+      - name: Run input queue and public header fixtures
+        run: ctest --test-dir build/${{ matrix.preset }} --output-on-failure --no-tests=error -R '^andswapchain_(input|headers)$'
+      - name: Build and run source and installed public consumers
+        if: matrix.preset == 'host-release'
+        run: |
+          cmake --install build/host-release --prefix "${RUNNER_TEMP}/andswapchain"
+          cmake -S tests/consumer -B build/ci-installed-consumer -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${RUNNER_TEMP}/andswapchain"
+          cmake --build build/ci-installed-consumer --parallel 4
+          build/ci-installed-consumer/consumer
+          cmake -S tests/consumer -B build/ci-source-consumer -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release -DANDSWAPCHAIN_SOURCE_DIR="${GITHUB_WORKSPACE}"
+          cmake --build build/ci-source-consumer --parallel 4
+          build/ci-source-consumer/consumer
+
+  android:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        include:
+          - preset: android-debug
+            configuration: Debug
+          - preset: android-release
+            configuration: Release
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          submodules: false
+          persist-credentials: false
+      - name: Install NDK r29
+        run: sdkmanager 'ndk;29.0.14206865'
+      - name: Configure
+        run: |
+          export NDK_HOME="${ANDROID_HOME}/ndk/29.0.14206865"
+          cmake --preset ${{ matrix.preset }}
+      - name: Cross-build default targets and headers
+        run: cmake --build --preset ${{ matrix.preset }} --parallel 4
+      - name: Cross-build source and installed public consumers
+        shell: bash
+        run: |
+          prefix="${RUNNER_TEMP}/andswapchain-${{ matrix.preset }}"
+          cmake --install build/${{ matrix.preset }} --prefix "$prefix"
+          options=(-G Ninja '-DCMAKE_BUILD_TYPE=${{ matrix.configuration }}')
+          options+=("-DCMAKE_TOOLCHAIN_FILE=${ANDROID_HOME}/ndk/29.0.14206865/build/cmake/android.toolchain.cmake")
+          options+=(-DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=android-27)
+          cmake -S tests/consumer -B build/ci-android-installed "${options[@]}" \
+            -DCMAKE_PREFIX_PATH="$prefix" -DCMAKE_FIND_ROOT_PATH="$prefix"
+          cmake --build build/ci-android-installed --parallel 4
+          cmake -S tests/consumer -B build/ci-android-source "${options[@]}" \
+            -DANDSWAPCHAIN_SOURCE_DIR="${GITHUB_WORKSPACE}"
+          cmake --build build/ci-android-source --parallel 4
+
+  assemble:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          submodules: false
+          persist-credentials: false
+      - name: Install NDK r29
+        run: sdkmanager 'ndk;29.0.14206865'
+      - name: Verify optional language-tool packages and source digests
+        run: python3 tests/verify_assemble.py --ndk "${ANDROID_HOME}/ndk/29.0.14206865" --jobs 4
+      - name: Preserve language-tool evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: language-tool-build-evidence
+          path: |
+            tests/verification.json
+            build/assembly-validation/logs

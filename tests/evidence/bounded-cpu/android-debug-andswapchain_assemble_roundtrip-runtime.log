@@ -1,0 +1,1 @@
+PASS: pinned source Keystone/Capstone round-trip, exact AArch64 bytes, invalid assembly and short reader

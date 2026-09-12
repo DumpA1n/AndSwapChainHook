@@ -1,0 +1,155 @@
+diff --git a/common/os_arch_features.h b/common/os_arch_features.h
+index ee0586d..066086d 100644
+--- a/common/os_arch_features.h
++++ b/common/os_arch_features.h
+@@ -1,3 +1,4 @@
++// Modified by AndSwapChainHook: memory access never changes permissions implicitly.
+ #pragma once
+ 
+ #include <sys/types.h>
+@@ -33,14 +34,4 @@ template <typename T> inline T arm64e_pac_strip_and_sign(T &addr) {
+ }
+ } // namespace apple
+ 
+-namespace android {
+-inline void make_memory_readable(void *address, size_t size) {
+-#if defined(ANDROID)
+-  auto page = (void *)ALIGN_FLOOR(address, OSMemory::PageSize());
+-  if (!OSMemory::SetPermission(page, OSMemory::PageSize(), kReadExecute)) {
+-    return;
+-  }
+-#endif
+-}
+-} // namespace android
+-} // namespace features
+\ No newline at end of file
++} // namespace features
+diff --git a/source/InterceptRouting/InlineHookRouting.h b/source/InterceptRouting/InlineHookRouting.h
+index 55cd20a..c190f1f 100644
+--- a/source/InterceptRouting/InlineHookRouting.h
++++ b/source/InterceptRouting/InlineHookRouting.h
+@@ -1,3 +1,4 @@
++// Modified by AndSwapChainHook: bounded hook-only build with observable patch failures.
+ #pragma once
+ 
+ #include "dobby/common.h"
+@@ -22,49 +23,8 @@ struct InlineHookRouting : InterceptRouting {
+     GenerateTrampoline();
+ 
+     GenerateRelocatedCode();
+-
+-    BackupOriginCode();
++    if (!error)
++      BackupOriginCode();
+   }
+ };
+ 
+-PUBLIC inline int DobbyHook(void *address, void *fake_func, void **out_origin_func) {
+-  __FUNC_CALL_TRACE__();
+-  if (!address) {
+-    ERROR_LOG("address is 0x0");
+-    return -1;
+-  }
+-
+-  features::apple::arm64e_pac_strip(address);
+-  features::apple::arm64e_pac_strip(fake_func);
+-  features::android::make_memory_readable(address, 4);
+-
+-  DEBUG_LOG("----- [DobbyHook: %p] -----", address);
+-
+-  auto entry = gInterceptor.find((addr_t)address);
+-  if (entry) {
+-    ERROR_LOG("%p already been hooked.", address);
+-    return -1;
+-  }
+-
+-  entry = new Interceptor::Entry((addr_t)address);
+-  entry->fake_func_addr = (addr_t)fake_func;
+-
+-  auto routing = new InlineHookRouting(entry, (addr_t)fake_func);
+-  routing->BuildRouting();
+-  routing->Active();
+-  entry->routing = routing;
+-
+-  if (routing->error) {
+-    ERROR_LOG("build routing error.");
+-    return -1;
+-  }
+-
+-  if (out_origin_func) {
+-    *out_origin_func = (void *)entry->relocated.addr();
+-  }
+-  features::apple::arm64e_pac_strip_and_sign(*out_origin_func);
+-
+-  gInterceptor.add(entry);
+-
+-  return 0;
+-}
+diff --git a/source/InterceptRouting/InterceptRouting.h b/source/InterceptRouting/InterceptRouting.h
+index fd94884..56b18ee 100644
+--- a/source/InterceptRouting/InterceptRouting.h
++++ b/source/InterceptRouting/InterceptRouting.h
+@@ -1,3 +1,4 @@
++// Modified by AndSwapChainHook: bounded hook-only build with observable patch failures.
+ #pragma once
+ 
+ #include "Interceptor.h"
+@@ -57,7 +58,7 @@ struct InterceptRouting {
+   virtual void Active() {
+     __FUNC_CALL_TRACE__();
+     auto ret = DobbyCodePatch((void *)entry->addr, (uint8_t *)trampoline_addr(), trampoline_size());
+-    error |= (ret != 0);
++    error = ret;
+   }
+ 
+   bool GenerateTrampoline() {
+@@ -87,6 +88,7 @@ struct InterceptRouting {
+     if (trampoline_addr() == 0) {
+       ERROR_LOG("GenerateTrampoline must be called first");
+       error = 1;
++      return;
+     }
+ 
+     auto code_addr = entry->addr;
+diff --git a/source/MemoryAllocator/AssemblerCodeBuilder.h b/source/MemoryAllocator/AssemblerCodeBuilder.h
+index 2623371..1703fd3 100644
+--- a/source/MemoryAllocator/AssemblerCodeBuilder.h
++++ b/source/MemoryAllocator/AssemblerCodeBuilder.h
+@@ -1,3 +1,4 @@
++// Modified by AndSwapChainHook: bounded hook-only build with observable patch failures.
+ #pragma once
+ 
+ #include "MemoryAllocator.h"
+@@ -33,7 +34,8 @@ struct AssemblerCodeBuilder {
+       assembler->set_fixed_addr(fixed_addr);
+     }
+ 
+-    DobbyCodePatch((void *)fixed_addr, code_buffer->data(), code_buffer->size());
++    if (DobbyCodePatch((void *)fixed_addr, code_buffer->data(), code_buffer->size()) != 0)
++      return MemBlock{};
+ 
+     return MemBlock(fixed_addr, code_buffer->size());
+   }
+diff --git a/source/MemoryAllocator/MemoryAllocator.h b/source/MemoryAllocator/MemoryAllocator.h
+index 0faf3ec..84f595b 100644
+--- a/source/MemoryAllocator/MemoryAllocator.h
++++ b/source/MemoryAllocator/MemoryAllocator.h
+@@ -1,3 +1,4 @@
++// Modified by AndSwapChainHook: bounded hook-only build with observable patch failures.
+ #pragma once
+ 
+ #include "common/linear_allocator.h"
+@@ -81,7 +82,12 @@ struct MemoryAllocator {
+     if (!result) {
+       {
+         auto page = OSMemory::Allocate(OSMemory::PageSize(), kNoAccess);
+-        OSMemory::SetPermission(page, OSMemory::PageSize(), is_exec ? kReadExecute : kReadWrite);
++        if (!page)
++          return {};
++        if (!OSMemory::SetPermission(page, OSMemory::PageSize(), is_exec ? kReadExecute : kReadWrite)) {
++          OSMemory::Free(page, OSMemory::PageSize());
++          return {};
++        }
+         auto page_allocator = new simple_linear_allocator_t((uint8_t *)page, OSMemory::PageSize());
+         if (is_exec)
+           code_page_allocators.push_back(page_allocator);

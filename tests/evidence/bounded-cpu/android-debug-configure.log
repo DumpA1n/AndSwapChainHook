@@ -1,0 +1,305 @@
+-- The C compiler identification is Clang 21.0.0
+-- The CXX compiler identification is Clang 21.0.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /opt/homebrew/share/android-ndk/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /opt/homebrew/share/android-ndk/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed
+-- Looking for pthread_create in pthreads
+-- Looking for pthread_create in pthreads - not found
+-- Looking for pthread_create in pthread
+-- Looking for pthread_create in pthread - not found
+-- Check if compiler accepts -pthread
+-- Check if compiler accepts -pthread - yes
+-- Found Threads: TRUE
+-- PROJECT_VERSION: 6.0.0 CAPSTONE_VERSION: 6.0.0
+-- Performing Test SUPPORTS_MU
+-- Performing Test SUPPORTS_MU - Failed
+-- Performing Test SUPPORTS_SHADOWING
+-- Performing Test SUPPORTS_SHADOWING - Failed
+-- Performing Test SUPPORTS_SUNINIT
+-- Performing Test SUPPORTS_SUNINIT - Success
+-- The ASM compiler identification is Clang with GNU-like command-line
+-- Found assembler: /opt/homebrew/share/android-ndk/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang
+-- Looking for dirent.h
+-- Looking for dirent.h - found
+-- Looking for dlfcn.h
+-- Looking for dlfcn.h - found
+-- Looking for errno.h
+-- Looking for errno.h - found
+-- Looking for execinfo.h
+-- Looking for execinfo.h - found
+-- Looking for fcntl.h
+-- Looking for fcntl.h - found
+-- Looking for inttypes.h
+-- Looking for inttypes.h - found
+-- Looking for limits.h
+-- Looking for limits.h - found
+-- Looking for link.h
+-- Looking for link.h - found
+-- Looking for malloc.h
+-- Looking for malloc.h - found
+-- Looking for malloc/malloc.h
+-- Looking for malloc/malloc.h - not found
+-- Looking for ndir.h
+-- Looking for ndir.h - not found
+-- Looking for pthread.h
+-- Looking for pthread.h - found
+-- Looking for signal.h
+-- Looking for signal.h - found
+-- Looking for stdint.h
+-- Looking for stdint.h - found
+-- Looking for sys/dir.h
+-- Looking for sys/dir.h - not found
+-- Looking for sys/ioctl.h
+-- Looking for sys/ioctl.h - found
+-- Looking for sys/mman.h
+-- Looking for sys/mman.h - found
+-- Looking for sys/ndir.h
+-- Looking for sys/ndir.h - not found
+-- Looking for sys/param.h
+-- Looking for sys/param.h - found
+-- Looking for sys/resource.h
+-- Looking for sys/resource.h - found
+-- Looking for sys/stat.h
+-- Looking for sys/stat.h - found
+-- Looking for sys/time.h
+-- Looking for sys/time.h - found
+-- Looking for sys/uio.h
+-- Looking for sys/uio.h - found
+-- Looking for termios.h
+-- Looking for termios.h - found
+-- Looking for unistd.h
+-- Looking for unistd.h - found
+-- Looking for utime.h
+-- Looking for utime.h - found
+-- Looking for zlib.h
+-- Looking for zlib.h - found
+-- Looking for fenv.h
+-- Looking for fenv.h - found
+-- Looking for FE_ALL_EXCEPT
+-- Looking for FE_ALL_EXCEPT - found
+-- Looking for FE_INEXACT
+-- Looking for FE_INEXACT - found
+-- Looking for mach/mach.h
+-- Looking for mach/mach.h - not found
+-- Looking for mach-o/dyld.h
+-- Looking for mach-o/dyld.h - not found
+-- Looking for histedit.h
+-- Looking for histedit.h - not found
+-- Performing Test HAVE_CXXABI_H
+-- Performing Test HAVE_CXXABI_H - Success
+-- Looking for pthread_create in pthread
+-- Looking for pthread_create in pthread - not found
+-- Looking for pthread_create in c
+-- Looking for pthread_create in c - found
+-- Looking for pthread_getspecific in c
+-- Looking for pthread_getspecific in c - found
+-- Looking for pthread_rwlock_init in c
+-- Looking for pthread_rwlock_init in c - found
+-- Looking for pthread_mutex_lock in c
+-- Looking for pthread_mutex_lock in c - found
+-- Looking for dlopen in dl
+-- Looking for dlopen in dl - found
+-- Looking for clock_gettime in rt
+-- Looking for clock_gettime in rt - not found
+-- Looking for arc4random
+-- Looking for arc4random - found
+-- Looking for backtrace
+-- Looking for backtrace - not found
+-- Looking for getpagesize
+-- Looking for getpagesize - found
+-- Looking for getrusage
+-- Looking for getrusage - found
+-- Looking for setrlimit
+-- Looking for setrlimit - found
+-- Looking for isatty
+-- Looking for isatty - found
+-- Looking for futimens
+-- Looking for futimens - found
+-- Looking for futimes
+-- Looking for futimes - not found
+-- Looking for writev
+-- Looking for writev - found
+-- Looking for mallctl
+-- Looking for mallctl - not found
+-- Looking for mallinfo
+-- Looking for mallinfo - found
+-- Looking for malloc_zone_statistics
+-- Looking for malloc_zone_statistics - not found
+-- Looking for mkdtemp
+-- Looking for mkdtemp - found
+-- Looking for mkstemp
+-- Looking for mkstemp - found
+-- Looking for mktemp
+-- Looking for mktemp - found
+-- Looking for closedir
+-- Looking for closedir - found
+-- Looking for opendir
+-- Looking for opendir - found
+-- Looking for readdir
+-- Looking for readdir - found
+-- Looking for getcwd
+-- Looking for getcwd - found
+-- Looking for gettimeofday
+-- Looking for gettimeofday - found
+-- Looking for getrlimit
+-- Looking for getrlimit - found
+-- Looking for posix_spawn
+-- Looking for posix_spawn - not found
+-- Looking for pread
+-- Looking for pread - found
+-- Looking for realpath
+-- Looking for realpath - found
+-- Looking for sbrk
+-- Looking for sbrk - found
+-- Looking for srand48
+-- Looking for srand48 - found
+-- Looking for lrand48
+-- Looking for lrand48 - found
+-- Looking for drand48
+-- Looking for drand48 - found
+-- Looking for strtoll
+-- Looking for strtoll - found
+-- Looking for strtoq
+-- Looking for strtoq - not found
+-- Looking for strerror
+-- Looking for strerror - found
+-- Looking for strerror_r
+-- Looking for strerror_r - found
+-- Looking for strerror_s
+-- Looking for strerror_s - not found
+-- Looking for setenv
+-- Looking for setenv - found
+-- Looking for dlerror
+-- Looking for dlerror - found
+-- Looking for dlopen
+-- Looking for dlopen - found
+-- Looking for __GLIBC__
+-- Looking for __GLIBC__ - not found
+-- Performing Test HAVE_INT64_T
+-- Performing Test HAVE_INT64_T - Success
+-- Performing Test HAVE_UINT64_T
+-- Performing Test HAVE_UINT64_T - Success
+-- Performing Test HAVE_U_INT64_T
+-- Performing Test HAVE_U_INT64_T - Success
+-- Performing Test HAVE_CXX_ATOMICS_WITHOUT_LIB
+-- Performing Test HAVE_CXX_ATOMICS_WITHOUT_LIB - Success
+-- Performing Test LLVM_HAS_ATOMICS
+-- Performing Test LLVM_HAS_ATOMICS - Success
+-- Performing Test SUPPORTS_NO_VARIADIC_MACROS_FLAG
+-- Performing Test SUPPORTS_NO_VARIADIC_MACROS_FLAG - Success
+-- Keystone host triple: aarch64-linux-android
+-- Native target architecture is AArch64
+-- Threads enabled.
+-- Performing Test LLVM_NO_OLD_LIBSTDCXX
+-- Performing Test LLVM_NO_OLD_LIBSTDCXX - Success
+-- Performing Test C_SUPPORTS_FPIC
+-- Performing Test C_SUPPORTS_FPIC - Success
+-- Performing Test CXX_SUPPORTS_FPIC
+-- Performing Test CXX_SUPPORTS_FPIC - Success
+-- Building with -fPIC
+-- Performing Test SUPPORTS_FVISIBILITY_INLINES_HIDDEN_FLAG
+-- Performing Test SUPPORTS_FVISIBILITY_INLINES_HIDDEN_FLAG - Success
+-- Performing Test CXX_SUPPORTS_MISSING_FIELD_INITIALIZERS_FLAG
+-- Performing Test CXX_SUPPORTS_MISSING_FIELD_INITIALIZERS_FLAG - Success
+-- Performing Test C_SUPPORTS_COVERED_SWITCH_DEFAULT_FLAG
+-- Performing Test C_SUPPORTS_COVERED_SWITCH_DEFAULT_FLAG - Success
+-- Performing Test CXX_SUPPORTS_COVERED_SWITCH_DEFAULT_FLAG
+-- Performing Test CXX_SUPPORTS_COVERED_SWITCH_DEFAULT_FLAG - Success
+-- Performing Test CXX_WONT_WARN_ON_FINAL_NONVIRTUALDTOR
+-- Performing Test CXX_WONT_WARN_ON_FINAL_NONVIRTUALDTOR - Success
+-- Performing Test C_SUPPORTS_DELETE_NON_VIRTUAL_DTOR_FLAG
+-- Performing Test C_SUPPORTS_DELETE_NON_VIRTUAL_DTOR_FLAG - Success
+-- Performing Test CXX_SUPPORTS_DELETE_NON_VIRTUAL_DTOR_FLAG
+-- Performing Test CXX_SUPPORTS_DELETE_NON_VIRTUAL_DTOR_FLAG - Success
+-- Performing Test C_WCOMMENT_ALLOWS_LINE_WRAP
+-- Performing Test C_WCOMMENT_ALLOWS_LINE_WRAP - Failed
+-- Performing Test C_SUPPORTS_WERROR_DATE_TIME
+-- Performing Test C_SUPPORTS_WERROR_DATE_TIME - Success
+-- Performing Test CXX_SUPPORTS_WERROR_DATE_TIME
+-- Performing Test CXX_SUPPORTS_WERROR_DATE_TIME - Success
+-- Performing Test CXX_SUPPORTS_CXX11
+-- Performing Test CXX_SUPPORTS_CXX11 - Success
+-- Found PythonInterp: /opt/homebrew/bin/python3.14 (found version "3.14.6")
+-- Constructing LLVMBuild project information
+-- Targeting AArch64
+-- Found PkgConfig: /opt/homebrew/bin/pkg-config (found version "3.0.5")
+-- Configuring done (65.6s)
+-- Generating done (0.1s)
+-- Build files have been written to: /Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-debug
+CMake Warning (deprecated) at build/bounded-current-20260912/android-debug/_deps/andswapchain_keystone-src/CMakeLists.txt:5 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+This warning is for project developers.  Use -Wno-author or -Wno-deprecated
+to suppress it.
+
+CMake Warning (deprecated) at build/bounded-current-20260912/android-debug/_deps/andswapchain_keystone-src/llvm/CMakeLists.txt:4 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+This warning is for project developers.  Use -Wno-author or -Wno-deprecated
+to suppress it.
+
+CMake Warning (policy) at /opt/homebrew/share/cmake/Modules/CheckIncludeFile.cmake:148 (cmake_policy):
+  Policy CMP0075 is not set: Include file check macros honor
+  CMAKE_REQUIRED_LIBRARIES.  Run "cmake --help-policy CMP0075" for policy
+  details.  Use the cmake_policy command to set the policy and suppress this
+  warning.
+
+  CMAKE_REQUIRED_LIBRARIES is set to:
+
+    m
+
+  For compatibility with CMake 3.11 and below this check is ignoring it.
+Call Stack (most recent call first):
+  build/bounded-current-20260912/android-debug/_deps/andswapchain_keystone-src/llvm/cmake/config-ix.cmake:45 (check_include_file)
+  build/bounded-current-20260912/android-debug/_deps/andswapchain_keystone-src/llvm/CMakeLists.txt:325 (include)
+This warning is for project developers.  Use -Wno-author or -Wno-policy to
+suppress it.
+
+CMake Warning (policy) at build/bounded-current-20260912/android-debug/_deps/andswapchain_keystone-src/llvm/cmake/modules/HandleLLVMOptions.cmake:474 (CHECK_C_SOURCE_COMPILES):
+  Policy CMP0219 is not set: Macro invocations preserve backslashes in
+  arguments.  Run "cmake --help-policy CMP0219" for policy details.  Use the
+  cmake_policy command to set the policy and suppress this warning.
+
+  Command "CHECK_C_SOURCE_COMPILES" called with arguments containing
+  backslashes.
+
+  Since the policy is not set, backslashes in the arguments:
+
+   "// \\\n//\nint main() {return 0;}"
+
+  will be interpreted as escape sequences for compatibility.
+
+  Set the policy to NEW to instead pass
+
+   "// \\\\\\n//\\nint main() {return 0;}"
+
+  so that argument parsing will preserve the original values.
+Call Stack (most recent call first):
+  build/bounded-current-20260912/android-debug/_deps/andswapchain_keystone-src/llvm/CMakeLists.txt:333 (include)
+This warning is for project developers.  Use -Wno-author or -Wno-policy to
+suppress it.
+
+CMake Warning (policy) at build/bounded-current-20260912/android-debug/_deps/andswapchain_keystone-src/llvm/CMakeLists.txt:339 (include):
+  Policy CMP0148 is not set: The FindPythonInterp and FindPythonLibs modules
+  are removed.  Run "cmake --help-policy CMP0148" for policy details.  Use
+  the cmake_policy command to set the policy and suppress this warning.
+This warning is for project developers.  Use -Wno-author or -Wno-policy to
+suppress it.
+

@@ -1,94 +1,211 @@
 cmake_minimum_required(VERSION 3.22.1)
+project(AndSwapChainHook VERSION 0.2.0 LANGUAGES C CXX)
 
-if(DEFINED ENV{NDK_HOME})
-    set(ANDROID_PLATFORM 27)
-    set(ANDROID_ABI arm64-v8a)
-    file(TO_CMAKE_PATH "$ENV{NDK_HOME}" NDK_HOME_CMAKE)
-    set(CMAKE_TOOLCHAIN_FILE "${NDK_HOME_CMAKE}/build/cmake/android.toolchain.cmake")
-else()
-    message(FATAL_ERROR "NDK_HOME environment variable not set. Please set it to the path of your Android NDK.")
+include(CTest)
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+option(ANDSWAPCHAIN_BUILD_ANDROID "Build the Android integration DSO" ${ANDROID})
+option(ANDSWAPCHAIN_BUILD_GRAPHICS "Build Android EGL presentation integration" OFF)
+option(ANDSWAPCHAIN_BUILD_CRASH_RECORDER "Build the opt-in process signal recorder" OFF)
+option(ANDSWAPCHAIN_BUILD_OVERLAY "Build the explicit Android SurfaceView provider" OFF)
+option(ANDSWAPCHAIN_BUILD_POINTER_ADAPTER "Expose the PointerHook dependency adapter" OFF)
+option(ANDSWAPCHAIN_BUILD_ASSEMBLER "Build the opt-in AArch64 assembler with Keystone (GPLv2/commercial)" OFF)
+option(ANDSWAPCHAIN_BUILD_DISASSEMBLER "Build the AArch64 disassembler with Capstone" OFF)
+option(ANDSWAPCHAIN_BUILD_ASSEMBLE "Build both opt-in assembler and disassembler components" OFF)
+if(ANDSWAPCHAIN_BUILD_ASSEMBLE)
+    set(ANDSWAPCHAIN_BUILD_ASSEMBLER ON)
+    set(ANDSWAPCHAIN_BUILD_DISASSEMBLER ON)
+endif()
+option(ANDSWAPCHAIN_ENABLE_SANITIZERS "Enable host AddressSanitizer and UndefinedBehaviorSanitizer" OFF)
+
+function(andswapchain_component target export_name)
+    add_library(${target} STATIC ${ARGN})
+    add_library(AndSwapChainHook::${export_name} ALIAS ${target})
+    set_target_properties(${target} PROPERTIES EXPORT_NAME ${export_name} POSITION_INDEPENDENT_CODE ON CXX_EXTENSIONS OFF)
+    target_compile_features(${target} PUBLIC cxx_std_20)
+    target_compile_options(${target} PRIVATE $<$<CONFIG:Release>:-g>)
+    target_include_directories(${target} PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+    if(ANDSWAPCHAIN_ENABLE_SANITIZERS AND NOT ANDROID)
+        target_compile_options(${target} PUBLIC -fsanitize=address,undefined -fno-omit-frame-pointer)
+        target_link_options(${target} PUBLIC -fsanitize=address,undefined)
+    endif()
+    install(TARGETS ${target} EXPORT AndSwapChainHookTargets ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+endfunction()
+
+andswapchain_component(AndSwapChainHookMemory Memory source/Memory/Memory.cpp)
+andswapchain_component(AndSwapChainHookAnalysis Analysis source/Analysis/Scan.cpp source/Analysis/Runtime.cpp)
+target_link_libraries(AndSwapChainHookAnalysis PUBLIC AndSwapChainHookMemory)
+andswapchain_component(AndSwapChainHookInstrumentation Instrumentation source/Instrumentation/HookTransaction.cpp)
+andswapchain_component(AndSwapChainHookInput Input source/Input/Queue.cpp)
+andswapchain_component(AndSwapChainHookProfiler Profiler source/Diagnostics/Profiler.cpp)
+find_package(Threads REQUIRED)
+target_link_libraries(AndSwapChainHookInstrumentation PUBLIC Threads::Threads)
+target_link_libraries(AndSwapChainHookAnalysis PUBLIC Threads::Threads)
+target_link_libraries(AndSwapChainHookInput PUBLIC Threads::Threads)
+target_link_libraries(AndSwapChainHookProfiler PUBLIC Threads::Threads)
+if(BUILD_TESTING)
+    add_executable(andswapchain_profiler_tests tests/profiler.cpp)
+    target_link_libraries(andswapchain_profiler_tests PRIVATE AndSwapChainHookProfiler)
+    add_test(NAME andswapchain_profiler COMMAND andswapchain_profiler_tests)
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/header_Profiler.cpp" "#include <AndSwapChainHook/Profiler.h>\n")
+    add_library(andswapchain_header_Profiler OBJECT "${CMAKE_CURRENT_BINARY_DIR}/header_Profiler.cpp")
+    target_link_libraries(andswapchain_header_Profiler PRIVATE AndSwapChainHookProfiler)
 endif()
 
-project(AndSwapChainHook C CXX ASM)
-
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    add_compile_options(-fvisibility=hidden -ffunction-sections -fdata-sections)
-    add_link_options(-Wl,--gc-sections -Wl,--strip-all -Wl,--exclude-libs,ALL)
+if(ANDSWAPCHAIN_BUILD_ASSEMBLER OR ANDSWAPCHAIN_BUILD_DISASSEMBLER)
+    include(cmake/AnalysisDependencies.cmake)
+endif()
+if(ANDSWAPCHAIN_BUILD_ASSEMBLER)
+    andswapchain_component(AndSwapChainHookAssembler Assembler source/Assemble/Assembler.cpp)
+    target_link_libraries(AndSwapChainHookAssembler PUBLIC Threads::Threads PRIVATE Keystone::Keystone)
+    if(BUILD_TESTING)
+        add_executable(andswapchain_assembler_roundtrip tests/assembler_roundtrip.cpp)
+        target_link_libraries(andswapchain_assembler_roundtrip PRIVATE AndSwapChainHookAssembler)
+        add_test(NAME andswapchain_assembler_roundtrip COMMAND andswapchain_assembler_roundtrip)
+        file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/header_Assembler.cpp" "#include <AndSwapChainHook/Assembler.h>\n")
+        add_library(andswapchain_header_Assembler OBJECT "${CMAKE_CURRENT_BINARY_DIR}/header_Assembler.cpp")
+        target_link_libraries(andswapchain_header_Assembler PRIVATE AndSwapChainHookAssembler)
+    endif()
+endif()
+if(ANDSWAPCHAIN_BUILD_DISASSEMBLER)
+    andswapchain_component(AndSwapChainHookDisassembler Disassembler source/Assemble/Disassembler.cpp)
+    target_link_libraries(AndSwapChainHookDisassembler PUBLIC Capstone::Capstone)
+    if(BUILD_TESTING)
+        add_executable(andswapchain_disassembler_roundtrip tests/disassembler_roundtrip.cpp)
+        target_link_libraries(andswapchain_disassembler_roundtrip PRIVATE AndSwapChainHookDisassembler)
+        add_test(NAME andswapchain_disassembler_roundtrip COMMAND andswapchain_disassembler_roundtrip)
+        file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/header_Disassembler.cpp" "#include <AndSwapChainHook/Disassembler.h>\n")
+        add_library(andswapchain_header_Disassembler OBJECT "${CMAKE_CURRENT_BINARY_DIR}/header_Disassembler.cpp")
+        target_link_libraries(andswapchain_header_Disassembler PRIVATE AndSwapChainHookDisassembler)
+    endif()
+endif()
+if(ANDSWAPCHAIN_BUILD_ASSEMBLER AND ANDSWAPCHAIN_BUILD_DISASSEMBLER)
+    add_library(AndSwapChainHookAssemble INTERFACE)
+    add_library(AndSwapChainHook::Assemble ALIAS AndSwapChainHookAssemble)
+    set_target_properties(AndSwapChainHookAssemble PROPERTIES EXPORT_NAME Assemble)
+    target_link_libraries(AndSwapChainHookAssemble INTERFACE AndSwapChainHookAssembler AndSwapChainHookDisassembler)
+    install(TARGETS AndSwapChainHookAssemble EXPORT AndSwapChainHookTargets)
+    if(BUILD_TESTING)
+        add_executable(andswapchain_assemble_contracts tests/assemble_contracts.cpp)
+        target_link_libraries(andswapchain_assemble_contracts PRIVATE AndSwapChainHookAssemble)
+        target_include_directories(andswapchain_assemble_contracts PRIVATE $<TARGET_PROPERTY:Keystone::Keystone,INTERFACE_INCLUDE_DIRECTORIES>)
+        add_test(NAME andswapchain_assemble_contracts COMMAND andswapchain_assemble_contracts)
+        add_executable(andswapchain_assemble_roundtrip tests/assemble_roundtrip.cpp)
+        target_link_libraries(andswapchain_assemble_roundtrip PRIVATE AndSwapChainHookAssemble)
+        add_test(NAME andswapchain_assemble_roundtrip COMMAND andswapchain_assemble_roundtrip)
+    endif()
 endif()
 
-file(GLOB_RECURSE COMMON_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/*.c
-)
-file(GLOB_RECURSE ASM_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/*.s
-)
-
-file(GLOB IMGUI_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui/imgui.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui/imgui_demo.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui/imgui_draw.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui/imgui_tables.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui/imgui_widgets.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui/backends/imgui_impl_android.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui/backends/imgui_impl_vulkan.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui/backends/imgui_impl_opengl3.cpp
-)
-
-option(USE_KITTYMEMORYEX "Use KittyMemoryEx backend (pvm syscall) instead of KittyMemory (mprotect+memcpy)" ON)
-
-if(USE_KITTYMEMORYEX)
-    file(GLOB KITTY_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/external/KittyMemoryEx/KittyMemoryEx/*.cpp)
-    set(KITTY_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/KittyMemoryEx)
-else()
-    file(GLOB KITTY_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/external/KittyMemory/KittyMemory/*.cpp)
-    set(KITTY_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/KittyMemory)
+if(ANDSWAPCHAIN_BUILD_POINTER_ADAPTER)
+    if(NOT TARGET PointerHook::Core)
+        find_package(PointerHook CONFIG REQUIRED)
+    endif()
+    add_library(AndSwapChainHookHookAdapter INTERFACE)
+    add_library(AndSwapChainHook::HookAdapter ALIAS AndSwapChainHookHookAdapter)
+    set_target_properties(AndSwapChainHookHookAdapter PROPERTIES EXPORT_NAME HookAdapter)
+    target_link_libraries(AndSwapChainHookHookAdapter INTERFACE PointerHook::Core)
+    install(TARGETS AndSwapChainHookHookAdapter EXPORT AndSwapChainHookTargets)
+    if(BUILD_TESTING)
+        add_executable(andswapchain_pointer_adapter_test tests/pointer_adapter.cpp)
+        target_link_libraries(andswapchain_pointer_adapter_test PRIVATE AndSwapChainHookHookAdapter)
+        add_test(NAME andswapchain_pointer_adapter COMMAND andswapchain_pointer_adapter_test)
+    endif()
 endif()
 
-set(LIBRARY_SOURCES
-    ${COMMON_SOURCES}
-    ${IMGUI_SOURCES}
-    ${KITTY_SOURCES}
-)
+if(ANDSWAPCHAIN_BUILD_ANDROID)
+    if(NOT ANDROID OR NOT ANDROID_ABI STREQUAL "arm64-v8a")
+        message(FATAL_ERROR "Android integration supports Android AArch64 only; select an Android preset.")
+    endif()
+    add_library(AndSwapChainHook SHARED source/Library.cpp source/Analysis/Runtime.cpp)
+    target_link_libraries(AndSwapChainHook PRIVATE AndSwapChainHookAnalysis AndSwapChainHookInstrumentation)
+    target_compile_features(AndSwapChainHook PRIVATE cxx_std_20)
+    target_compile_options(AndSwapChainHook PRIVATE $<$<CONFIG:Release>:-g>)
+    if(BUILD_TESTING)
+        add_executable(andswapchain_load_test tests/load.cpp)
+        target_link_libraries(andswapchain_load_test PRIVATE dl)
+        target_compile_features(andswapchain_load_test PRIVATE cxx_std_20)
+    endif()
+endif()
 
-include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/source
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/Utils
-    ${CMAKE_CURRENT_SOURCE_DIR}/external
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui
-    ${KITTY_INCLUDE_DIR}
-)
+if(ANDSWAPCHAIN_BUILD_GRAPHICS)
+    if(NOT ANDROID OR NOT ANDROID_ABI STREQUAL "arm64-v8a")
+        message(FATAL_ERROR "Graphics requires Android AArch64.")
+    endif()
+    include(cmake/Graphics.cmake)
+    if(BUILD_TESTING)
+        file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/dobby_header.c" "#include <dobby.h>\n")
+        add_library(andswapchain_dobby_header OBJECT "${CMAKE_CURRENT_BINARY_DIR}/dobby_header.c")
+        target_link_libraries(andswapchain_dobby_header PRIVATE Dobby::Dobby)
+        add_executable(andswapchain_dobby_test tests/dobby.cpp)
+        target_link_libraries(andswapchain_dobby_test PRIVATE AndSwapChainHookInstrumentation Dobby::Dobby)
+        target_link_options(andswapchain_dobby_test PRIVATE -Wl,--wrap=mprotect)
+        target_compile_options(andswapchain_dobby_test PRIVATE -mbranch-protection=none)
+        add_executable(andswapchain_egl_test tests/egl.cpp)
+        target_compile_options(andswapchain_egl_test PRIVATE -mbranch-protection=none -fno-optimize-sibling-calls)
+        target_link_libraries(andswapchain_egl_test PRIVATE AndSwapChainHookGraphics GLESv3)
+    endif()
+endif()
 
-set(LIBS
-    android
-    log
-    vulkan
-    GLESv3
-    EGL
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/Dobby/arm64-v8a/libdobby.a
-)
+if(ANDSWAPCHAIN_BUILD_CRASH_RECORDER)
+    andswapchain_component(AndSwapChainHookCrashRecorder CrashRecorder source/Diagnostics/CrashRecorder.cpp)
+    target_link_libraries(AndSwapChainHookCrashRecorder PUBLIC Threads::Threads)
+    if(BUILD_TESTING)
+        add_executable(andswapchain_crash_record_test tests/crash_record.cpp)
+        target_link_libraries(andswapchain_crash_record_test PRIVATE AndSwapChainHookCrashRecorder)
+        add_test(NAME andswapchain_crash_record COMMAND andswapchain_crash_record_test)
+    endif()
+endif()
 
-add_library(${PROJECT_NAME}_asm OBJECT ${ASM_SOURCES})
-set_target_properties(${PROJECT_NAME}_asm PROPERTIES EXPORT_COMPILE_COMMANDS OFF)
+if(ANDSWAPCHAIN_BUILD_OVERLAY)
+    if(NOT ANDROID)
+        message(FATAL_ERROR "Overlay requires an Android toolchain.")
+    endif()
+    andswapchain_component(AndSwapChainHookOverlay Overlay source/Android/SurfaceView.cpp)
+    target_link_libraries(AndSwapChainHookOverlay PUBLIC android Threads::Threads)
+    if(BUILD_TESTING)
+        add_library(andswapchain_overlay_fixture SHARED tests/overlay/native.cpp)
+        target_link_libraries(andswapchain_overlay_fixture PRIVATE AndSwapChainHookOverlay)
+    endif()
+endif()
 
-add_library(${PROJECT_NAME} SHARED
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/Library.cpp
-    ${LIBRARY_SOURCES}
-    $<TARGET_OBJECTS:${PROJECT_NAME}_asm>
-)
+if(BUILD_TESTING)
+    add_executable(andswapchain_input_tests tests/input.cpp)
+    target_link_libraries(andswapchain_input_tests PRIVATE AndSwapChainHookInput)
+    add_test(NAME andswapchain_input COMMAND andswapchain_input_tests)
+    add_executable(andswapchain_contract_tests tests/contracts.cpp)
+    target_link_libraries(andswapchain_contract_tests PRIVATE AndSwapChainHookAnalysis AndSwapChainHookInstrumentation)
+    add_test(NAME andswapchain_contracts COMMAND andswapchain_contract_tests)
+    set(header_checks Memory HookTransaction CallbackGate Runtime CrashRecorder Input)
+    if(ANDROID)
+        list(APPEND header_checks Graphics Overlay)
+    endif()
+    foreach(header IN LISTS header_checks)
+        file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/header_${header}.cpp" "#include <AndSwapChainHook/${header}.h>\n")
+        add_library(andswapchain_header_${header} OBJECT "${CMAKE_CURRENT_BINARY_DIR}/header_${header}.cpp")
+        target_link_libraries(andswapchain_header_${header} PRIVATE AndSwapChainHookAnalysis)
+    endforeach()
+    add_library(andswapchain_c_header OBJECT tests/runtime_header.c)
+    target_link_libraries(andswapchain_c_header PRIVATE AndSwapChainHookAnalysis)
+    add_executable(andswapchain_header_check tests/headers.cpp)
+    target_link_libraries(andswapchain_header_check PRIVATE AndSwapChainHookAnalysis AndSwapChainHookInstrumentation)
+    add_test(NAME andswapchain_headers COMMAND andswapchain_header_check)
+endif()
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE
-    $<$<BOOL:${USE_KITTYMEMORYEX}>:kUSE_KITTYMEMORYEX>
-    kNO_KEYSTONE
-    kUSE_LOGCAT # KITTY_LOGX
-    kANDROID_LOG
-    kANDROID_LOG_TAG="INJECT"
-    kPROJECT_NAME="${PROJECT_NAME}"
-)
+install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(FILES LICENSE THIRD_PARTY_NOTICES.md DESTINATION ${CMAKE_INSTALL_DATADIR}/licenses/AndSwapChainHook)
+install(EXPORT AndSwapChainHookTargets NAMESPACE AndSwapChainHook:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/AndSwapChainHook)
+configure_package_config_file(cmake/AndSwapChainHookConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/AndSwapChainHookConfig.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/AndSwapChainHook)
+write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/AndSwapChainHookConfigVersion.cmake VERSION ${PROJECT_VERSION} COMPATIBILITY SameMajorVersion)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/AndSwapChainHookConfig.cmake ${CMAKE_CURRENT_BINARY_DIR}/AndSwapChainHookConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/AndSwapChainHook)
 
-target_link_libraries(${PROJECT_NAME} ${LIBS})
+if(BUILD_TESTING)
+    get_property(andswapchain_tests DIRECTORY PROPERTY TESTS)
+    if(andswapchain_tests)
+        set_tests_properties(${andswapchain_tests} PROPERTIES TIMEOUT 30)
+    endif()
+endif()

@@ -1,0 +1,332 @@
+{
+  "schema": 2,
+  "recorded_at": "2026-09-12T14:28:41.627054+00:00",
+  "github_actions_execution": "unverified; no workflow dispatched or repository pushed",
+  "local_yaml_parser": "Ruby Psych parses the workflow; GitHub expression/runner semantics are unverified",
+  "local_shell_syntax": "bash -n on each selected matrix-expanded run step; no run step executed",
+  "workflow": {
+    "path": ".github/workflows/build.yml",
+    "sha256": "fce22e1305557755279ca3a7ff742d99879300524c838058bc06e958bb374bee",
+    "bytes": 3981
+  },
+  "documentation": {
+    "path": "docs/ci.md",
+    "sha256": "cc2c407a3b22a52350ebbe225cd5ac06ff3f3dcb43bba979863a7d82ef11ac7d",
+    "bytes": 1912
+  },
+  "checks": [
+    {
+      "job": "host",
+      "matrix": {
+        "preset": "host-debug"
+      },
+      "step": "Configure",
+      "status": "passed",
+      "scope": "bash -n only; not executed",
+      "exit_code": 0,
+      "script": {
+        "path": "tests/evidence/bounded-cpu/ci-syntax-host-0-1.sh",
+        "sha256": "648ce974a640076adfbc8e4975131f55d77510afc1279e4821277714da5ac1eb",
+        "bytes": 26
+      }
+    },
+    {
+      "job": "host",
+      "matrix": {
+        "preset": "host-debug"
+      },
+      "step": "Build default targets and public headers",
+      "status": "passed",
+      "scope": "bash -n only; not executed",
+      "exit_code": 0,
+      "script": {
+        "path": "tests/evidence/bounded-cpu/ci-syntax-host-0-2.sh",
+        "sha256": "1fc0945369a9375bbdbd6ace0d253322a7d3dc6cd97ba4f5572c090adb097c09",
+        "bytes": 47
+      }
+    },
+    {
+      "job": "host",
+      "matrix": {
+        "preset": "host-debug"
+      },
+      "step": "Run input queue and public header fixtures",
+      "status": "passed",
+      "scope": "bash -n only; not executed",
+      "exit_code": 0,
+      "script": {
+        "path": "tests/evidence/bounded-cpu/ci-syntax-host-0-3.sh",
+        "sha256": "4277464f29d80ce0b871ff109a45bb4d39f4bcce2ce0fd3396d44fa8d95fe823",
+        "bytes": 107
+      }
+    },
+    {
+      "job": "host",
+      "matrix": {
+        "preset": "host-release"
+      },
+      "step": "Configure",
+      "status": "passed",
+      "scope": "bash -n only; not executed",
+      "exit_code": 0,
+      "script": {
+        "path": "tests/evidence/bounded-cpu/ci-syntax-host-1-1.sh",
+        "sha256": "6b4b064a91204cc631159c03295b2e4e13b66ccb2d42355b700bcb22f0aa999f",
+        "bytes": 28
+      }
+    },
+    {
+      "job": "host",
+      "matrix": {
+        "preset": "host-release"
+      },
+      "step": "Build default targets and public headers",
+      "status": "passed",
+      "scope": "bash -n only; not executed",
+      "exit_code": 0,
+      "script": {
+        "path": "tests/evidence/bounded-cpu/ci-syntax-host-1-2.sh",
+        "sha256": "664882ac560f9e1ddcb4082558aa3d250bd35a0a23a8fb435a1b50a71057cab3",
+        "bytes": 49
+      }
+    },
+    {
+      "job": "host",
+      "matrix": {
+        "preset": "host-release"
+      },
+      "step": "Run input queue and public header fixtures",
+      "status": "passed",
+      "scope": "bash -n only; not executed",
+      "exit_code": 0,
+      "script": {
+        "path": "tests/evidence/bounded-cpu/ci-syntax-host-1-3.sh",
+        "sha256": "19e3042f968bce781e64928f6808d5132089f6c1762f73be003ddc7dc0e5bf90",
+        "bytes": 109
+      }
+    },
+    {
+      "job": "host",
+      "matrix": {
+        "preset": "host-release"
+      },
+      "step": "Build and run source and installed public consumers",
+      "status": "passed",
+      "scope": "bash -n only; not executed",
+      "exit_code": 0,
+      "script": {
+        "path": "tests/evidence/bounded-cpu/ci-syntax-host-1-4.sh",
+        "sha256": "48e2238c0871783b303e27ba4ad5b93c8286c973d7687ceccce1f569ef0186b5",
+        "bytes": 538
+      }
+    },
+    {
+      "job": "host",
+      "matrix": {
+        "preset": "host-sanitized"
+      },
+      "step": "Configure",
+      "status": "passed",
+      "scope": "bash -n only; not executed",
+      "exit_code": 0,
+      "script": {
+        "path": "tests/evidence/bounded-cpu/ci-syntax-host-2-1.sh",
+        "sha256": "eb8f6b05387f0e3cb8fac8c34917207712fe2a88eb801755529c03914e732c90",
+        "bytes": 30
+      }
+    },
+    {
+      "job": "host",
+      "matrix": {
+        "preset": "host-sanitized"
+      },
+      "step": "Build default targets and public headers",
+      "status": "passed",
+      "scope": "bash -n only; not executed",
+      "exit_code": 0,
+      "script": {
+        "path": "tests/evidence/bounded-cpu/ci-syntax-host-2-2.sh",
+        "sha256": "c6d03d854eb5f6d9b3ee145f3088217d1ab547accd279304d29c56ac477ba76c",
+        "bytes": 51
+      }
+    },
+    {
+      "job": "host",
+      "matrix": {
+        "preset": "host-sanitized"
+      },
+      "step": "Run input queue and public header fixtures",
+      "status": "passed",
+      "scope": "bash -n only; not executed",
+      "exit_code": 0,
+      "script": {
+        "path": "tests/evidence/bounded-cpu/ci-syntax-host-2-3.sh",
+        "sha256": "190be7c13655034d9e177234c797a99a562bdd5f2953092befd73c5d4d033282",
+        "bytes": 111
+      }
+    },
+    {
+      "job": "android",
+      "matrix": {
+        "preset": "android-debug",
+        "configuration": "Debug"
+      },
+      "step": "Install NDK r29",
+      "status": "passed",
+      "scope": "bash -n only; not executed",
+      "exit_code": 0,
+      "script": {
+        "path": "tests/evidence/bounded-cpu/ci-syntax-android-0-1.sh",
+        "sha256": "6f35477e680673180a3590e64b7ccc95bb9657dfdded80a7c21466f201cd500f",
+        "bytes": 31
+      }
+    },
+    {
+      "job": "android",
+      "matrix": {
+        "preset": "android-debug",
+        "configuration": "Debug"
+      },
+      "step": "Configure",
+      "status": "passed",
+      "scope": "bash -n only; not executed",
+      "exit_code": 0,
+      "script": {
+        "path": "tests/evidence/bounded-cpu/ci-syntax-android-0-2.sh",
+        "sha256": "41f1d158357cd4cccf5548d6ae563b3321c993230a3cad52efece3cf052b8e6b",
+        "bytes": 82
+      }
+    },
+    {
+      "job": "android",
+      "matrix": {
+        "preset": "android-debug",
+        "configuration": "Debug"
+      },
+      "step": "Cross-build default targets and headers",
+      "status": "passed",
+      "scope": "bash -n only; not executed",
+      "exit_code": 0,
+      "script": {
+        "path": "tests/evidence/bounded-cpu/ci-syntax-android-0-3.sh",
+        "sha256": "b1af2317c493faa7276ed0d5ea4bed2043c431cac5dd4d50792caef6f7f2187d",
+        "bytes": 50
+      }
+    },
+    {
+      "job": "android",
+      "matrix": {
+        "preset": "android-debug",
+        "configuration": "Debug"
+      },
+      "step": "Cross-build source and installed public consumers",
+      "status": "passed",
+      "scope": "bash -n only; not executed",
+      "exit_code": 0,
+      "script": {
+        "path": "tests/evidence/bounded-cpu/ci-syntax-android-0-4.sh",
+        "sha256": "4df14b9e6f3245fa237b48264b851d6c3ff3aeba7dfc99451063545f2f6091da",
+        "bytes": 685
+      }
+    },
+    {
+      "job": "android",
+      "matrix": {
+        "preset": "android-release",
+        "configuration": "Release"
+      },
+      "step": "Install NDK r29",
+      "status": "passed",
+      "scope": "bash -n only; not executed",
+      "exit_code": 0,
+      "script": {
+        "path": "tests/evidence/bounded-cpu/ci-syntax-android-1-1.sh",
+        "sha256": "6f35477e680673180a3590e64b7ccc95bb9657dfdded80a7c21466f201cd500f",
+        "bytes": 31
+      }
+    },
+    {
+      "job": "android",
+      "matrix": {
+        "preset": "android-release",
+        "configuration": "Release"
+      },
+      "step": "Configure",
+      "status": "passed",
+      "scope": "bash -n only; not executed",
+      "exit_code": 0,
+      "script": {
+        "path": "tests/evidence/bounded-cpu/ci-syntax-android-1-2.sh",
+        "sha256": "eddb9788c005b479dc78f209e148f3cb87d1f0230464fb350f7e683793d4d68f",
+        "bytes": 84
+      }
+    },
+    {
+      "job": "android",
+      "matrix": {
+        "preset": "android-release",
+        "configuration": "Release"
+      },
+      "step": "Cross-build default targets and headers",
+      "status": "passed",
+      "scope": "bash -n only; not executed",
+      "exit_code": 0,
+      "script": {
+        "path": "tests/evidence/bounded-cpu/ci-syntax-android-1-3.sh",
+        "sha256": "a4ed099da153911e155e112bda13ad9f20627680e8f63c13b9e32249a7efff24",
+        "bytes": 52
+      }
+    },
+    {
+      "job": "android",
+      "matrix": {
+        "preset": "android-release",
+        "configuration": "Release"
+      },
+      "step": "Cross-build source and installed public consumers",
+      "status": "passed",
+      "scope": "bash -n only; not executed",
+      "exit_code": 0,
+      "script": {
+        "path": "tests/evidence/bounded-cpu/ci-syntax-android-1-4.sh",
+        "sha256": "6fb691874fd7842a4a74e8af392994be9dfd3f589b6f2866d8b12341b722d199",
+        "bytes": 691
+      }
+    },
+    {
+      "job": "assemble",
+      "matrix": {},
+      "step": "Install NDK r29",
+      "status": "passed",
+      "scope": "bash -n only; not executed",
+      "exit_code": 0,
+      "script": {
+        "path": "tests/evidence/bounded-cpu/ci-syntax-assemble-0-1.sh",
+        "sha256": "6f35477e680673180a3590e64b7ccc95bb9657dfdded80a7c21466f201cd500f",
+        "bytes": 31
+      }
+    },
+    {
+      "job": "assemble",
+      "matrix": {},
+      "step": "Verify optional language-tool packages and source digests",
+      "status": "passed",
+      "scope": "bash -n only; not executed",
+      "exit_code": 0,
+      "script": {
+        "path": "tests/evidence/bounded-cpu/ci-syntax-assemble-0-2.sh",
+        "sha256": "32f8837b1ce8a9d0362ff372502f8ff8ee8e06be95031a3a34355602916e0dcd",
+        "bytes": 84
+      }
+    }
+  ],
+  "current_local_cpu_evidence": {
+    "path": "tests/verification.json",
+    "sha256": "c763ab9ced9ddc3c6f479c5b5394ba03ac7498d8c96512d7898e7e92dd3c12a3",
+    "bytes": 387693
+  },
+  "limitations": [
+    "Current workflow run steps, default Input/header suite, SDK installation and Ubuntu/GitHub runners were not reexecuted by this syntax check.",
+    "Separate CPU producer/consumer execution does not establish workflow execution or public UI/instrumentation acceptance."
+  ]
+}

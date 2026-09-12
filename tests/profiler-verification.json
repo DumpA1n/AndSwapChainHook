@@ -1,0 +1,758 @@
+{
+  "schema": 1,
+  "component": "AndSwapChainHook::Profiler",
+  "status": "passed",
+  "toolchain": {
+    "host": "macOS-15.7.3-arm64-arm-64bit",
+    "cmake": "cmake version 4.4.2\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake).",
+    "compiler": "Apple clang version 17.0.0 (clang-1700.0.13.5)\nTarget: arm64-apple-darwin24.6.0\nThread model: posix\nInstalledDir: /Library/Developer/CommandLineTools/usr/bin"
+  },
+  "checks": [
+    {
+      "name": "cmake-version",
+      "command": [
+        "cmake",
+        "--version"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": {
+        "path": "build/profiler-current-20260912/logs/cmake-version.log",
+        "sha256": "9e2032657b821ca15fdf749298148b08afc4d86fe8a6f709a8459318fa1c018f"
+      }
+    },
+    {
+      "name": "compiler-version",
+      "command": [
+        "c++",
+        "--version"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": {
+        "path": "build/profiler-current-20260912/logs/compiler-version.log",
+        "sha256": "abf148723dce5bca87f773682e1acb4c7849188b7b6e0a07215609901139f527"
+      }
+    },
+    {
+      "name": "debug-configure",
+      "command": [
+        "cmake",
+        "-S",
+        "/Users/ddd/Developer/AndSwapChainHook",
+        "-B",
+        "/Users/ddd/Developer/AndSwapChainHook/build/profiler-current-20260912/debug",
+        "-G",
+        "Ninja",
+        "-DBUILD_TESTING=ON",
+        "-DANDSWAPCHAIN_BUILD_ANDROID=OFF",
+        "-DANDSWAPCHAIN_BUILD_GRAPHICS=OFF",
+        "-DANDSWAPCHAIN_BUILD_OVERLAY=OFF",
+        "-DANDSWAPCHAIN_BUILD_CRASH_RECORDER=OFF",
+        "-DANDSWAPCHAIN_BUILD_POINTER_ADAPTER=OFF",
+        "-DANDSWAPCHAIN_BUILD_ASSEMBLE=OFF",
+        "-DANDSWAPCHAIN_BUILD_ASSEMBLER=OFF",
+        "-DANDSWAPCHAIN_BUILD_DISASSEMBLER=OFF",
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-DANDSWAPCHAIN_ENABLE_SANITIZERS=ON"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": {
+        "path": "build/profiler-current-20260912/logs/debug-configure.log",
+        "sha256": "938a466ecbb76b24c9ec1dd27c23fd454df45d1f8def865f5622ef7020332a9d"
+      }
+    },
+    {
+      "name": "debug-build",
+      "command": [
+        "cmake",
+        "--build",
+        "/Users/ddd/Developer/AndSwapChainHook/build/profiler-current-20260912/debug",
+        "--parallel",
+        "4",
+        "--target",
+        "andswapchain_profiler_tests",
+        "andswapchain_header_Profiler"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": {
+        "path": "build/profiler-current-20260912/logs/debug-build.log",
+        "sha256": "9d6703dab1e1557f50b1a03e04c70ae81585e63e55da15f7f3d6bb1f24545752"
+      }
+    },
+    {
+      "name": "debug-ctest",
+      "command": [
+        "ctest",
+        "--test-dir",
+        "/Users/ddd/Developer/AndSwapChainHook/build/profiler-current-20260912/debug",
+        "--output-on-failure",
+        "--no-tests=error",
+        "-R",
+        "^andswapchain_profiler$"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": {
+        "path": "build/profiler-current-20260912/logs/debug-ctest.log",
+        "sha256": "996298f142b210916c05ef8ce27ec130332db52cffc651674728072ce2470bdc"
+      }
+    },
+    {
+      "name": "release-configure",
+      "command": [
+        "cmake",
+        "-S",
+        "/Users/ddd/Developer/AndSwapChainHook",
+        "-B",
+        "/Users/ddd/Developer/AndSwapChainHook/build/profiler-current-20260912/release",
+        "-G",
+        "Ninja",
+        "-DBUILD_TESTING=ON",
+        "-DANDSWAPCHAIN_BUILD_ANDROID=OFF",
+        "-DANDSWAPCHAIN_BUILD_GRAPHICS=OFF",
+        "-DANDSWAPCHAIN_BUILD_OVERLAY=OFF",
+        "-DANDSWAPCHAIN_BUILD_CRASH_RECORDER=OFF",
+        "-DANDSWAPCHAIN_BUILD_POINTER_ADAPTER=OFF",
+        "-DANDSWAPCHAIN_BUILD_ASSEMBLE=OFF",
+        "-DANDSWAPCHAIN_BUILD_ASSEMBLER=OFF",
+        "-DANDSWAPCHAIN_BUILD_DISASSEMBLER=OFF",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DANDSWAPCHAIN_ENABLE_SANITIZERS=OFF"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": {
+        "path": "build/profiler-current-20260912/logs/release-configure.log",
+        "sha256": "62ff76ea9271156b532e50a3402c1c591b21b1a2ed0d3afc430955dc3984e8b8"
+      }
+    },
+    {
+      "name": "release-build",
+      "command": [
+        "cmake",
+        "--build",
+        "/Users/ddd/Developer/AndSwapChainHook/build/profiler-current-20260912/release",
+        "--parallel",
+        "4",
+        "--target",
+        "andswapchain_profiler_tests",
+        "andswapchain_header_Profiler"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": {
+        "path": "build/profiler-current-20260912/logs/release-build.log",
+        "sha256": "9d6703dab1e1557f50b1a03e04c70ae81585e63e55da15f7f3d6bb1f24545752"
+      }
+    },
+    {
+      "name": "release-ctest",
+      "command": [
+        "ctest",
+        "--test-dir",
+        "/Users/ddd/Developer/AndSwapChainHook/build/profiler-current-20260912/release",
+        "--output-on-failure",
+        "--no-tests=error",
+        "-R",
+        "^andswapchain_profiler$"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": {
+        "path": "build/profiler-current-20260912/logs/release-ctest.log",
+        "sha256": "1f081707e340d73412873209f83e580c323cced096612208e0866553738037d7"
+      }
+    },
+    {
+      "name": "tsan-configure",
+      "command": [
+        "cmake",
+        "-S",
+        "/Users/ddd/Developer/AndSwapChainHook",
+        "-B",
+        "/Users/ddd/Developer/AndSwapChainHook/build/profiler-current-20260912/tsan",
+        "-G",
+        "Ninja",
+        "-DBUILD_TESTING=ON",
+        "-DANDSWAPCHAIN_BUILD_ANDROID=OFF",
+        "-DANDSWAPCHAIN_BUILD_GRAPHICS=OFF",
+        "-DANDSWAPCHAIN_BUILD_OVERLAY=OFF",
+        "-DANDSWAPCHAIN_BUILD_CRASH_RECORDER=OFF",
+        "-DANDSWAPCHAIN_BUILD_POINTER_ADAPTER=OFF",
+        "-DANDSWAPCHAIN_BUILD_ASSEMBLE=OFF",
+        "-DANDSWAPCHAIN_BUILD_ASSEMBLER=OFF",
+        "-DANDSWAPCHAIN_BUILD_DISASSEMBLER=OFF",
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-DANDSWAPCHAIN_ENABLE_SANITIZERS=OFF",
+        "-DCMAKE_CXX_FLAGS=-fsanitize=thread -fno-omit-frame-pointer",
+        "-DCMAKE_EXE_LINKER_FLAGS=-fsanitize=thread"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": {
+        "path": "build/profiler-current-20260912/logs/tsan-configure.log",
+        "sha256": "3ed9ce9d7f0a8eff41c6975db311214b37e3e3ff98b3f37fa6a627992a5c6774"
+      }
+    },
+    {
+      "name": "tsan-build",
+      "command": [
+        "cmake",
+        "--build",
+        "/Users/ddd/Developer/AndSwapChainHook/build/profiler-current-20260912/tsan",
+        "--parallel",
+        "4",
+        "--target",
+        "andswapchain_profiler_tests",
+        "andswapchain_header_Profiler"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": {
+        "path": "build/profiler-current-20260912/logs/tsan-build.log",
+        "sha256": "9d6703dab1e1557f50b1a03e04c70ae81585e63e55da15f7f3d6bb1f24545752"
+      }
+    },
+    {
+      "name": "tsan-ctest",
+      "command": [
+        "ctest",
+        "--test-dir",
+        "/Users/ddd/Developer/AndSwapChainHook/build/profiler-current-20260912/tsan",
+        "--output-on-failure",
+        "--no-tests=error",
+        "-R",
+        "^andswapchain_profiler$"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": {
+        "path": "build/profiler-current-20260912/logs/tsan-ctest.log",
+        "sha256": "d876a5dea83b321ec45635ba584cc9213b67ddfeb81e253337897ca07f469951"
+      }
+    },
+    {
+      "name": "source-consumer-configure",
+      "command": [
+        "cmake",
+        "-S",
+        "/Users/ddd/Developer/AndSwapChainHook/tests/profiler_consumer",
+        "-B",
+        "/Users/ddd/Developer/AndSwapChainHook/build/profiler-current-20260912/source-consumer",
+        "-G",
+        "Ninja",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DANDSWAPCHAIN_SOURCE_DIR=/Users/ddd/Developer/AndSwapChainHook",
+        "-DCMAKE_INSTALL_PREFIX=/Users/ddd/Developer/AndSwapChainHook/build/profiler-current-20260912/original-install"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": {
+        "path": "build/profiler-current-20260912/logs/source-consumer-configure.log",
+        "sha256": "1277ca9f9477ad29c9d3e111d176665286d19acecbe2c5d13be5828f1ef2fcd6"
+      }
+    },
+    {
+      "name": "source-consumer-build",
+      "command": [
+        "cmake",
+        "--build",
+        "/Users/ddd/Developer/AndSwapChainHook/build/profiler-current-20260912/source-consumer",
+        "--parallel",
+        "4"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": {
+        "path": "build/profiler-current-20260912/logs/source-consumer-build.log",
+        "sha256": "a560fb5ae95582749ae195336347ed31a1ced0da2024e03bba991a89dfc4ef0b"
+      }
+    },
+    {
+      "name": "source-consumer-ctest",
+      "command": [
+        "ctest",
+        "--test-dir",
+        "/Users/ddd/Developer/AndSwapChainHook/build/profiler-current-20260912/source-consumer",
+        "--output-on-failure",
+        "--no-tests=error"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": {
+        "path": "build/profiler-current-20260912/logs/source-consumer-ctest.log",
+        "sha256": "abeb137f59acaac072adaafb26a0bf9cfc31f68ce933444da76ef5d5e1f0f8ad"
+      }
+    },
+    {
+      "name": "install",
+      "command": [
+        "cmake",
+        "--install",
+        "/Users/ddd/Developer/AndSwapChainHook/build/profiler-current-20260912/source-consumer",
+        "--prefix",
+        "/Users/ddd/Developer/AndSwapChainHook/build/profiler-current-20260912/relocated-install"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": {
+        "path": "build/profiler-current-20260912/logs/install.log",
+        "sha256": "21f7a47c438f8afe3718cc8320713aed3e31209494e7bdfd0891b1015f37ff5a"
+      }
+    },
+    {
+      "name": "installed-consumer-configure",
+      "command": [
+        "cmake",
+        "-S",
+        "/Users/ddd/Developer/AndSwapChainHook/tests/profiler_consumer",
+        "-B",
+        "/Users/ddd/Developer/AndSwapChainHook/build/profiler-current-20260912/installed-consumer",
+        "-G",
+        "Ninja",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_PREFIX_PATH=/Users/ddd/Developer/AndSwapChainHook/build/profiler-current-20260912/relocated-install"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": {
+        "path": "build/profiler-current-20260912/logs/installed-consumer-configure.log",
+        "sha256": "c81d21fdb04355c7f1c8d600fb49b995b61860fea58151c5aa668aad1e608347"
+      }
+    },
+    {
+      "name": "installed-consumer-build",
+      "command": [
+        "cmake",
+        "--build",
+        "/Users/ddd/Developer/AndSwapChainHook/build/profiler-current-20260912/installed-consumer",
+        "--parallel",
+        "4"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": {
+        "path": "build/profiler-current-20260912/logs/installed-consumer-build.log",
+        "sha256": "57aea30bec20935b1e9eccd4c118a9183a3616e5d1bc2ec7ed5f7d8fa85946e6"
+      }
+    },
+    {
+      "name": "installed-consumer-ctest",
+      "command": [
+        "ctest",
+        "--test-dir",
+        "/Users/ddd/Developer/AndSwapChainHook/build/profiler-current-20260912/installed-consumer",
+        "--output-on-failure",
+        "--no-tests=error"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": {
+        "path": "build/profiler-current-20260912/logs/installed-consumer-ctest.log",
+        "sha256": "efe400cedf9302361fc3c4a2ad8d4bc9070211306b32b5c001a5274dbc4fdc67"
+      }
+    },
+    {
+      "name": "common-compatibility-configure",
+      "command": [
+        "cmake",
+        "-S",
+        "/Users/ddd/Developer/AndSwapChainHook/build/profiler-current-20260912/common-compatibility",
+        "-B",
+        "/Users/ddd/Developer/AndSwapChainHook/build/profiler-current-20260912/common-compatibility/build",
+        "-G",
+        "Ninja",
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-DCMAKE_PREFIX_PATH=/Users/ddd/Developer/AndSwapChainHook/build/profiler-current-20260912/relocated-install"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": {
+        "path": "build/profiler-current-20260912/logs/common-compatibility-configure.log",
+        "sha256": "1ca6d4cef22d080a711438447481000e95ec11d5194a3b497f4ec362a4364743"
+      }
+    },
+    {
+      "name": "common-compatibility-build",
+      "command": [
+        "cmake",
+        "--build",
+        "/Users/ddd/Developer/AndSwapChainHook/build/profiler-current-20260912/common-compatibility/build",
+        "--parallel",
+        "4"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": {
+        "path": "build/profiler-current-20260912/logs/common-compatibility-build.log",
+        "sha256": "444f30071aecda7478aa42a203c6a72af218a40848b0ea7afd7fd806a10a4f63"
+      }
+    },
+    {
+      "name": "common-compatibility-ctest",
+      "command": [
+        "ctest",
+        "--test-dir",
+        "/Users/ddd/Developer/AndSwapChainHook/build/profiler-current-20260912/common-compatibility/build",
+        "--output-on-failure",
+        "--no-tests=error"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": {
+        "path": "build/profiler-current-20260912/logs/common-compatibility-ctest.log",
+        "sha256": "6a4885d75c6a39d50112fcb40165f3cc711185d58e71f5c2bc7bd699b0e0fe44"
+      }
+    }
+  ],
+  "source_hashes": [
+    {
+      "path": "CMakeLists.txt",
+      "sha256": "4854f5037969f07968910c5aaf27bb3018fd68693cfa94c50351f71cc4d5afaa"
+    },
+    {
+      "path": "README.md",
+      "sha256": "525c50710616b02b626b1a0ad186425ef0bf593653130806402271d5f08956e7"
+    },
+    {
+      "path": "cmake/AndSwapChainHookConfig.cmake.in",
+      "sha256": "4bcaed1283f51ae4484c9262c40028fbb299d3d68bc1be1f37be740d30278f85"
+    },
+    {
+      "path": "include/AndSwapChainHook/Profiler.h",
+      "sha256": "68329bf69d05410d310c9d4b3e913953e343884c678ea03e86554a529c5f416d"
+    },
+    {
+      "path": "source/Diagnostics/Profiler.cpp",
+      "sha256": "c76540dfe6df2be33345c05faebf793325021044b757214e5a0c23175bdbb9eb"
+    },
+    {
+      "path": "tests/profiler.cpp",
+      "sha256": "3e17e3624ffcb1766e958053bc5dfb8bfb70f4ebb01f9cdce871e92e97a9b761"
+    },
+    {
+      "path": "tests/profiler_consumer/CMakeLists.txt",
+      "sha256": "c1a5082bef9538cc4bd4e6c03e792bc56dc41b080e2cec31083952f49dbd3f0d"
+    },
+    {
+      "path": "tests/profiler_consumer/main.cpp",
+      "sha256": "8864c5f7bf1a6f2dba227c573e990859f990ad1a0293ed217ac8c12c31021ab5"
+    },
+    {
+      "path": "tests/verify_profiler.py",
+      "sha256": "96b74d864700781761b0092593b26ef0dd97d0a5f42e7821e96ff17accc0b201"
+    },
+    {
+      "path": "docs/profiler.md",
+      "sha256": "ec12b510dc920e837ff2c162626d7a074e681f25d7c7e833d1db392937e01029"
+    },
+    {
+      "path": "/Users/ddd/Developer/AndCommon/source/Utils/Profiler.h",
+      "sha256": "69bd94a0ea0706636fe2ca55ea8b33f6ad32aabd352717960531aee4194f9358"
+    },
+    {
+      "path": "/Users/ddd/Developer/AndCommon/source/Utils/SnapshotBuffer.h",
+      "sha256": "4550ba87ff83ed5500d8f24b60f4ae778ac92f14625161f7a4f5e2c27ea02e4e"
+    },
+    {
+      "path": "/Users/ddd/Developer/AndCommon/source/Graphics/SurfaceGeometry.h",
+      "sha256": "812b454690daa5043ec61ca0815d4d6b42f354e9a2f917722d72d73c685304ac"
+    },
+    {
+      "path": "/Users/ddd/Developer/AndCommon/tests/host/contracts.cpp",
+      "sha256": "0ce59bac15f71676ca20303fe34384d31cd875f003aef3658d02f18d47d77dab"
+    },
+    {
+      "path": "/Users/ddd/Developer/AndCommon/tests/host/stubs/Utils/Logger.h",
+      "sha256": "86f94b6d760eeb931ca8082f42b2dba9505b78d877319f1a53fe5cc5b970c2a9"
+    },
+    {
+      "path": "/Users/ddd/Developer/AndCommon/tests/host/identity_peer.cpp",
+      "sha256": "bdadd48e81643d12aeea2076c53fbef97c95a2492316cc77a6c9373e93143016"
+    },
+    {
+      "path": "/Users/ddd/Developer/AndCommon/source/ImGui/OverlayIdentity.h",
+      "sha256": "be0c3efb714b7fdf21fe9e33c477a134c18f187183daf05d09a3a67b8906e449"
+    }
+  ],
+  "source_hashes_after": [
+    {
+      "path": "CMakeLists.txt",
+      "sha256": "4854f5037969f07968910c5aaf27bb3018fd68693cfa94c50351f71cc4d5afaa"
+    },
+    {
+      "path": "README.md",
+      "sha256": "525c50710616b02b626b1a0ad186425ef0bf593653130806402271d5f08956e7"
+    },
+    {
+      "path": "cmake/AndSwapChainHookConfig.cmake.in",
+      "sha256": "4bcaed1283f51ae4484c9262c40028fbb299d3d68bc1be1f37be740d30278f85"
+    },
+    {
+      "path": "include/AndSwapChainHook/Profiler.h",
+      "sha256": "68329bf69d05410d310c9d4b3e913953e343884c678ea03e86554a529c5f416d"
+    },
+    {
+      "path": "source/Diagnostics/Profiler.cpp",
+      "sha256": "c76540dfe6df2be33345c05faebf793325021044b757214e5a0c23175bdbb9eb"
+    },
+    {
+      "path": "tests/profiler.cpp",
+      "sha256": "3e17e3624ffcb1766e958053bc5dfb8bfb70f4ebb01f9cdce871e92e97a9b761"
+    },
+    {
+      "path": "tests/profiler_consumer/CMakeLists.txt",
+      "sha256": "c1a5082bef9538cc4bd4e6c03e792bc56dc41b080e2cec31083952f49dbd3f0d"
+    },
+    {
+      "path": "tests/profiler_consumer/main.cpp",
+      "sha256": "8864c5f7bf1a6f2dba227c573e990859f990ad1a0293ed217ac8c12c31021ab5"
+    },
+    {
+      "path": "tests/verify_profiler.py",
+      "sha256": "96b74d864700781761b0092593b26ef0dd97d0a5f42e7821e96ff17accc0b201"
+    },
+    {
+      "path": "docs/profiler.md",
+      "sha256": "ec12b510dc920e837ff2c162626d7a074e681f25d7c7e833d1db392937e01029"
+    },
+    {
+      "path": "/Users/ddd/Developer/AndCommon/source/Utils/Profiler.h",
+      "sha256": "69bd94a0ea0706636fe2ca55ea8b33f6ad32aabd352717960531aee4194f9358"
+    },
+    {
+      "path": "/Users/ddd/Developer/AndCommon/source/Utils/SnapshotBuffer.h",
+      "sha256": "4550ba87ff83ed5500d8f24b60f4ae778ac92f14625161f7a4f5e2c27ea02e4e"
+    },
+    {
+      "path": "/Users/ddd/Developer/AndCommon/source/Graphics/SurfaceGeometry.h",
+      "sha256": "812b454690daa5043ec61ca0815d4d6b42f354e9a2f917722d72d73c685304ac"
+    },
+    {
+      "path": "/Users/ddd/Developer/AndCommon/tests/host/contracts.cpp",
+      "sha256": "0ce59bac15f71676ca20303fe34384d31cd875f003aef3658d02f18d47d77dab"
+    },
+    {
+      "path": "/Users/ddd/Developer/AndCommon/tests/host/stubs/Utils/Logger.h",
+      "sha256": "86f94b6d760eeb931ca8082f42b2dba9505b78d877319f1a53fe5cc5b970c2a9"
+    },
+    {
+      "path": "/Users/ddd/Developer/AndCommon/tests/host/identity_peer.cpp",
+      "sha256": "bdadd48e81643d12aeea2076c53fbef97c95a2492316cc77a6c9373e93143016"
+    },
+    {
+      "path": "/Users/ddd/Developer/AndCommon/source/ImGui/OverlayIdentity.h",
+      "sha256": "be0c3efb714b7fdf21fe9e33c477a134c18f187183daf05d09a3a67b8906e449"
+    }
+  ],
+  "source_consistent": true,
+  "artifacts": [
+    {
+      "path": "build/profiler-current-20260912/common-compatibility/CMakeLists.txt",
+      "sha256": "d9b614dd660ac32ebdcbb3b0352ee68377036e89057da441222636fa2f272dcc"
+    },
+    {
+      "path": "build/profiler-current-20260912/common-compatibility/build/common_profiler_contracts",
+      "sha256": "65eb915924c49555d77908bafddd234547bf3b8b0bd5c60577a43b726cdd8b08"
+    },
+    {
+      "path": "build/profiler-current-20260912/debug/andswapchain_profiler_tests",
+      "sha256": "c575534e4273b47bc5404c701e959a709e32d0f3919d0aa35fb2b79d59716b99"
+    },
+    {
+      "path": "build/profiler-current-20260912/debug/libAndSwapChainHookProfiler.a",
+      "sha256": "9c5968177efa463d97e40bcb24e0cf6ba0ff0e96ab6f2bb7dfbd69aec2dc7cde"
+    },
+    {
+      "path": "build/profiler-current-20260912/installed-consumer/profiler_consumer",
+      "sha256": "db3a71d08464908191331deddd6c1ce7e43dc877fabd811a571339a2a80b39d8"
+    },
+    {
+      "path": "build/profiler-current-20260912/release/andswapchain_profiler_tests",
+      "sha256": "f81313a5009c9462c260c15002c4bee5dc148f9b3a353fcc0cccdcd962c98af2"
+    },
+    {
+      "path": "build/profiler-current-20260912/release/libAndSwapChainHookProfiler.a",
+      "sha256": "216b87a7df90acc4b10164cc9553501f982f3642dbeb9450e15a6c4f926850b2"
+    },
+    {
+      "path": "build/profiler-current-20260912/relocated-install/include/AndSwapChainHook/Profiler.h",
+      "sha256": "68329bf69d05410d310c9d4b3e913953e343884c678ea03e86554a529c5f416d"
+    },
+    {
+      "path": "build/profiler-current-20260912/relocated-install/lib/cmake/AndSwapChainHook/AndSwapChainHookConfig.cmake",
+      "sha256": "ee3018fa8bc03a593c4667fd04ec660a65da3d5b93d2132ef7e01fcd9ed079c6"
+    },
+    {
+      "path": "build/profiler-current-20260912/relocated-install/lib/cmake/AndSwapChainHook/AndSwapChainHookConfigVersion.cmake",
+      "sha256": "bef27358917b8deca0715d09e7d3004f9fb86c7b5a76fc12ca8c48481d93aa7c"
+    },
+    {
+      "path": "build/profiler-current-20260912/relocated-install/lib/cmake/AndSwapChainHook/AndSwapChainHookTargets-release.cmake",
+      "sha256": "2ef7ba0adb461edd7ab4fc7b48fe42b95e35b3a19d56a43e7ca65e8dcf70dda3"
+    },
+    {
+      "path": "build/profiler-current-20260912/relocated-install/lib/cmake/AndSwapChainHook/AndSwapChainHookTargets.cmake",
+      "sha256": "6ff8271c778bb009c988a378c88f2b857c005ec3abe9e3d147f49113b6252f14"
+    },
+    {
+      "path": "build/profiler-current-20260912/relocated-install/lib/libAndSwapChainHookProfiler.a",
+      "sha256": "828db1efd3634c8410362276bb04db3b969b971d06950fe1bbedd03cbc2c84f4"
+    },
+    {
+      "path": "build/profiler-current-20260912/source-consumer/profiler_consumer",
+      "sha256": "2635539c208b8e4773b008c33e13b3cd62d8233b97b7b27dcc7455cc1d9334dc"
+    },
+    {
+      "path": "build/profiler-current-20260912/tsan/andswapchain_profiler_tests",
+      "sha256": "b8a478dc358fd770a87df99a211b1be7866cc5ed943ceff092f0a7a1feb76fb2"
+    },
+    {
+      "path": "build/profiler-current-20260912/tsan/libAndSwapChainHookProfiler.a",
+      "sha256": "a8e1dc8cbdffbbadc3e58613c49ff4e969b0138f2a0275be16d8be680c04f704"
+    }
+  ],
+  "limits": {
+    "zone_capacity": 96,
+    "maximum_name_bytes": 95,
+    "history_samples": 128
+  },
+  "android_package": null,
+  "limitations": [
+    "Counters and history elements are atomic; multi-field snapshots and reset are not coherent.",
+    "Separate static component copies do not share registry state.",
+    "Other assembly, CI, instrumentation, and device evidence is not refreshed by this run.",
+    "Android runtime coverage is the selected PLQ110/API36/4096-byte CLI fixture only; complete source/input identities for those producer builds are in the referenced reports."
+  ],
+  "android_execution": {
+    "status": "passed",
+    "device": {
+      "serial": "3B163600WKV00000",
+      "properties": {
+        "ro.product.manufacturer": "OnePlus",
+        "ro.product.model": "PLQ110",
+        "ro.product.cpu.abi": "arm64-v8a",
+        "ro.build.version.release": "16",
+        "ro.build.version.sdk": "36",
+        "ro.build.fingerprint": "OnePlus/PLQ110/OP6113L1:16/BP2A.250605.015/B.12c47b6_f0e766_ee7ff8:user/release-keys",
+        "page_size": "4096",
+        "kernel": "Linux localhost 6.6.89-android15-8-gf4dc45704e54-abogki446052083-4k #1 SMP PREEMPT Fri Sep 19 06:13:40 UTC 2025 aarch64 Toybox",
+        "shell_identity": "uid=0(root) gid=0(root) groups=0(root),1004(input),1007(log),1011(adb),1015(sdcard_rw),1028(sdcard_r),1078(ext_data_rw),1079(ext_obb_rw),3001(net_bt_admin),3002(net_bt),3003(inet),3006(net_bw_stats),3009(readproc),3011(uhid),3012(readtracefs) context=u:r:ksu:s0"
+      },
+      "scope": "Owned command-line fixture processes; no Android Activity, GPU, renderer or driver validation"
+    },
+    "configurations": [
+      {
+        "configuration": "android-debug",
+        "execution": {
+          "fixture": "andswapchain_profiler_tests",
+          "status": "passed",
+          "output": "PASS: owned bounded names, concurrent publication/capacity, 80000 concurrent records, scoped timing and retained history\n",
+          "sha256": "c864fc3f914cffa2b91b627299dd1fdc27e3b21611144d663ae6748484e788e5",
+          "device_sha256": "c864fc3f914cffa2b91b627299dd1fdc27e3b21611144d663ae6748484e788e5",
+          "build_id": "aeb899d925124474009b79e2fb350e3425362360",
+          "matching_symbols": "The recorded unstripped ELF contains .symtab; build ID and pushed SHA256 identify the executed binary",
+          "artifact": {
+            "path": "build/bounded-current-20260912/android-debug/andswapchain_profiler_tests",
+            "sha256": "c864fc3f914cffa2b91b627299dd1fdc27e3b21611144d663ae6748484e788e5",
+            "bytes": 6305040
+          }
+        },
+        "producer_report": {
+          "path": "tests/evidence/bounded-cpu/android-debug-verification.json",
+          "sha256": "d150bce63ac29bc06ed38407b587bc7338a9054fbc12949ff3b7813d38875220",
+          "bytes": 37748
+        }
+      },
+      {
+        "configuration": "android-release",
+        "execution": {
+          "fixture": "andswapchain_profiler_tests",
+          "status": "passed",
+          "output": "PASS: owned bounded names, concurrent publication/capacity, 80000 concurrent records, scoped timing and retained history\n",
+          "sha256": "bd3f481ef704986e0498a15e662669be92348a6413691ed6b56fcece5c9e422b",
+          "device_sha256": "bd3f481ef704986e0498a15e662669be92348a6413691ed6b56fcece5c9e422b",
+          "build_id": "9581a7a60bc54f66251134e48cb90761a4be3476",
+          "matching_symbols": "The recorded unstripped ELF contains .symtab; build ID and pushed SHA256 identify the executed binary",
+          "artifact": {
+            "path": "build/bounded-current-20260912/android-release/andswapchain_profiler_tests",
+            "sha256": "bd3f481ef704986e0498a15e662669be92348a6413691ed6b56fcece5c9e422b",
+            "bytes": 5747816
+          }
+        },
+        "producer_report": {
+          "path": "tests/evidence/bounded-cpu/android-release-verification.json",
+          "sha256": "3c33e945affebbd40421ceab0c45ef8cd4add762d62c5b3d08713df90b92af35",
+          "bytes": 37949
+        }
+      }
+    ],
+    "scope": "Actual standalone Profiler fixtures built with the recorded Android CPU producer inputs; no Android GUI or public instrumentation integration"
+  },
+  "artifact_build_configuration": [
+    {
+      "path": "build/profiler-current-20260912/tsan/build.ninja",
+      "sha256": "c032495418297db72ade2cd9aa09f7a44e33d8d27ee17004ebfd593a3fc45e6c",
+      "bytes": 59454
+    },
+    {
+      "path": "build/profiler-current-20260912/tsan/CMakeCache.txt",
+      "sha256": "7035aa5c8e4ebfff540f4c5257567b1a01ddd77c161a8baf40d4efc48bbd9a42",
+      "bytes": 21043
+    },
+    {
+      "path": "build/profiler-current-20260912/release/build.ninja",
+      "sha256": "37ac2c29e88a404f1b1d11cb86beb7f52f2e0cd559b79b201bbea11f45b23c5e",
+      "bytes": 58831
+    },
+    {
+      "path": "build/profiler-current-20260912/release/CMakeCache.txt",
+      "sha256": "57e4f68d721fac2c70063eacde635ff31cf45c7dcf5687a5cf41de2b0034f29d",
+      "bytes": 20999
+    },
+    {
+      "path": "build/profiler-current-20260912/installed-consumer/build.ninja",
+      "sha256": "ade18244ea9a12517f9d806b46c0f8e5d750877a3e9a26d7f103a08b18c38e75",
+      "bytes": 13042
+    },
+    {
+      "path": "build/profiler-current-20260912/installed-consumer/CMakeCache.txt",
+      "sha256": "f7e12a787365ec9b5077f0fcf3a6ba6a86ed00c029e18487e3fbb2c367b753b6",
+      "bytes": 14433
+    },
+    {
+      "path": "build/profiler-current-20260912/source-consumer/build.ninja",
+      "sha256": "f56bad6204c3e2b922aa33f9241dcbab068a9e6a2aafca9fabf6c2a2184622a1",
+      "bytes": 30824
+    },
+    {
+      "path": "build/profiler-current-20260912/source-consumer/CMakeCache.txt",
+      "sha256": "b651dd98bce9c9e63abb71d0c7c89f7ceb790f675f04c86543d0a3056f75e64f",
+      "bytes": 19830
+    },
+    {
+      "path": "build/profiler-current-20260912/debug/build.ninja",
+      "sha256": "ac3369fb48d14cdae717e9eb43fec4c6970a4aacfa568725c381112254d895f9",
+      "bytes": 59407
+    },
+    {
+      "path": "build/profiler-current-20260912/debug/CMakeCache.txt",
+      "sha256": "8814585cd609af9c68575e3ca0df9a69780a62bc67091ae552e6ca3c076d9b88",
+      "bytes": 20988
+    },
+    {
+      "path": "build/profiler-current-20260912/common-compatibility/build/build.ninja",
+      "sha256": "3179ac1ce82ccdec8c6b163ff4f4dc95650f8d7bfbceb76244550aa4899e29a1",
+      "bytes": 13721
+    },
+    {
+      "path": "build/profiler-current-20260912/common-compatibility/build/CMakeCache.txt",
+      "sha256": "4231800b89a366c0da288165906ce1d618e589fdbad61a221355f6cb2aa57d59",
+      "bytes": 14565
+    }
+  ],
+  "scope": "Host Debug ASan/UBSan, Release and ThreadSanitizer; independent source/relocated-installed consumers; actual Common compatibility translation units; standalone Android Debug/Release CPU fixture"
+}

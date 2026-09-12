@@ -7,7 +7,7 @@
 #include <android/input.h>
 
 #include "ElfScanner/ElfScannerManager.h"
-#include "Dobby/dobby.h"
+#include <dobby.h>
 #include "Utils/Logger.h"
 
 constexpr const char* sdk33_android_InputConsumer_consume = "_ZN7android13InputConsumer7consumeEPNS_26InputEventFactoryInterfaceEblPjPPNS_10InputEventEPiS7_Pb";

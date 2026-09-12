@@ -1,0 +1,10 @@
+host-release configure 0
+host-release build 0
+host-release runtime 0
+host-release andswapchain_contract_tests-uuid 0
+host-release andswapchain_profiler_tests-uuid 0
+host-release andswapchain_crash_record_test-uuid 0
+host-release andswapchain_assembler_roundtrip-uuid 0
+host-release andswapchain_disassembler_roundtrip-uuid 0
+host-release andswapchain_assemble_roundtrip-uuid 0
+host-release andswapchain_assemble_contracts-uuid 0

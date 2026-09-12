@@ -1,0 +1,3843 @@
+{
+  "schema": 1,
+  "baseline_commit": "8ae82ba81d60bb1b9d68cdc2e6dbb1244e6622f0",
+  "source_state": "uncommitted implementation; source hashes are authoritative",
+  "ndk_revision": "29.0.14206865",
+  "android_abi": "arm64-v8a",
+  "android_api": 27,
+  "checks": [
+    {
+      "name": "host-debug-configure",
+      "status": "passed",
+      "command": [
+        "cmake",
+        "--preset",
+        "host-debug"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "host-debug-build",
+      "status": "passed",
+      "command": [
+        "cmake",
+        "--build",
+        "--preset",
+        "host-debug"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "host-debug-ctest",
+      "status": "passed",
+      "command": [
+        "ctest",
+        "--preset",
+        "host-debug",
+        "--no-tests=error"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "host-release-configure",
+      "status": "passed",
+      "command": [
+        "cmake",
+        "--preset",
+        "host-release"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "host-release-build",
+      "status": "passed",
+      "command": [
+        "cmake",
+        "--build",
+        "--preset",
+        "host-release"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "host-release-ctest",
+      "status": "passed",
+      "command": [
+        "ctest",
+        "--preset",
+        "host-release",
+        "--no-tests=error"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "host-optional-configure",
+      "status": "passed",
+      "command": [
+        "cmake",
+        "--preset",
+        "host-optional"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "host-optional-build",
+      "status": "passed",
+      "command": [
+        "cmake",
+        "--build",
+        "--preset",
+        "host-optional"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "host-optional-ctest",
+      "status": "passed",
+      "command": [
+        "ctest",
+        "--preset",
+        "host-optional",
+        "--no-tests=error"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "android-debug-configure",
+      "status": "passed",
+      "command": [
+        "cmake",
+        "--preset",
+        "android-debug"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "android-debug-build",
+      "status": "passed",
+      "command": [
+        "cmake",
+        "--build",
+        "--preset",
+        "android-debug"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "android-release-configure",
+      "status": "passed",
+      "command": [
+        "cmake",
+        "--preset",
+        "android-release"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "android-release-build",
+      "status": "passed",
+      "command": [
+        "cmake",
+        "--build",
+        "--preset",
+        "android-release"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "android-modules-debug-configure",
+      "status": "passed",
+      "command": [
+        "cmake",
+        "--preset",
+        "android-modules-debug"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "android-modules-debug-build",
+      "status": "passed",
+      "command": [
+        "cmake",
+        "--build",
+        "--preset",
+        "android-modules-debug"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "android-modules-release-configure",
+      "status": "passed",
+      "command": [
+        "cmake",
+        "--preset",
+        "android-modules-release",
+        "-DANDSWAPCHAIN_BUILD_POINTER_ADAPTER=ON",
+        "-DPointerHook_DIR=/tmp/pointerhook-android-release/consumer-install/lib/cmake/PointerHook"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "android-modules-release-build",
+      "status": "passed",
+      "command": [
+        "cmake",
+        "--build",
+        "--preset",
+        "android-modules-release"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "host-install",
+      "status": "passed",
+      "command": [
+        "cmake",
+        "--install",
+        "/Users/ddd/Developer/AndSwapChainHook/build/host-release",
+        "--prefix",
+        "/Users/ddd/Developer/AndSwapChainHook/build/install-host"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "host-installed-consumer-configure",
+      "status": "passed",
+      "command": [
+        "cmake",
+        "-S",
+        "/Users/ddd/Developer/AndSwapChainHook/tests/consumer",
+        "-B",
+        "/Users/ddd/Developer/AndSwapChainHook/build/consumer-installed",
+        "-G",
+        "Ninja",
+        "-DCMAKE_PREFIX_PATH=/Users/ddd/Developer/AndSwapChainHook/build/install-host"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "host-installed-consumer-build",
+      "status": "passed",
+      "command": [
+        "cmake",
+        "--build",
+        "/Users/ddd/Developer/AndSwapChainHook/build/consumer-installed"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "host-installed-consumer-run",
+      "status": "passed",
+      "command": [
+        "/Users/ddd/Developer/AndSwapChainHook/build/consumer-installed/consumer"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "host-subdirectory-consumer-configure",
+      "status": "passed",
+      "command": [
+        "cmake",
+        "-S",
+        "/Users/ddd/Developer/AndSwapChainHook/tests/consumer",
+        "-B",
+        "/Users/ddd/Developer/AndSwapChainHook/build/consumer-subdir",
+        "-G",
+        "Ninja",
+        "-DANDSWAPCHAIN_SOURCE_DIR=/Users/ddd/Developer/AndSwapChainHook"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "host-subdirectory-consumer-build",
+      "status": "passed",
+      "command": [
+        "cmake",
+        "--build",
+        "/Users/ddd/Developer/AndSwapChainHook/build/consumer-subdir"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "host-subdirectory-consumer-run",
+      "status": "passed",
+      "command": [
+        "/Users/ddd/Developer/AndSwapChainHook/build/consumer-subdir/consumer"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "android-install",
+      "status": "passed",
+      "command": [
+        "cmake",
+        "--install",
+        "/Users/ddd/Developer/AndSwapChainHook/build/android-modules-release",
+        "--prefix",
+        "/Users/ddd/Developer/AndSwapChainHook/build/install-android"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "android-installed-consumer-configure",
+      "status": "passed",
+      "command": [
+        "cmake",
+        "-S",
+        "/Users/ddd/Developer/AndSwapChainHook/tests/consumer",
+        "-B",
+        "/Users/ddd/Developer/AndSwapChainHook/build/consumer-android-installed",
+        "-G",
+        "Ninja",
+        "-DCMAKE_TOOLCHAIN_FILE=/opt/homebrew/share/android-ndk/build/cmake/android.toolchain.cmake",
+        "-DANDROID_ABI=arm64-v8a",
+        "-DANDROID_PLATFORM=android-27",
+        "-DCMAKE_FIND_ROOT_PATH=/Users/ddd/Developer/AndSwapChainHook/build/install-android",
+        "-DANDSWAPCHAIN_CONSUME_ANDROID_MODULES=ON",
+        "-DPointerHook_DIR=/tmp/pointerhook-android-release/consumer-install/lib/cmake/PointerHook"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "android-installed-consumer-build",
+      "status": "passed",
+      "command": [
+        "cmake",
+        "--build",
+        "/Users/ddd/Developer/AndSwapChainHook/build/consumer-android-installed"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "dobby-repro-configure",
+      "status": "passed",
+      "command": [
+        "cmake",
+        "-S",
+        "/Users/ddd/Developer/AndSwapChainHook/cmake/dobby",
+        "-B",
+        "/Users/ddd/Developer/AndSwapChainHook/build/dobby-repro",
+        "-G",
+        "Ninja",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_TOOLCHAIN_FILE=/opt/homebrew/share/android-ndk/build/cmake/android.toolchain.cmake",
+        "-DANDROID_ABI=arm64-v8a",
+        "-DANDROID_PLATFORM=android-27"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "dobby-repro-build",
+      "status": "passed",
+      "command": [
+        "cmake",
+        "--build",
+        "/Users/ddd/Developer/AndSwapChainHook/build/dobby-repro"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "dobby-independent-build-byte-identity",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "name": "dobby-matching-symbols",
+      "status": "passed",
+      "command": [
+        "/opt/homebrew/share/android-ndk/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "--sections",
+        "/Users/ddd/Developer/AndSwapChainHook/build/android-modules-release/cmake/dobby/libandswapchain_dobby.a"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "dobby-external-target-consumer-configure",
+      "status": "passed",
+      "command": [
+        "cmake",
+        "-S",
+        "/Users/ddd/Developer/AndSwapChainHook/tests/dobby_consumer",
+        "-B",
+        "/Users/ddd/Developer/AndSwapChainHook/build/dobby-consumer",
+        "-G",
+        "Ninja",
+        "-DCMAKE_TOOLCHAIN_FILE=/opt/homebrew/share/android-ndk/build/cmake/android.toolchain.cmake",
+        "-DANDROID_ABI=arm64-v8a",
+        "-DANDROID_PLATFORM=android-27",
+        "-DDobby_DIR=/Users/ddd/Developer/AndSwapChainHook/build/install-android/lib/cmake/Dobby",
+        "-DANDSWAPCHAIN_SOURCE_DIR=/Users/ddd/Developer/AndSwapChainHook"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "dobby-external-target-consumer-build",
+      "status": "passed",
+      "command": [
+        "cmake",
+        "--build",
+        "/Users/ddd/Developer/AndSwapChainHook/build/dobby-consumer"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "device-fixture-directory",
+      "status": "passed",
+      "command": [
+        "adb",
+        "-s",
+        "OWNED_DEVICE_SERIAL",
+        "shell",
+        "mkdir",
+        "-p",
+        "/data/local/tmp/andswapchain-refactor-owned"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "device-fixture-copy",
+      "status": "passed",
+      "command": [
+        "adb",
+        "-s",
+        "OWNED_DEVICE_SERIAL",
+        "push",
+        "/Users/ddd/Developer/AndSwapChainHook/build/android-modules-release/andswapchain_input_tests",
+        "/Users/ddd/Developer/AndSwapChainHook/build/android-modules-release/andswapchain_contract_tests",
+        "/Users/ddd/Developer/AndSwapChainHook/build/android-modules-release/andswapchain_load_test",
+        "/Users/ddd/Developer/AndSwapChainHook/build/android-modules-release/andswapchain_dobby_test",
+        "/Users/ddd/Developer/AndSwapChainHook/build/android-modules-release/andswapchain_egl_test",
+        "/Users/ddd/Developer/AndSwapChainHook/build/android-modules-release/andswapchain_crash_record_test",
+        "/Users/ddd/Developer/AndSwapChainHook/build/android-modules-release/libAndSwapChainHook.so",
+        "/Users/ddd/Developer/AndSwapChainHook/build/android-modules-release/andswapchain_pointer_adapter_test",
+        "/data/local/tmp/andswapchain-refactor-owned/"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "andswapchain_input_tests-device",
+      "status": "passed",
+      "command": [
+        "adb",
+        "-s",
+        "OWNED_DEVICE_SERIAL",
+        "shell",
+        "cd /data/local/tmp/andswapchain-refactor-owned && chmod 700 andswapchain_input_tests && timeout 30 ./andswapchain_input_tests"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "andswapchain_contract_tests-device",
+      "status": "passed",
+      "command": [
+        "adb",
+        "-s",
+        "OWNED_DEVICE_SERIAL",
+        "shell",
+        "cd /data/local/tmp/andswapchain-refactor-owned && chmod 700 andswapchain_contract_tests && timeout 30 ./andswapchain_contract_tests"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "andswapchain_load_test-device",
+      "status": "passed",
+      "command": [
+        "adb",
+        "-s",
+        "OWNED_DEVICE_SERIAL",
+        "shell",
+        "cd /data/local/tmp/andswapchain-refactor-owned && chmod 700 andswapchain_load_test && timeout 30 ./andswapchain_load_test ./libAndSwapChainHook.so"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "andswapchain_dobby_test-device",
+      "status": "passed",
+      "command": [
+        "adb",
+        "-s",
+        "OWNED_DEVICE_SERIAL",
+        "shell",
+        "cd /data/local/tmp/andswapchain-refactor-owned && chmod 700 andswapchain_dobby_test && timeout 30 ./andswapchain_dobby_test"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "andswapchain_egl_test-device",
+      "status": "passed",
+      "command": [
+        "adb",
+        "-s",
+        "OWNED_DEVICE_SERIAL",
+        "shell",
+        "cd /data/local/tmp/andswapchain-refactor-owned && chmod 700 andswapchain_egl_test && timeout 30 ./andswapchain_egl_test"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "andswapchain_crash_record_test-device",
+      "status": "passed",
+      "command": [
+        "adb",
+        "-s",
+        "OWNED_DEVICE_SERIAL",
+        "shell",
+        "cd /data/local/tmp/andswapchain-refactor-owned && chmod 700 andswapchain_crash_record_test && timeout 30 ./andswapchain_crash_record_test"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "andswapchain_pointer_adapter_test-device",
+      "status": "passed",
+      "command": [
+        "adb",
+        "-s",
+        "OWNED_DEVICE_SERIAL",
+        "shell",
+        "cd /data/local/tmp/andswapchain-refactor-owned && chmod 700 andswapchain_pointer_adapter_test && timeout 30 ./andswapchain_pointer_adapter_test"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "android-installed-consumer-copy",
+      "status": "passed",
+      "command": [
+        "adb",
+        "-s",
+        "OWNED_DEVICE_SERIAL",
+        "push",
+        "/Users/ddd/Developer/AndSwapChainHook/build/consumer-android-installed/consumer",
+        "/data/local/tmp/andswapchain-refactor-owned/consumer"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "android-installed-consumer-run",
+      "status": "passed",
+      "command": [
+        "adb",
+        "-s",
+        "OWNED_DEVICE_SERIAL",
+        "shell",
+        "cd /data/local/tmp/andswapchain-refactor-owned && chmod 700 consumer && timeout 30 ./consumer"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "dobby-external-target-consumer-copy",
+      "status": "passed",
+      "command": [
+        "adb",
+        "-s",
+        "OWNED_DEVICE_SERIAL",
+        "push",
+        "/Users/ddd/Developer/AndSwapChainHook/build/dobby-consumer/dobby_consumer",
+        "/data/local/tmp/andswapchain-refactor-owned/dobby_consumer"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "dobby-external-target-consumer-run",
+      "status": "passed",
+      "command": [
+        "adb",
+        "-s",
+        "OWNED_DEVICE_SERIAL",
+        "shell",
+        "cd /data/local/tmp/andswapchain-refactor-owned && chmod 700 dobby_consumer && timeout 30 ./dobby_consumer"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "device": {
+    "model": "PLQ110",
+    "api": "36",
+    "build": "PLQ110_16.0.3.504(CN01)",
+    "page_size": 4096,
+    "serial_sha256": "32816d5a451568f06ab4475f415caa29bfe05f8eb37d1bf222e40a7072ad4d15"
+  },
+  "dobby": {
+    "repository": "https://github.com/jmpews/Dobby",
+    "revision": "5dfc8546954ce3b3198132ab13fddb89ee92cdd7",
+    "source_archive_sha256": "01a417233c40929aa21098c8a9724c00f6f05b5cde3f11abcac84b8e00053748",
+    "contract_version": 1,
+    "license": "Apache-2.0",
+    "options": [
+      "Android AArch64",
+      "C++17",
+      "PIC",
+      "logging disabled",
+      "near branches disabled",
+      "no constructor",
+      "no instruction instrumentation",
+      "debug symbols and frame pointers",
+      "path remapping"
+    ],
+    "independent_build_archive_identity": true,
+    "matching_symbols": ".debug_info and .symtab in the exact archived objects",
+    "system_egl_pac_entries": "unsupported; owned presentation entries call real EGL"
+  },
+  "traceability": [
+    "R22",
+    "R01",
+    "R05",
+    "R07",
+    "R08",
+    "R16",
+    "R18",
+    "R21",
+    "C02",
+    "C04",
+    "C05",
+    "C07",
+    "C09",
+    "E01",
+    "E03",
+    "E04",
+    "E07"
+  ],
+  "limitations": [
+    "Dobby restoration requires external retirement of every acquired replacement/original address.",
+    "Vulkan host provider is unsupported; Vulkan synchronization and Android input-provider/ImGui queue integration remain open.",
+    "16 KiB, MTE, BTI/PAC, ShadowCallStack and general concurrent patching are unverified.",
+    "Legacy UI/auxiliary source and private downstream migration remain outside validated components.",
+    "System EGL exports with PAC/BTI entries are unsupported; owned entry fixtures call real system EGL."
+  ],
+  "source_hashes": [
+    {
+      "path": "CMakeLists.txt",
+      "sha256": "ae1a8997e6055ee0c20627208d9844498b11498efdffc89b7d9fc27858513157"
+    },
+    {
+      "path": "CMakePresets.json",
+      "sha256": "a0a061575dd80aecdc870c9be7f1a6fd193f4cf64f80f82d49dd879f9d557f36"
+    },
+    {
+      "path": "cmake/AndSwapChainHookConfig.cmake.in",
+      "sha256": "19ee492531481b4d739bfddf7070a924337b96cceb93b319e54e79aa036c6661"
+    },
+    {
+      "path": "cmake/Graphics.cmake",
+      "sha256": "97617ddd95a4f0c6a1d204089fbbc1fdf9c608c12fdf20cd8465bd5e9866a42e"
+    },
+    {
+      "path": "cmake/dobby/CMakeLists.txt",
+      "sha256": "5722a934078530e077eb4d85238f24e79e9bf76f687072bbefe3d1c8001c77a4"
+    },
+    {
+      "path": "cmake/dobby/DobbyConfig.cmake.in",
+      "sha256": "4acdc9a1f5734f3d02c59c9b5a33ad9b8b092798083fbce1461741d69e836aa4"
+    },
+    {
+      "path": "cmake/dobby/Entry.cpp",
+      "sha256": "8e4dcfd4fadfdfde6ecdf7dd8636ea30b7eabad8f60367d91419c763236fa432"
+    },
+    {
+      "path": "cmake/dobby/LICENSE",
+      "sha256": "43070e2d4e532684de521b885f385d0841030efa2b1a20bafb76133a5e1379c1"
+    },
+    {
+      "path": "cmake/dobby/Memory.cpp",
+      "sha256": "d0624f7a5d8dcec7ddff584865bf26a4d438a3330131fb51923e8f805fa96561"
+    },
+    {
+      "path": "cmake/dobby/Memory.h",
+      "sha256": "57e191fcb15cc6d59532f683a1fca35f6acf7f1056c28ae079a4e4c197d47204"
+    },
+    {
+      "path": "cmake/dobby/README.md",
+      "sha256": "18c250719bc5bfa5bf605820bbfb109a353b295e3d4dc3df45b8f6bfeba17170"
+    },
+    {
+      "path": "cmake/dobby/include/dobby.h",
+      "sha256": "26b4e75bfffa2ffd10e8ac09e0101b37ec8df5c11b486d870ee8536f25d7066f"
+    },
+    {
+      "path": "cmake/dobby/ownership.patch",
+      "sha256": "05d24a2c5ef4e39019ea05233fa33ef05bbe6dcd3f8871b9e94a2ed937f070c8"
+    },
+    {
+      "path": "include/AndSwapChainHook/CallbackGate.h",
+      "sha256": "2b82316ae112e7caea3191f05ba5890dadb70b1c9d7ed9094fa96c71a38b8922"
+    },
+    {
+      "path": "include/AndSwapChainHook/CrashRecorder.h",
+      "sha256": "5f2f8d6079a3aaac220b7249f779509c2be09cf0721275562205bbea60aa2fd0"
+    },
+    {
+      "path": "include/AndSwapChainHook/Graphics.h",
+      "sha256": "18af202d84dba150c81697f7b90f7b0ce44b98bf48e87649ec27185549144954"
+    },
+    {
+      "path": "include/AndSwapChainHook/HookTransaction.h",
+      "sha256": "34cb66e0b8be492bd430d8b165e88f7c26e852020d9baec02317a177fb900b1a"
+    },
+    {
+      "path": "include/AndSwapChainHook/Input.h",
+      "sha256": "c3434ad440167adf5166d3c08bea8f945e57a81868c336e748eb43deac9bc051"
+    },
+    {
+      "path": "include/AndSwapChainHook/Memory.h",
+      "sha256": "aa7268dd6c6ea17b32df4ac5ab72f2713f91f0a4ed888d2e3ae86bb8766c7dac"
+    },
+    {
+      "path": "include/AndSwapChainHook/Overlay.h",
+      "sha256": "2d25f3590741dd805cd49c8b5594aef026e7f0e653da0e9fbc8be5b1aa8aa93f"
+    },
+    {
+      "path": "include/AndSwapChainHook/Runtime.h",
+      "sha256": "fea8f3d57eca6db1f29e7c5e6331c811f1b035b8dacb0268709d23c3a3a27753"
+    },
+    {
+      "path": "source/Analysis/Runtime.cpp",
+      "sha256": "c0276f382a812d45bef1809d24035e821d254499e8854e0a803febe4da371d49"
+    },
+    {
+      "path": "source/Analysis/Scan.cpp",
+      "sha256": "a975ba6d880f54c03834fa7428203da294748215460a9ff2795556f58a157d4e"
+    },
+    {
+      "path": "source/Android/SurfaceView.cpp",
+      "sha256": "1e439325ab69ba8d2a29df737fb070af71e4b4729434a691dc19f6f1d96cf290"
+    },
+    {
+      "path": "source/Diagnostics/CrashRecorder.cpp",
+      "sha256": "09946a856f5571574ded51826e188d4a1591ee07fd2a66673bc84758121df26d"
+    },
+    {
+      "path": "source/Graphics/SwapChainHook.cpp",
+      "sha256": "4cac121d5e70474ade4b3e121ec2e584cf9fb224f4579f3ed4510d3627222db2"
+    },
+    {
+      "path": "source/Input/Queue.cpp",
+      "sha256": "c1b25fb243dbd74657fc59e254cd83c1d09e4f42aa80c8add9fa228e6733ea02"
+    },
+    {
+      "path": "source/Instrumentation/HookTransaction.cpp",
+      "sha256": "e138d1f7e43ce49fef5f92efcf0fb98a592c685a132afb0ff3d9d49421dcda5d"
+    },
+    {
+      "path": "source/Library.cpp",
+      "sha256": "bd22476647012b72deefcb3adb5978444b803dd94ad54702941e33b6c93054b9"
+    },
+    {
+      "path": "source/Memory/Memory.cpp",
+      "sha256": "b13e3e63c08b8ef204aa3be867a2283ea15860f1cb4ef58cd1e16b226ac6e2bb"
+    },
+    {
+      "path": "tests/consumer/CMakeLists.txt",
+      "sha256": "9a4eb790c125f58f73289f4d7f911fde8472ab2a154d90dda7ae7f053d8ea052"
+    },
+    {
+      "path": "tests/consumer/main.cpp",
+      "sha256": "6481339242393dddda302b8aed2d96fd2d713ff3ad17a6f74b6f42975139bed4"
+    },
+    {
+      "path": "tests/contracts.cpp",
+      "sha256": "241ae2cc5f3f1262c3bac20193684256d08c8d5fe515acc00783c9633689fbbb"
+    },
+    {
+      "path": "tests/crash_record.cpp",
+      "sha256": "afa1d41dfe3f57a190b2008710463ab1cf15945270fdacb437df6901a72ed4fd"
+    },
+    {
+      "path": "tests/dobby.cpp",
+      "sha256": "9573ef692751586a4ca8f4b1ab1e2b2a03b9f2d40882374a502f9d2be7d445da"
+    },
+    {
+      "path": "tests/dobby_consumer/CMakeLists.txt",
+      "sha256": "5afff5652619f34792c316afb4cb8077fe9b5ec20e1be4222b4d00a28b11e54c"
+    },
+    {
+      "path": "tests/egl.cpp",
+      "sha256": "8bec3c9415b93827f7ea52b96ab54820f851f26dc2fc4bc3acf7bd0b6fac4253"
+    },
+    {
+      "path": "tests/headers.cpp",
+      "sha256": "3a42e56ab2f21012f8fb5bd83ae4a9384710cde514c08988879e69dbb11a3bff"
+    },
+    {
+      "path": "tests/input.cpp",
+      "sha256": "893fa73934c343ca76caa7ad6b927a3cc6bc7e12ccee4f39811c2a79ca092609"
+    },
+    {
+      "path": "tests/load.cpp",
+      "sha256": "e9e725f450013258cc2a4d57302f507efd2b7a1477084396a0a8257985523ef9"
+    },
+    {
+      "path": "tests/overlay/app/AndroidManifest.xml",
+      "sha256": "b0438ba2c11c458dc8bb78b42e6f23cadb9073bc2f4577b2908d84f297c98d05"
+    },
+    {
+      "path": "tests/overlay/app/java/com/andswapchain/owned/MainActivity.java",
+      "sha256": "112efc01b68c89b9971abca5ca77ebb1e2090d310c860c1ed713cb6f3b56a5c2"
+    },
+    {
+      "path": "tests/overlay/native.cpp",
+      "sha256": "f27b3de061a6ec8d93c14f15562af268435e7a6a724145d1271c338a802a43e2"
+    },
+    {
+      "path": "tests/overlay/run.py",
+      "sha256": "a9871024f4d71aae29bbc061902efe18247497df7aa70df674c3759359157aeb"
+    },
+    {
+      "path": "tests/pointer_adapter.cpp",
+      "sha256": "fd4ef5c6c6a3b050c053de66bf3d7ae54bc96b6f61e99af5d0babf46c56a2242"
+    },
+    {
+      "path": "tests/pointer_consumer/CMakeLists.txt",
+      "sha256": "30cedc925920964b6e7dc66a77e6c1f9d832f6058c0089c8f2916246717822b4"
+    },
+    {
+      "path": "tests/runtime_header.c",
+      "sha256": "3fb8d1bba43a308947174fa9acf6be5cd17068bdaea3b4f6c1f3441e094604ac"
+    },
+    {
+      "path": "tests/verify.py",
+      "sha256": "48227c3d8add2e14f3042e8089416e9cadcdda38b3a6fef0293d0891314b8bda"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "build/android-debug/andswapchain_contract_tests",
+      "sha256": "94005884cf4c548e00f5e97baaecd3a18ddab6f7d3419e040b4515e4309c467c"
+    },
+    {
+      "path": "build/android-debug/andswapchain_header_check",
+      "sha256": "c3dc99d37bb01382df71f675d29f0de9366225bc191676317ee750fd55152488"
+    },
+    {
+      "path": "build/android-debug/andswapchain_input_tests",
+      "sha256": "720eea3936199517a0d80544ff722426469316dfa12217251834f087fb8d7811"
+    },
+    {
+      "path": "build/android-debug/andswapchain_load_test",
+      "sha256": "e18aa8d8bebb14225299b052d387f30bbfc5fd861fc4e80b24618593dfc187aa"
+    },
+    {
+      "path": "build/android-debug/libAndSwapChainHook.so",
+      "sha256": "1acda25cb435da5868c1adf5c8275a87cdeff7e3c767454e393fb51ec86a46d0"
+    },
+    {
+      "path": "build/android-debug/libAndSwapChainHookAnalysis.a",
+      "sha256": "b6757c7ac23658a2397cc702bbb7abe23129269f4430db44d7aa0f2d4a8ad6d0"
+    },
+    {
+      "path": "build/android-debug/libAndSwapChainHookInput.a",
+      "sha256": "df03f6bb28a81dae7f63cff8b18a612d19364b1adbfba8165d54c7880f6e38c8"
+    },
+    {
+      "path": "build/android-debug/libAndSwapChainHookInstrumentation.a",
+      "sha256": "9f8041f2c5afb177d6bc061cb4363f6f93b1740455155d642f0786f9eddf8eff"
+    },
+    {
+      "path": "build/android-debug/libAndSwapChainHookMemory.a",
+      "sha256": "1b2229b0c643c1590dd33bd21dbbb1425574b213fc4d48baf2e4b546fb8f0b98"
+    },
+    {
+      "path": "build/android-modules-debug/andswapchain_contract_tests",
+      "sha256": "11d94ad6e3c83b1d59a47ca488a11f775a926beb289ab2a1de0a57b11c49479c"
+    },
+    {
+      "path": "build/android-modules-debug/andswapchain_crash_record_test",
+      "sha256": "9abba68527c52fcb4d6f84cb91a55dc26b0615829729848c25d298ac1137a601"
+    },
+    {
+      "path": "build/android-modules-debug/andswapchain_dobby_test",
+      "sha256": "c583b2e32e8d94ea7ef76ad8464743058a75c4043da1060e6d55d738ec73743b"
+    },
+    {
+      "path": "build/android-modules-debug/andswapchain_egl_test",
+      "sha256": "bc7554ea37145dddc81505b02934613b5b3b61bf9b4a4f0a11048241153e78a8"
+    },
+    {
+      "path": "build/android-modules-debug/andswapchain_header_check",
+      "sha256": "74b03db5e0d3739d4c5d8976b4940a5e2d5d29445d92fa423a58fe1bfb294c2d"
+    },
+    {
+      "path": "build/android-modules-debug/andswapchain_input_tests",
+      "sha256": "7140f25c31e894bca107a0b6af43043cec38efd411fa72b99343978e64119dc5"
+    },
+    {
+      "path": "build/android-modules-debug/andswapchain_load_test",
+      "sha256": "6a84f01e53520e8a94e3aab7ce9a80a9977dfedbfb4982c9371179cf088a7787"
+    },
+    {
+      "path": "build/android-modules-debug/libAndSwapChainHook.so",
+      "sha256": "598aadb96e457de297130ee5500024bf441c36df86d137481f49cf5e34b848de"
+    },
+    {
+      "path": "build/android-modules-debug/libAndSwapChainHookAnalysis.a",
+      "sha256": "61cfb27fbe04568c9073efaf77f761c83d9f5be5aaf9fc476888fc05086e951b"
+    },
+    {
+      "path": "build/android-modules-debug/libAndSwapChainHookCrashRecorder.a",
+      "sha256": "b9920703eccce53c6127fbb281eada7aea522f2a8089193c0ce054632cc875aa"
+    },
+    {
+      "path": "build/android-modules-debug/libAndSwapChainHookGraphics.a",
+      "sha256": "f801c578d4393cf21a58a7d92331e4f03902030c1c403e673591740bb395219c"
+    },
+    {
+      "path": "build/android-modules-debug/libAndSwapChainHookInput.a",
+      "sha256": "504dfa5190c34677720b109a751f5d2616e250495eaa428a817a9ed63af37de5"
+    },
+    {
+      "path": "build/android-modules-debug/libAndSwapChainHookInstrumentation.a",
+      "sha256": "7c27a097aef96f5cbbc98eae7659f0c5e09560a1a796701379ab4c9968bf0ee8"
+    },
+    {
+      "path": "build/android-modules-debug/libAndSwapChainHookMemory.a",
+      "sha256": "a12a1ea6701b23d78f9b0e9c33b70d843f38dbf195d376d38ebf9740a5f92484"
+    },
+    {
+      "path": "build/android-modules-debug/libAndSwapChainHookOverlay.a",
+      "sha256": "6c94a7f6788feb06de0c28acc4d40684f26fd33a418f6f90fb246bed7156d91f"
+    },
+    {
+      "path": "build/android-modules-debug/libandswapchain_overlay_fixture.so",
+      "sha256": "a44816b8f69e951ade465d4ce0424fd00168533195efa7e790983096ee7e33a1"
+    },
+    {
+      "path": "build/android-modules-release/andswapchain_contract_tests",
+      "sha256": "48fb5517b314cf9c7b224b8b1635c27f69b311441fb60321b24e56315bb7b17b"
+    },
+    {
+      "path": "build/android-modules-release/andswapchain_crash_record_test",
+      "sha256": "6e5b61064f89b221ec8b8f78757bc3f7e493b9074e8d90a3658475f4f33b7c1e"
+    },
+    {
+      "path": "build/android-modules-release/andswapchain_dobby_test",
+      "sha256": "fffe1783576ec4fb979347880e1caeae868a02bfe0bc5fc1b637931ef7c78961"
+    },
+    {
+      "path": "build/android-modules-release/andswapchain_egl_test",
+      "sha256": "02e7594debc88941c45f580e182e9aa478841a3938793cf165714db22fc16cd9"
+    },
+    {
+      "path": "build/android-modules-release/andswapchain_header_check",
+      "sha256": "4a1b5bc9677c20d5ee91b23bb34b9ff6af5612c9bdc27122930f7b38d5a3e4b8"
+    },
+    {
+      "path": "build/android-modules-release/andswapchain_input_tests",
+      "sha256": "cf88c7dae9c0cfbe7623d91da6960c83fc9c0d5c6cade337d5937c0e61d19ee2"
+    },
+    {
+      "path": "build/android-modules-release/andswapchain_load_test",
+      "sha256": "35d4f13ad34b72bd226aa962860c9707b620212ac13fb3bb376ef727806a5d98"
+    },
+    {
+      "path": "build/android-modules-release/andswapchain_pointer_adapter_test",
+      "sha256": "7ba46f45324492e87fd570876bc5030dbfb37f1e2ef0b87be3a9c6cfa4002ac2"
+    },
+    {
+      "path": "build/android-modules-release/cmake/dobby/libandswapchain_dobby.a",
+      "sha256": "4c2751e3f502cbdc16d0edcd923fc7a414dbec1cf9f3b7214eba4d103ad72eb3"
+    },
+    {
+      "path": "build/android-modules-release/libAndSwapChainHook.so",
+      "sha256": "e9673fb1c31c390d43f9da8d8c9048fa2d009d8e6021f660cd7699ec3f3c0192"
+    },
+    {
+      "path": "build/android-modules-release/libAndSwapChainHookAnalysis.a",
+      "sha256": "0e7130d0de47d8aa2177df572bdae6ba1de59daca412bd58269930184cda3c8f"
+    },
+    {
+      "path": "build/android-modules-release/libAndSwapChainHookCrashRecorder.a",
+      "sha256": "6c24867b3987ddda02ff5a2d9f02736297bc888dcc9cb44f51c083ad51361160"
+    },
+    {
+      "path": "build/android-modules-release/libAndSwapChainHookGraphics.a",
+      "sha256": "4330006f4125f582a709bd2c0a60de5aa7e2003fb468baf4b0e70da29b648614"
+    },
+    {
+      "path": "build/android-modules-release/libAndSwapChainHookInput.a",
+      "sha256": "77aabe4b441aa6d7587bc4a8eda34b0228edc07793dd4021c5113bff4d46c056"
+    },
+    {
+      "path": "build/android-modules-release/libAndSwapChainHookInstrumentation.a",
+      "sha256": "a1dd3436a0b36a57e3656ca24d928b524615f456a6fcf55e8b5164b2640ed2ca"
+    },
+    {
+      "path": "build/android-modules-release/libAndSwapChainHookMemory.a",
+      "sha256": "d1a5f1ab9ce5585c7dd3c50d704f524d2827d52eb8654d41e88a9297982d0ab3"
+    },
+    {
+      "path": "build/android-modules-release/libAndSwapChainHookOverlay.a",
+      "sha256": "683f640c562177d29c19bdb55eb257b17ad23387f8368adf5244d585ec2fa0e1"
+    },
+    {
+      "path": "build/android-modules-release/libandswapchain_overlay_fixture.so",
+      "sha256": "00ae5eea09919c242b60d2ca27489e909a575d2c5df9a0025b27cc6d84294df8"
+    },
+    {
+      "path": "build/android-release/andswapchain_contract_tests",
+      "sha256": "c22dc1af092b05b2be06fa969f423b262f96b86e228ceda10cb5e560036dfd22"
+    },
+    {
+      "path": "build/android-release/andswapchain_header_check",
+      "sha256": "fe6cc9d2f90aa09bb0ccd16731dff582decbff1c67821627fc03e5549f10c213"
+    },
+    {
+      "path": "build/android-release/andswapchain_input_tests",
+      "sha256": "babfcbc698d28787596e47eb67b807c431e5c71994659b9d71b6e59d05929c91"
+    },
+    {
+      "path": "build/android-release/andswapchain_load_test",
+      "sha256": "13b66e0be090ded21ea53f5a4ea76d9cb8cd125ad46ef8d044309d72333aa9f0"
+    },
+    {
+      "path": "build/android-release/libAndSwapChainHook.so",
+      "sha256": "d3723f77f151735edc7b07024d01f2e2f774b5a05458c059df34dbfeea4ff91e"
+    },
+    {
+      "path": "build/android-release/libAndSwapChainHookAnalysis.a",
+      "sha256": "91a38418ca692fab85f213316e7b1aeaebbbd9252778951122b40ab0159e46f5"
+    },
+    {
+      "path": "build/android-release/libAndSwapChainHookInput.a",
+      "sha256": "b16780c493644db25fe6e66806a220f02e25a12a42dbcc7c3f7e24cdd7b082bd"
+    },
+    {
+      "path": "build/android-release/libAndSwapChainHookInstrumentation.a",
+      "sha256": "e5ef37dd62de5eba0be5717fd9d7e428c123853e13a3afbd69d07fbeccde74ee"
+    },
+    {
+      "path": "build/android-release/libAndSwapChainHookMemory.a",
+      "sha256": "1c24eeaaaa3f5c5122f61a2965da36dd6d84f32ad1e98730c45ca4d06eded3a6"
+    },
+    {
+      "path": "build/dobby-consumer/dobby_consumer",
+      "sha256": "d7e8be75cbdca608710e60c2e2c97a3e18fe85f89cd3cb11189a394ddd9437ea"
+    },
+    {
+      "path": "build/dobby-repro/libandswapchain_dobby.a",
+      "sha256": "4c2751e3f502cbdc16d0edcd923fc7a414dbec1cf9f3b7214eba4d103ad72eb3"
+    },
+    {
+      "path": "build/host-debug/andswapchain_contract_tests",
+      "sha256": "cffe48da99b4f6443936d31f9b6feafcd17416777c03b526af48b06cbc8f2a69"
+    },
+    {
+      "path": "build/host-debug/andswapchain_header_check",
+      "sha256": "2dcbfeed59268596950cbaf5993d17afa70eac72bf0e8559a64169386416a71a"
+    },
+    {
+      "path": "build/host-debug/andswapchain_input_tests",
+      "sha256": "c32930e1a03890f99431a26cb9f7e6984f916181fb5dde9d1605a786d9e21ff9"
+    },
+    {
+      "path": "build/host-debug/libAndSwapChainHookAnalysis.a",
+      "sha256": "505181eb7e106c653df054993eacd3e74a435b24c42d3d2af74bc996304a7d34"
+    },
+    {
+      "path": "build/host-debug/libAndSwapChainHookInput.a",
+      "sha256": "5baddea549f6cf514cc6b9c30445d1593207ce80dfc7c9c170708b0176cb672d"
+    },
+    {
+      "path": "build/host-debug/libAndSwapChainHookInstrumentation.a",
+      "sha256": "fc3f02158536012558f8c8d17332003b953aeab0359cc5063747350c9bc9eb9c"
+    },
+    {
+      "path": "build/host-debug/libAndSwapChainHookMemory.a",
+      "sha256": "c1bb07d43d60248f80021ccefc5106e8d1cc974364f0cbcc029d2b7c790e9411"
+    },
+    {
+      "path": "build/host-optional/andswapchain_contract_tests",
+      "sha256": "154611d4c0970c361727a3c94518fc9a4cec5050cacaca10f76e99afcca44e7b"
+    },
+    {
+      "path": "build/host-optional/andswapchain_crash_record_test",
+      "sha256": "c3471f14a2b44a15ef1a7f912685e7b304781c76b7dbb4fd2fb23d4b05745724"
+    },
+    {
+      "path": "build/host-optional/andswapchain_header_check",
+      "sha256": "94324790f834eb5b94a49b9b08042373947da8e584d28ca34043f62c82420898"
+    },
+    {
+      "path": "build/host-optional/andswapchain_input_tests",
+      "sha256": "4de969ea25b9484290b321249faf2fd777ebbcf71d2a22a3b29ad52182869eff"
+    },
+    {
+      "path": "build/host-optional/libAndSwapChainHookAnalysis.a",
+      "sha256": "822c46bee387fb6afb8af97fc258a1f7c88edec01b642fbc083834cdca60ab27"
+    },
+    {
+      "path": "build/host-optional/libAndSwapChainHookCrashRecorder.a",
+      "sha256": "2dba6557bac4b66ce0c6cb4be8161efa8db0bfcb9b1f3e6d2772aec49774771c"
+    },
+    {
+      "path": "build/host-optional/libAndSwapChainHookInput.a",
+      "sha256": "7cbacf8fc816f18ecf12f5b39b14153a7a306c2711b391fcdac702c43579490d"
+    },
+    {
+      "path": "build/host-optional/libAndSwapChainHookInstrumentation.a",
+      "sha256": "df134072fbdcae771fabfdcbaad23abd6797b105d6774d023dcf97e589e2237b"
+    },
+    {
+      "path": "build/host-optional/libAndSwapChainHookMemory.a",
+      "sha256": "9b8f35d1f35421e2649c7be52d1466e2a5376ab8699c237ecb532f8a05efbab2"
+    },
+    {
+      "path": "build/host-release/andswapchain_contract_tests",
+      "sha256": "68202fa9e21af57cec8f01e14b2a5ce75be35fe6a0795b3ab2a934b3bcf50eae"
+    },
+    {
+      "path": "build/host-release/andswapchain_header_check",
+      "sha256": "757689daefd61763010c33ae93c8b8b786d6634ca3bd7a6c2d183389836a656d"
+    },
+    {
+      "path": "build/host-release/andswapchain_input_tests",
+      "sha256": "85da44dc52b5d37cc4f32710298fbe941a8e800a0553e6516a31dc31a5f309d2"
+    },
+    {
+      "path": "build/host-release/libAndSwapChainHookAnalysis.a",
+      "sha256": "3d79f382ad0e54414ef52514c5ae9e59a06775531e1e3b1cdb6a0d19a0a41631"
+    },
+    {
+      "path": "build/host-release/libAndSwapChainHookInput.a",
+      "sha256": "7d7461eefb56f8e16ccf045db95bcc6e0a38d385bfd327af81b36f22b1ec07d4"
+    },
+    {
+      "path": "build/host-release/libAndSwapChainHookInstrumentation.a",
+      "sha256": "563a7b9bd185e0066b6825a3414a3b90dbf291c54e0125c6f4271c0b442c3d81"
+    },
+    {
+      "path": "build/host-release/libAndSwapChainHookMemory.a",
+      "sha256": "57b4341dfe1f855d90dec9c7896ee26e4a6104e0ad1e19df74772fd4350db656"
+    },
+    {
+      "path": "build/overlay-fixture/apk/owned-overlay.apk",
+      "sha256": "9f2d476360c45182a595c791e332822efd8fb7ccd4bb9030bade155effda7b05"
+    },
+    {
+      "path": "build/overlay-fixture/libandswapchain_overlay_fixture.so",
+      "sha256": "28a57e8f009902950043e8f26494db85253fd1c849f53b6903d6920f4c1a3d37"
+    }
+  ],
+  "pointerhook_package": {
+    "revision": "uncommitted validated producer package; no gitlink changed",
+    "artifacts": [
+      {
+        "path": "lib/libpointerhook_core.a",
+        "sha256": "0bc309c59a09e842aa78956f55d3be594939881e84c6b0147457bfbc96d154d5"
+      }
+    ]
+  },
+  "owned_overlay_result": "PASS cycles=10 activityReplacements=1 globals=0 windows=0 leases=0 WindowManagerGlobal=baseline",
+  "assembly_validation": {
+    "schema": 1,
+    "status": "passed",
+    "scope": "Assembler, Disassembler, and Assemble only. Other top-level component evidence retains its original source mapping.",
+    "producer_configurations": [
+      "host-Debug",
+      "host-Release",
+      "android-Debug",
+      "android-Release"
+    ],
+    "consumer_configuration": "Release",
+    "consumer_components": [
+      "Assembler",
+      "Disassembler",
+      "Assemble"
+    ],
+    "consumer_forms": [
+      "add_subdirectory",
+      "relocated find_package"
+    ],
+    "sanitizers": "AddressSanitizer and UndefinedBehaviorSanitizer on host Debug wrappers and fixtures; upstream engines are not instrumented.",
+    "toolchain": {
+      "host": "macOS-15.7.3-arm64-arm-64bit",
+      "cmake": "cmake version 4.4.2\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake).",
+      "host_cxx": "Apple clang version 17.0.0 (clang-1700.0.13.5)\nTarget: arm64-apple-darwin24.6.0\nThread model: posix\nInstalledDir: /Library/Developer/CommandLineTools/usr/bin",
+      "ndk_source_properties": "Pkg.Desc = Android NDK\nPkg.Revision = 29.0.14206865\nPkg.BaseRevision = 29.0.14206865\nPkg.ReleaseName = r29",
+      "android_abi": "arm64-v8a",
+      "android_api": 27
+    },
+    "device": {
+      "serial_sha256": "32816d5a451568f06ab4475f415caa29bfe05f8eb37d1bf222e40a7072ad4d15",
+      "model": "PLQ110",
+      "api": "36",
+      "scope": "Owned byte fixtures only; generated instructions are never executed."
+    },
+    "checks": [
+      {
+        "name": "cmake-version",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "--version"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/cmake-version.log",
+          "sha256": "9e2032657b821ca15fdf749298148b08afc4d86fe8a6f709a8459318fa1c018f"
+        }
+      },
+      {
+        "name": "host-cxx-version",
+        "status": "passed",
+        "command": [
+          "c++",
+          "--version"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/host-cxx-version.log",
+          "sha256": "abf148723dce5bca87f773682e1acb4c7849188b7b6e0a07215609901139f527"
+        }
+      },
+      {
+        "name": "device-fixture-directory",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "mkdir",
+          "-p",
+          "/data/local/tmp/andswapchain-owned-language-fixtures"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/device-fixture-directory.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "name": "device-model",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "getprop",
+          "ro.product.model"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/device-model.log",
+          "sha256": "fa0f8d65f4c60fa99871d6096f3209bf0f960cf7ba3a822b19acb9c3b9da89e2"
+        }
+      },
+      {
+        "name": "device-api",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "getprop",
+          "ro.build.version.sdk"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/device-api.log",
+          "sha256": "a4b2c5db15348c29451e18b8307e5ef81625ea638e807935f39ceaa8d9ac7758"
+        }
+      },
+      {
+        "name": "host-assemble-debug-configure",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "-S",
+          "/Users/ddd/Developer/AndSwapChainHook",
+          "-B",
+          "/Users/ddd/Developer/AndSwapChainHook/build/host-assemble-debug",
+          "-G",
+          "Ninja",
+          "-DCMAKE_BUILD_TYPE=Debug",
+          "-DBUILD_TESTING=ON",
+          "-DANDSWAPCHAIN_BUILD_ASSEMBLE=ON",
+          "-DANDSWAPCHAIN_BUILD_ANDROID=OFF",
+          "-DANDSWAPCHAIN_BUILD_GRAPHICS=OFF",
+          "-DANDSWAPCHAIN_BUILD_OVERLAY=OFF",
+          "-DANDSWAPCHAIN_BUILD_CRASH_RECORDER=OFF",
+          "-DANDSWAPCHAIN_BUILD_POINTER_ADAPTER=OFF",
+          "-DANDSWAPCHAIN_ENABLE_SANITIZERS=ON"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/host-assemble-debug-configure.log",
+          "sha256": "cec5b0aae0ca4623e2868c8190de7cd304418cc6b574e754e3e188578545d5ca"
+        }
+      },
+      {
+        "name": "host-assemble-debug-build",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "--build",
+          "/Users/ddd/Developer/AndSwapChainHook/build/host-assemble-debug",
+          "--parallel",
+          "4",
+          "--target",
+          "andswapchain_assembler_roundtrip",
+          "andswapchain_disassembler_roundtrip",
+          "andswapchain_assemble_roundtrip",
+          "andswapchain_assemble_contracts",
+          "andswapchain_header_Assembler",
+          "andswapchain_header_Disassembler"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/host-assemble-debug-build.log",
+          "sha256": "ccd3b63709d36a90a3206e311bd9bb27b31ef61f3d749df21a27754785012029"
+        }
+      },
+      {
+        "name": "host-assemble-debug-ctest",
+        "status": "passed",
+        "command": [
+          "ctest",
+          "--test-dir",
+          "/Users/ddd/Developer/AndSwapChainHook/build/host-assemble-debug",
+          "--output-on-failure",
+          "--no-tests=error",
+          "-R",
+          "^andswapchain_(assemble_contracts|assemble_roundtrip|assembler_roundtrip|disassembler_roundtrip)$"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/host-assemble-debug-ctest.log",
+          "sha256": "619fd9a253ddd6c5a53d79cc02ca56b56d5b15e0c142d3316c1c2eb63332ae30"
+        }
+      },
+      {
+        "name": "host-assemble-release-configure",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "-S",
+          "/Users/ddd/Developer/AndSwapChainHook",
+          "-B",
+          "/Users/ddd/Developer/AndSwapChainHook/build/host-assemble-release",
+          "-G",
+          "Ninja",
+          "-DCMAKE_BUILD_TYPE=Release",
+          "-DBUILD_TESTING=ON",
+          "-DANDSWAPCHAIN_BUILD_ASSEMBLE=ON",
+          "-DANDSWAPCHAIN_BUILD_ANDROID=OFF",
+          "-DANDSWAPCHAIN_BUILD_GRAPHICS=OFF",
+          "-DANDSWAPCHAIN_BUILD_OVERLAY=OFF",
+          "-DANDSWAPCHAIN_BUILD_CRASH_RECORDER=OFF",
+          "-DANDSWAPCHAIN_BUILD_POINTER_ADAPTER=OFF",
+          "-DANDSWAPCHAIN_ENABLE_SANITIZERS=OFF"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/host-assemble-release-configure.log",
+          "sha256": "f8e932482be005aa316b69cc5f40e430115fa430c9dd599b37e834de34fb658a"
+        }
+      },
+      {
+        "name": "host-assemble-release-build",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "--build",
+          "/Users/ddd/Developer/AndSwapChainHook/build/host-assemble-release",
+          "--parallel",
+          "4",
+          "--target",
+          "andswapchain_assembler_roundtrip",
+          "andswapchain_disassembler_roundtrip",
+          "andswapchain_assemble_roundtrip",
+          "andswapchain_assemble_contracts",
+          "andswapchain_header_Assembler",
+          "andswapchain_header_Disassembler"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/host-assemble-release-build.log",
+          "sha256": "ccd3b63709d36a90a3206e311bd9bb27b31ef61f3d749df21a27754785012029"
+        }
+      },
+      {
+        "name": "host-assemble-release-ctest",
+        "status": "passed",
+        "command": [
+          "ctest",
+          "--test-dir",
+          "/Users/ddd/Developer/AndSwapChainHook/build/host-assemble-release",
+          "--output-on-failure",
+          "--no-tests=error",
+          "-R",
+          "^andswapchain_(assemble_contracts|assemble_roundtrip|assembler_roundtrip|disassembler_roundtrip)$"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/host-assemble-release-ctest.log",
+          "sha256": "4dc881245a7046e66502b07f005a7a49c916b9555f66c7e48be014b0ce1372ed"
+        }
+      },
+      {
+        "name": "host-assembler-source-configure",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "-S",
+          "/Users/ddd/Developer/AndSwapChainHook/tests/assemble_consumer",
+          "-B",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-assembler-source",
+          "-G",
+          "Ninja",
+          "-DCMAKE_BUILD_TYPE=Release",
+          "-DANDSWAPCHAIN_SOURCE_DIR=/Users/ddd/Developer/AndSwapChainHook",
+          "-DASSEMBLE_COMPONENT=Assembler",
+          "-DCMAKE_INSTALL_PREFIX=/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-assembler-original-install"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/host-assembler-source-configure.log",
+          "sha256": "8629c464004f3217a2a0706b65dd9eac12082d3305de559a1d6c8d6ea983e73d"
+        }
+      },
+      {
+        "name": "host-assembler-source-build",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "--build",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-assembler-source",
+          "--parallel",
+          "4"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/host-assembler-source-build.log",
+          "sha256": "1d3641e9af61b7539939e01ef9eb2a9d88f70e68fc5bcba5ea674e8a5f3b778f"
+        }
+      },
+      {
+        "name": "host-assembler-source-consumer",
+        "status": "passed",
+        "command": [
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-assembler-source/consumer"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/host-assembler-source-consumer.log",
+          "sha256": "701ce707187fb666d23ee82d6e9169213fbfd19376deb4952066e5c8b3085970"
+        }
+      },
+      {
+        "name": "host-assembler-install",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "--install",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-assembler-source",
+          "--prefix",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-assembler-relocated-install"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/host-assembler-install.log",
+          "sha256": "983c3399e1f5b34ce1fc6e0b4d1a79fad5071d810c9a6938430f02d5ed162e84"
+        }
+      },
+      {
+        "name": "host-assembler-installed-configure",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "-S",
+          "/Users/ddd/Developer/AndSwapChainHook/tests/assemble_consumer",
+          "-B",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-assembler-installed",
+          "-G",
+          "Ninja",
+          "-DCMAKE_BUILD_TYPE=Release",
+          "-DASSEMBLE_COMPONENT=Assembler",
+          "-DCMAKE_PREFIX_PATH=/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-assembler-relocated-install",
+          "-DCMAKE_FIND_ROOT_PATH=/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-assembler-relocated-install"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/host-assembler-installed-configure.log",
+          "sha256": "c5f1fc679e1e0a466846220e839648a9b798a0130553581398b2db73e66467bd"
+        }
+      },
+      {
+        "name": "host-assembler-installed-build",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "--build",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-assembler-installed",
+          "--parallel",
+          "4"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/host-assembler-installed-build.log",
+          "sha256": "2e64ea9f73ed35b4141e02a2341b4477e89e9dbf43e8105017b00323d4d23d36"
+        }
+      },
+      {
+        "name": "host-assembler-installed-consumer",
+        "status": "passed",
+        "command": [
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-assembler-installed/consumer"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/host-assembler-installed-consumer.log",
+          "sha256": "701ce707187fb666d23ee82d6e9169213fbfd19376deb4952066e5c8b3085970"
+        }
+      },
+      {
+        "name": "host-disassembler-source-configure",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "-S",
+          "/Users/ddd/Developer/AndSwapChainHook/tests/assemble_consumer",
+          "-B",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-disassembler-source",
+          "-G",
+          "Ninja",
+          "-DCMAKE_BUILD_TYPE=Release",
+          "-DANDSWAPCHAIN_SOURCE_DIR=/Users/ddd/Developer/AndSwapChainHook",
+          "-DASSEMBLE_COMPONENT=Disassembler",
+          "-DCMAKE_INSTALL_PREFIX=/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-disassembler-original-install"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/host-disassembler-source-configure.log",
+          "sha256": "9bc23de893fb5062697c2d4dc0aa6fdf8f562ed6f0cc2ced4b4daafa95176ef3"
+        }
+      },
+      {
+        "name": "host-disassembler-source-build",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "--build",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-disassembler-source",
+          "--parallel",
+          "4"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/host-disassembler-source-build.log",
+          "sha256": "4b956d61eec26f26c961e785e446e13fba0e884490fc99a8c46225db3d9ab7c2"
+        }
+      },
+      {
+        "name": "host-disassembler-source-consumer",
+        "status": "passed",
+        "command": [
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-disassembler-source/consumer"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/host-disassembler-source-consumer.log",
+          "sha256": "76df9ba9052142a0efc930a07f98ff3a9ce8d8656274c5aea5ecc765ab408fd7"
+        }
+      },
+      {
+        "name": "host-disassembler-install",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "--install",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-disassembler-source",
+          "--prefix",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-disassembler-relocated-install"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/host-disassembler-install.log",
+          "sha256": "7956610eb43a5f4b143fe3ff9ccdd68d915d33016199b28c6dc381f1ab05cbbf"
+        }
+      },
+      {
+        "name": "host-disassembler-installed-configure",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "-S",
+          "/Users/ddd/Developer/AndSwapChainHook/tests/assemble_consumer",
+          "-B",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-disassembler-installed",
+          "-G",
+          "Ninja",
+          "-DCMAKE_BUILD_TYPE=Release",
+          "-DASSEMBLE_COMPONENT=Disassembler",
+          "-DCMAKE_PREFIX_PATH=/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-disassembler-relocated-install",
+          "-DCMAKE_FIND_ROOT_PATH=/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-disassembler-relocated-install"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/host-disassembler-installed-configure.log",
+          "sha256": "72b2dc5543818085b89649b368cbadd65ffc0f6df69237276f46e5c145c74b6f"
+        }
+      },
+      {
+        "name": "host-disassembler-installed-build",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "--build",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-disassembler-installed",
+          "--parallel",
+          "4"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/host-disassembler-installed-build.log",
+          "sha256": "3f6080f021e5a50c168d92df8ac459f2b3e5b147bb3f2e2c9bf510bf5ef4c4e1"
+        }
+      },
+      {
+        "name": "host-disassembler-installed-consumer",
+        "status": "passed",
+        "command": [
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-disassembler-installed/consumer"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/host-disassembler-installed-consumer.log",
+          "sha256": "76df9ba9052142a0efc930a07f98ff3a9ce8d8656274c5aea5ecc765ab408fd7"
+        }
+      },
+      {
+        "name": "host-assemble-source-configure",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "-S",
+          "/Users/ddd/Developer/AndSwapChainHook/tests/assemble_consumer",
+          "-B",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-assemble-source",
+          "-G",
+          "Ninja",
+          "-DCMAKE_BUILD_TYPE=Release",
+          "-DANDSWAPCHAIN_SOURCE_DIR=/Users/ddd/Developer/AndSwapChainHook",
+          "-DASSEMBLE_COMPONENT=Assemble",
+          "-DCMAKE_INSTALL_PREFIX=/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-assemble-original-install"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/host-assemble-source-configure.log",
+          "sha256": "4cbc7f548bfd9f023456a71f26b2c4a07166c06977d08b374f05233afcb1fa98"
+        }
+      },
+      {
+        "name": "host-assemble-source-build",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "--build",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-assemble-source",
+          "--parallel",
+          "4"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/host-assemble-source-build.log",
+          "sha256": "4b19be373382e67133f94a47d3cfeedcac99ce9cfc3b0b081c8129cde9b07472"
+        }
+      },
+      {
+        "name": "host-assemble-source-consumer",
+        "status": "passed",
+        "command": [
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-assemble-source/consumer"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/host-assemble-source-consumer.log",
+          "sha256": "abe4e70482059af25d1a50c78482aec8bb05bd83779636aedd698792ab8e2a4c"
+        }
+      },
+      {
+        "name": "host-assemble-install",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "--install",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-assemble-source",
+          "--prefix",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-assemble-relocated-install"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/host-assemble-install.log",
+          "sha256": "41a60122cd0ccf246dfceda83850369444e8389bd86d926ce6dc5653e6db9c75"
+        }
+      },
+      {
+        "name": "host-assemble-installed-configure",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "-S",
+          "/Users/ddd/Developer/AndSwapChainHook/tests/assemble_consumer",
+          "-B",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-assemble-installed",
+          "-G",
+          "Ninja",
+          "-DCMAKE_BUILD_TYPE=Release",
+          "-DASSEMBLE_COMPONENT=Assemble",
+          "-DCMAKE_PREFIX_PATH=/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-assemble-relocated-install",
+          "-DCMAKE_FIND_ROOT_PATH=/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-assemble-relocated-install"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/host-assemble-installed-configure.log",
+          "sha256": "0f6c6e065081cb6047d20d25b7b23c7f7c216cb7f82f0d0f7759112e47c10007"
+        }
+      },
+      {
+        "name": "host-assemble-installed-build",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "--build",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-assemble-installed",
+          "--parallel",
+          "4"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/host-assemble-installed-build.log",
+          "sha256": "38563d09cc656aef15237a7638039cf74b6d38114b2a4c1d7dbee517a674f6da"
+        }
+      },
+      {
+        "name": "host-assemble-installed-consumer",
+        "status": "passed",
+        "command": [
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/host-assemble-installed/consumer"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/host-assemble-installed-consumer.log",
+          "sha256": "abe4e70482059af25d1a50c78482aec8bb05bd83779636aedd698792ab8e2a4c"
+        }
+      },
+      {
+        "name": "android-assemble-debug-configure",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "-S",
+          "/Users/ddd/Developer/AndSwapChainHook",
+          "-B",
+          "/Users/ddd/Developer/AndSwapChainHook/build/android-assemble-debug",
+          "-G",
+          "Ninja",
+          "-DCMAKE_BUILD_TYPE=Debug",
+          "-DBUILD_TESTING=ON",
+          "-DANDSWAPCHAIN_BUILD_ASSEMBLE=ON",
+          "-DANDSWAPCHAIN_BUILD_ANDROID=OFF",
+          "-DANDSWAPCHAIN_BUILD_GRAPHICS=OFF",
+          "-DANDSWAPCHAIN_BUILD_OVERLAY=OFF",
+          "-DANDSWAPCHAIN_BUILD_CRASH_RECORDER=OFF",
+          "-DANDSWAPCHAIN_BUILD_POINTER_ADAPTER=OFF",
+          "-DANDSWAPCHAIN_ENABLE_SANITIZERS=OFF",
+          "-DCMAKE_TOOLCHAIN_FILE=/opt/homebrew/share/android-ndk/build/cmake/android.toolchain.cmake",
+          "-DANDROID_ABI=arm64-v8a",
+          "-DANDROID_PLATFORM=android-27"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-debug-configure.log",
+          "sha256": "7a62fd961a711d904bc17927521b3d688790fbb1ae09cbe615bbadfffe715b92"
+        }
+      },
+      {
+        "name": "android-assemble-debug-build",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "--build",
+          "/Users/ddd/Developer/AndSwapChainHook/build/android-assemble-debug",
+          "--parallel",
+          "4",
+          "--target",
+          "andswapchain_assembler_roundtrip",
+          "andswapchain_disassembler_roundtrip",
+          "andswapchain_assemble_roundtrip",
+          "andswapchain_assemble_contracts",
+          "andswapchain_header_Assembler",
+          "andswapchain_header_Disassembler"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-debug-build.log",
+          "sha256": "cd4b17904daca7060a8e36b7e02a0aa5e95a26baf9f7176ed6fc8e25a0216a47"
+        }
+      },
+      {
+        "name": "android-assemble-debug-andswapchain_assembler_roundtrip-copy",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "push",
+          "/Users/ddd/Developer/AndSwapChainHook/build/android-assemble-debug/andswapchain_assembler_roundtrip",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-debug-andswapchain_assembler_roundtrip"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-debug-andswapchain_assembler_roundtrip-copy.log",
+          "sha256": "2bb76c6628e8bfbb28a93e0ea9fae1f5118b9cd056e77d867757ecbe03401943"
+        }
+      },
+      {
+        "name": "android-assemble-debug-andswapchain_assembler_roundtrip",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "chmod",
+          "700",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-debug-andswapchain_assembler_roundtrip"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-debug-andswapchain_assembler_roundtrip.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "name": "android-assemble-debug-andswapchain_assembler_roundtrip-run",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "timeout",
+          "30",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-debug-andswapchain_assembler_roundtrip"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-debug-andswapchain_assembler_roundtrip-run.log",
+          "sha256": "701ce707187fb666d23ee82d6e9169213fbfd19376deb4952066e5c8b3085970"
+        }
+      },
+      {
+        "name": "android-assemble-debug-andswapchain_disassembler_roundtrip-copy",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "push",
+          "/Users/ddd/Developer/AndSwapChainHook/build/android-assemble-debug/andswapchain_disassembler_roundtrip",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-debug-andswapchain_disassembler_roundtrip"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-debug-andswapchain_disassembler_roundtrip-copy.log",
+          "sha256": "c971124b7be45d0abeb0002ffec06ab6003e13418f5114a4a596b89e1044545a"
+        }
+      },
+      {
+        "name": "android-assemble-debug-andswapchain_disassembler_roundtrip",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "chmod",
+          "700",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-debug-andswapchain_disassembler_roundtrip"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-debug-andswapchain_disassembler_roundtrip.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "name": "android-assemble-debug-andswapchain_disassembler_roundtrip-run",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "timeout",
+          "30",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-debug-andswapchain_disassembler_roundtrip"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-debug-andswapchain_disassembler_roundtrip-run.log",
+          "sha256": "76df9ba9052142a0efc930a07f98ff3a9ce8d8656274c5aea5ecc765ab408fd7"
+        }
+      },
+      {
+        "name": "android-assemble-debug-andswapchain_assemble_roundtrip-copy",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "push",
+          "/Users/ddd/Developer/AndSwapChainHook/build/android-assemble-debug/andswapchain_assemble_roundtrip",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-debug-andswapchain_assemble_roundtrip"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-debug-andswapchain_assemble_roundtrip-copy.log",
+          "sha256": "fe7558b52778fae89b4bbdc0fa43157fed44ad14bc314936e917a81b46a9ad30"
+        }
+      },
+      {
+        "name": "android-assemble-debug-andswapchain_assemble_roundtrip",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "chmod",
+          "700",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-debug-andswapchain_assemble_roundtrip"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-debug-andswapchain_assemble_roundtrip.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "name": "android-assemble-debug-andswapchain_assemble_roundtrip-run",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "timeout",
+          "30",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-debug-andswapchain_assemble_roundtrip"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-debug-andswapchain_assemble_roundtrip-run.log",
+          "sha256": "abe4e70482059af25d1a50c78482aec8bb05bd83779636aedd698792ab8e2a4c"
+        }
+      },
+      {
+        "name": "android-assemble-debug-andswapchain_assemble_contracts-copy",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "push",
+          "/Users/ddd/Developer/AndSwapChainHook/build/android-assemble-debug/andswapchain_assemble_contracts",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-debug-andswapchain_assemble_contracts"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-debug-andswapchain_assemble_contracts-copy.log",
+          "sha256": "25c972caf342c24c0fdb827be884460048ec250b7498d993fcc8dc5b106d6c27"
+        }
+      },
+      {
+        "name": "android-assemble-debug-andswapchain_assemble_contracts",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "chmod",
+          "700",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-debug-andswapchain_assemble_contracts"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-debug-andswapchain_assemble_contracts.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "name": "android-assemble-debug-andswapchain_assemble_contracts-run",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "timeout",
+          "30",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-debug-andswapchain_assemble_contracts"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-debug-andswapchain_assemble_contracts-run.log",
+          "sha256": "ddf9738c06d39e8d68b46b8093ba231b87dea66dbba9e43dda937d6a770d8a3a"
+        }
+      },
+      {
+        "name": "android-assemble-release-configure",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "-S",
+          "/Users/ddd/Developer/AndSwapChainHook",
+          "-B",
+          "/Users/ddd/Developer/AndSwapChainHook/build/android-assemble-release",
+          "-G",
+          "Ninja",
+          "-DCMAKE_BUILD_TYPE=Release",
+          "-DBUILD_TESTING=ON",
+          "-DANDSWAPCHAIN_BUILD_ASSEMBLE=ON",
+          "-DANDSWAPCHAIN_BUILD_ANDROID=OFF",
+          "-DANDSWAPCHAIN_BUILD_GRAPHICS=OFF",
+          "-DANDSWAPCHAIN_BUILD_OVERLAY=OFF",
+          "-DANDSWAPCHAIN_BUILD_CRASH_RECORDER=OFF",
+          "-DANDSWAPCHAIN_BUILD_POINTER_ADAPTER=OFF",
+          "-DANDSWAPCHAIN_ENABLE_SANITIZERS=OFF",
+          "-DCMAKE_TOOLCHAIN_FILE=/opt/homebrew/share/android-ndk/build/cmake/android.toolchain.cmake",
+          "-DANDROID_ABI=arm64-v8a",
+          "-DANDROID_PLATFORM=android-27"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-release-configure.log",
+          "sha256": "057221af7da213c704a2c6223ddbadd4f7360f21617b755a2d0e18ca80b250fd"
+        }
+      },
+      {
+        "name": "android-assemble-release-build",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "--build",
+          "/Users/ddd/Developer/AndSwapChainHook/build/android-assemble-release",
+          "--parallel",
+          "4",
+          "--target",
+          "andswapchain_assembler_roundtrip",
+          "andswapchain_disassembler_roundtrip",
+          "andswapchain_assemble_roundtrip",
+          "andswapchain_assemble_contracts",
+          "andswapchain_header_Assembler",
+          "andswapchain_header_Disassembler"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-release-build.log",
+          "sha256": "9d9d975be0ee81b76864f8bdac52621e241b8d53e9e7b60a2ab9e03c71859c3f"
+        }
+      },
+      {
+        "name": "android-assemble-release-andswapchain_assembler_roundtrip-copy",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "push",
+          "/Users/ddd/Developer/AndSwapChainHook/build/android-assemble-release/andswapchain_assembler_roundtrip",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-release-andswapchain_assembler_roundtrip"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-release-andswapchain_assembler_roundtrip-copy.log",
+          "sha256": "a740b497d637e757025328463eff8bd9a2393f6b6cbd9e50b92907d906c426ab"
+        }
+      },
+      {
+        "name": "android-assemble-release-andswapchain_assembler_roundtrip",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "chmod",
+          "700",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-release-andswapchain_assembler_roundtrip"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-release-andswapchain_assembler_roundtrip.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "name": "android-assemble-release-andswapchain_assembler_roundtrip-run",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "timeout",
+          "30",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-release-andswapchain_assembler_roundtrip"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-release-andswapchain_assembler_roundtrip-run.log",
+          "sha256": "701ce707187fb666d23ee82d6e9169213fbfd19376deb4952066e5c8b3085970"
+        }
+      },
+      {
+        "name": "android-assemble-release-andswapchain_disassembler_roundtrip-copy",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "push",
+          "/Users/ddd/Developer/AndSwapChainHook/build/android-assemble-release/andswapchain_disassembler_roundtrip",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-release-andswapchain_disassembler_roundtrip"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-release-andswapchain_disassembler_roundtrip-copy.log",
+          "sha256": "ab7aeaaca0a744ebd1477154319b662b099381f160274fc92f97bf583624b47a"
+        }
+      },
+      {
+        "name": "android-assemble-release-andswapchain_disassembler_roundtrip",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "chmod",
+          "700",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-release-andswapchain_disassembler_roundtrip"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-release-andswapchain_disassembler_roundtrip.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "name": "android-assemble-release-andswapchain_disassembler_roundtrip-run",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "timeout",
+          "30",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-release-andswapchain_disassembler_roundtrip"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-release-andswapchain_disassembler_roundtrip-run.log",
+          "sha256": "76df9ba9052142a0efc930a07f98ff3a9ce8d8656274c5aea5ecc765ab408fd7"
+        }
+      },
+      {
+        "name": "android-assemble-release-andswapchain_assemble_roundtrip-copy",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "push",
+          "/Users/ddd/Developer/AndSwapChainHook/build/android-assemble-release/andswapchain_assemble_roundtrip",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-release-andswapchain_assemble_roundtrip"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-release-andswapchain_assemble_roundtrip-copy.log",
+          "sha256": "14a87311afb448e83bf50a9d04a2687f4f9d428d703f088a1534a0b0b639d589"
+        }
+      },
+      {
+        "name": "android-assemble-release-andswapchain_assemble_roundtrip",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "chmod",
+          "700",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-release-andswapchain_assemble_roundtrip"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-release-andswapchain_assemble_roundtrip.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "name": "android-assemble-release-andswapchain_assemble_roundtrip-run",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "timeout",
+          "30",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-release-andswapchain_assemble_roundtrip"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-release-andswapchain_assemble_roundtrip-run.log",
+          "sha256": "abe4e70482059af25d1a50c78482aec8bb05bd83779636aedd698792ab8e2a4c"
+        }
+      },
+      {
+        "name": "android-assemble-release-andswapchain_assemble_contracts-copy",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "push",
+          "/Users/ddd/Developer/AndSwapChainHook/build/android-assemble-release/andswapchain_assemble_contracts",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-release-andswapchain_assemble_contracts"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-release-andswapchain_assemble_contracts-copy.log",
+          "sha256": "e232fbab48f1b5cc5aeef3feda83b6f781ccf68d62833f7f8770460c1aae32d5"
+        }
+      },
+      {
+        "name": "android-assemble-release-andswapchain_assemble_contracts",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "chmod",
+          "700",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-release-andswapchain_assemble_contracts"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-release-andswapchain_assemble_contracts.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "name": "android-assemble-release-andswapchain_assemble_contracts-run",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "timeout",
+          "30",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-release-andswapchain_assemble_contracts"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-release-andswapchain_assemble_contracts-run.log",
+          "sha256": "ddf9738c06d39e8d68b46b8093ba231b87dea66dbba9e43dda937d6a770d8a3a"
+        }
+      },
+      {
+        "name": "android-assembler-source-configure",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "-S",
+          "/Users/ddd/Developer/AndSwapChainHook/tests/assemble_consumer",
+          "-B",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-assembler-source",
+          "-G",
+          "Ninja",
+          "-DCMAKE_BUILD_TYPE=Release",
+          "-DANDSWAPCHAIN_SOURCE_DIR=/Users/ddd/Developer/AndSwapChainHook",
+          "-DASSEMBLE_COMPONENT=Assembler",
+          "-DCMAKE_INSTALL_PREFIX=/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-assembler-original-install",
+          "-DCMAKE_TOOLCHAIN_FILE=/opt/homebrew/share/android-ndk/build/cmake/android.toolchain.cmake",
+          "-DANDROID_ABI=arm64-v8a",
+          "-DANDROID_PLATFORM=android-27"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assembler-source-configure.log",
+          "sha256": "8657e8968290bb95705f6be1664c9dcd45bd7b6cbb3f22ed60154a6b8d139190"
+        }
+      },
+      {
+        "name": "android-assembler-source-build",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "--build",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-assembler-source",
+          "--parallel",
+          "4"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assembler-source-build.log",
+          "sha256": "39876f8358176f5617cb4d53faaf3638ec78857c7de824ec0e4359de2d1a9d02"
+        }
+      },
+      {
+        "name": "android-assembler-source-consumer-copy",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "push",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-assembler-source/consumer",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assembler-source-consumer"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assembler-source-consumer-copy.log",
+          "sha256": "b338d50582d90000b5dd9893ce6bc52d812c9562d0fc430f88606ce5e27dbc61"
+        }
+      },
+      {
+        "name": "android-assembler-source-consumer",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "chmod",
+          "700",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assembler-source-consumer"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assembler-source-consumer.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "name": "android-assembler-source-consumer-run",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "timeout",
+          "30",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assembler-source-consumer"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assembler-source-consumer-run.log",
+          "sha256": "701ce707187fb666d23ee82d6e9169213fbfd19376deb4952066e5c8b3085970"
+        }
+      },
+      {
+        "name": "android-assembler-install",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "--install",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-assembler-source",
+          "--prefix",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-assembler-relocated-install"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assembler-install.log",
+          "sha256": "be61e31ef40b6edc25470768705cc1b4c4e88ebca073cfa7e27f80c5c0a7bf0a"
+        }
+      },
+      {
+        "name": "android-assembler-installed-configure",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "-S",
+          "/Users/ddd/Developer/AndSwapChainHook/tests/assemble_consumer",
+          "-B",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-assembler-installed",
+          "-G",
+          "Ninja",
+          "-DCMAKE_BUILD_TYPE=Release",
+          "-DASSEMBLE_COMPONENT=Assembler",
+          "-DCMAKE_PREFIX_PATH=/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-assembler-relocated-install",
+          "-DCMAKE_FIND_ROOT_PATH=/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-assembler-relocated-install",
+          "-DCMAKE_TOOLCHAIN_FILE=/opt/homebrew/share/android-ndk/build/cmake/android.toolchain.cmake",
+          "-DANDROID_ABI=arm64-v8a",
+          "-DANDROID_PLATFORM=android-27"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assembler-installed-configure.log",
+          "sha256": "978e1ad67aec4efce23243373661a7d1c63a781def85d1d6418d7207dc2be2f0"
+        }
+      },
+      {
+        "name": "android-assembler-installed-build",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "--build",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-assembler-installed",
+          "--parallel",
+          "4"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assembler-installed-build.log",
+          "sha256": "3a0c0647c8f0ee5dc85d8acc49b513fc0efe103f7e48849dafcf13eb3020f98b"
+        }
+      },
+      {
+        "name": "android-assembler-installed-consumer-copy",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "push",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-assembler-installed/consumer",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assembler-installed-consumer"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assembler-installed-consumer-copy.log",
+          "sha256": "650a60b8180aa1687d28fffec5e48eea0685e56d1c11534843da758fdc58d4cf"
+        }
+      },
+      {
+        "name": "android-assembler-installed-consumer",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "chmod",
+          "700",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assembler-installed-consumer"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assembler-installed-consumer.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "name": "android-assembler-installed-consumer-run",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "timeout",
+          "30",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assembler-installed-consumer"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assembler-installed-consumer-run.log",
+          "sha256": "701ce707187fb666d23ee82d6e9169213fbfd19376deb4952066e5c8b3085970"
+        }
+      },
+      {
+        "name": "android-disassembler-source-configure",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "-S",
+          "/Users/ddd/Developer/AndSwapChainHook/tests/assemble_consumer",
+          "-B",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-disassembler-source",
+          "-G",
+          "Ninja",
+          "-DCMAKE_BUILD_TYPE=Release",
+          "-DANDSWAPCHAIN_SOURCE_DIR=/Users/ddd/Developer/AndSwapChainHook",
+          "-DASSEMBLE_COMPONENT=Disassembler",
+          "-DCMAKE_INSTALL_PREFIX=/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-disassembler-original-install",
+          "-DCMAKE_TOOLCHAIN_FILE=/opt/homebrew/share/android-ndk/build/cmake/android.toolchain.cmake",
+          "-DANDROID_ABI=arm64-v8a",
+          "-DANDROID_PLATFORM=android-27"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-disassembler-source-configure.log",
+          "sha256": "13541bee6490d6b628d2a4623be2341b8ba49ac030fb76feebf1c2bc6c96aff9"
+        }
+      },
+      {
+        "name": "android-disassembler-source-build",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "--build",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-disassembler-source",
+          "--parallel",
+          "4"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-disassembler-source-build.log",
+          "sha256": "84c0a0632d436b6a94df44903c3de54bc4fe04649f303ac91cf1a8ae287c8090"
+        }
+      },
+      {
+        "name": "android-disassembler-source-consumer-copy",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "push",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-disassembler-source/consumer",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-disassembler-source-consumer"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-disassembler-source-consumer-copy.log",
+          "sha256": "9da64dcead1403b2bba9acb57e1ef7f727b129bd99bcae59ee29cc39bd418f05"
+        }
+      },
+      {
+        "name": "android-disassembler-source-consumer",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "chmod",
+          "700",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-disassembler-source-consumer"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-disassembler-source-consumer.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "name": "android-disassembler-source-consumer-run",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "timeout",
+          "30",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-disassembler-source-consumer"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-disassembler-source-consumer-run.log",
+          "sha256": "76df9ba9052142a0efc930a07f98ff3a9ce8d8656274c5aea5ecc765ab408fd7"
+        }
+      },
+      {
+        "name": "android-disassembler-install",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "--install",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-disassembler-source",
+          "--prefix",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-disassembler-relocated-install"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-disassembler-install.log",
+          "sha256": "1cb27c4cd1c8a4703ed4bfcdde9d372222f794e43620ed1c4df92c8805fa8d8d"
+        }
+      },
+      {
+        "name": "android-disassembler-installed-configure",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "-S",
+          "/Users/ddd/Developer/AndSwapChainHook/tests/assemble_consumer",
+          "-B",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-disassembler-installed",
+          "-G",
+          "Ninja",
+          "-DCMAKE_BUILD_TYPE=Release",
+          "-DASSEMBLE_COMPONENT=Disassembler",
+          "-DCMAKE_PREFIX_PATH=/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-disassembler-relocated-install",
+          "-DCMAKE_FIND_ROOT_PATH=/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-disassembler-relocated-install",
+          "-DCMAKE_TOOLCHAIN_FILE=/opt/homebrew/share/android-ndk/build/cmake/android.toolchain.cmake",
+          "-DANDROID_ABI=arm64-v8a",
+          "-DANDROID_PLATFORM=android-27"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-disassembler-installed-configure.log",
+          "sha256": "a7655dc9c8c323819ab31eea41b7a73665fe90f5121cc8c9440c52f9b34f12fc"
+        }
+      },
+      {
+        "name": "android-disassembler-installed-build",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "--build",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-disassembler-installed",
+          "--parallel",
+          "4"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-disassembler-installed-build.log",
+          "sha256": "4afed7228992c032d20d9ba3487863a81e1c3623383db79153f710e43080578b"
+        }
+      },
+      {
+        "name": "android-disassembler-installed-consumer-copy",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "push",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-disassembler-installed/consumer",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-disassembler-installed-consumer"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-disassembler-installed-consumer-copy.log",
+          "sha256": "f9cca9c7e1599d3a7905e90b1c0b2726e4364ef7b45cf3d064fe1344d5519273"
+        }
+      },
+      {
+        "name": "android-disassembler-installed-consumer",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "chmod",
+          "700",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-disassembler-installed-consumer"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-disassembler-installed-consumer.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "name": "android-disassembler-installed-consumer-run",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "timeout",
+          "30",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-disassembler-installed-consumer"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-disassembler-installed-consumer-run.log",
+          "sha256": "76df9ba9052142a0efc930a07f98ff3a9ce8d8656274c5aea5ecc765ab408fd7"
+        }
+      },
+      {
+        "name": "android-assemble-source-configure",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "-S",
+          "/Users/ddd/Developer/AndSwapChainHook/tests/assemble_consumer",
+          "-B",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-assemble-source",
+          "-G",
+          "Ninja",
+          "-DCMAKE_BUILD_TYPE=Release",
+          "-DANDSWAPCHAIN_SOURCE_DIR=/Users/ddd/Developer/AndSwapChainHook",
+          "-DASSEMBLE_COMPONENT=Assemble",
+          "-DCMAKE_INSTALL_PREFIX=/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-assemble-original-install",
+          "-DCMAKE_TOOLCHAIN_FILE=/opt/homebrew/share/android-ndk/build/cmake/android.toolchain.cmake",
+          "-DANDROID_ABI=arm64-v8a",
+          "-DANDROID_PLATFORM=android-27"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-source-configure.log",
+          "sha256": "e61666ad6278f08c3789d9a39714956c1d8508bb0a57d3ce89e4d2893933688d"
+        }
+      },
+      {
+        "name": "android-assemble-source-build",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "--build",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-assemble-source",
+          "--parallel",
+          "4"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-source-build.log",
+          "sha256": "7fd408e32e278a7d0c6675239031e27c7deaf07d392fd340d77fec406b8ab042"
+        }
+      },
+      {
+        "name": "android-assemble-source-consumer-copy",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "push",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-assemble-source/consumer",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-source-consumer"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-source-consumer-copy.log",
+          "sha256": "65a2603de5e97f85b7fef28d5740a7fc943d67bffa131badd113352e78658ef2"
+        }
+      },
+      {
+        "name": "android-assemble-source-consumer",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "chmod",
+          "700",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-source-consumer"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-source-consumer.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "name": "android-assemble-source-consumer-run",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "timeout",
+          "30",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-source-consumer"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-source-consumer-run.log",
+          "sha256": "abe4e70482059af25d1a50c78482aec8bb05bd83779636aedd698792ab8e2a4c"
+        }
+      },
+      {
+        "name": "android-assemble-install",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "--install",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-assemble-source",
+          "--prefix",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-assemble-relocated-install"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-install.log",
+          "sha256": "bf82c7ae598b063ea17c8bb22f895147afe0af578c244ef17f727936cbef273a"
+        }
+      },
+      {
+        "name": "android-assemble-installed-configure",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "-S",
+          "/Users/ddd/Developer/AndSwapChainHook/tests/assemble_consumer",
+          "-B",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-assemble-installed",
+          "-G",
+          "Ninja",
+          "-DCMAKE_BUILD_TYPE=Release",
+          "-DASSEMBLE_COMPONENT=Assemble",
+          "-DCMAKE_PREFIX_PATH=/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-assemble-relocated-install",
+          "-DCMAKE_FIND_ROOT_PATH=/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-assemble-relocated-install",
+          "-DCMAKE_TOOLCHAIN_FILE=/opt/homebrew/share/android-ndk/build/cmake/android.toolchain.cmake",
+          "-DANDROID_ABI=arm64-v8a",
+          "-DANDROID_PLATFORM=android-27"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-installed-configure.log",
+          "sha256": "86066e8c19059a7445ee260ffae7697a7def1f4ee63983b45784b77c28e3a752"
+        }
+      },
+      {
+        "name": "android-assemble-installed-build",
+        "status": "passed",
+        "command": [
+          "cmake",
+          "--build",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-assemble-installed",
+          "--parallel",
+          "4"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-installed-build.log",
+          "sha256": "0774d45a1b49709d8658199a0d6eb4f36e190f47c95aeee26e2ee112356f24ac"
+        }
+      },
+      {
+        "name": "android-assemble-installed-consumer-copy",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "push",
+          "/Users/ddd/Developer/AndSwapChainHook/build/assembly-validation/android-assemble-installed/consumer",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-installed-consumer"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-installed-consumer-copy.log",
+          "sha256": "e96a30dfd2177365b87b48a78b5b72667c24cf1dc9f920f611fae3cbe84cc61f"
+        }
+      },
+      {
+        "name": "android-assemble-installed-consumer",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "chmod",
+          "700",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-installed-consumer"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-installed-consumer.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "name": "android-assemble-installed-consumer-run",
+        "status": "passed",
+        "command": [
+          "adb",
+          "-s",
+          "OWNED_DEVICE_SERIAL",
+          "shell",
+          "timeout",
+          "30",
+          "/data/local/tmp/andswapchain-owned-language-fixtures/android-assemble-installed-consumer"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "build/assembly-validation/logs/android-assemble-installed-consumer-run.log",
+          "sha256": "abe4e70482059af25d1a50c78482aec8bb05bd83779636aedd698792ab8e2a4c"
+        }
+      }
+    ],
+    "dependencies": [
+      {
+        "engine": "keystone",
+        "source_tree_sha256": "ebe54ca30f79685433cbe1fde12d77719c08cb83f46a0e31ad2ce454a8a9b96d",
+        "source_tree_files": 1048,
+        "tree_hash_format": "Sorted POSIX relative path, NUL, binary SHA-256 of each file.",
+        "license_files_match_fetched_source": true
+      },
+      {
+        "engine": "capstone",
+        "source_tree_sha256": "328d62a945b5ed67dddd562a37c4e0d8e9a7632c666bc333eaa9309a342071f9",
+        "source_tree_files": 3566,
+        "tree_hash_format": "Sorted POSIX relative path, NUL, binary SHA-256 of each file.",
+        "license_files_match_fetched_source": true
+      }
+    ],
+    "dependency_configurations": [
+      {
+        "name": "host-assemble-debug",
+        "platform": "host",
+        "component": "Assemble",
+        "capstone_project_version": "6.0.0",
+        "keystone_generated_configuration": {
+          "path": "build/host-assemble-debug/_deps/andswapchain_keystone-build/llvm/include/llvm/Config/llvm-config.h",
+          "sha256": "bcffb0e8fa97554c6237168eb4289ea725d8a47cfd86da19bcf1f52becab99d8"
+        }
+      },
+      {
+        "name": "host-assemble-release",
+        "platform": "host",
+        "component": "Assemble",
+        "capstone_project_version": "6.0.0",
+        "keystone_generated_configuration": {
+          "path": "build/host-assemble-release/_deps/andswapchain_keystone-build/llvm/include/llvm/Config/llvm-config.h",
+          "sha256": "5480bf092ef5561cab408794377d5b947883de60081dbb23cace6d76f2ec6c2a"
+        }
+      },
+      {
+        "name": "host-assembler",
+        "platform": "host",
+        "component": "Assembler",
+        "keystone_generated_configuration": {
+          "path": "build/assembly-validation/host-assembler-source/_deps/andswapchain_keystone-build/llvm/include/llvm/Config/llvm-config.h",
+          "sha256": "b67dbee353f6eb2c64f06fd4c34797fb3309d5b4b1a0fe3abf8dadf42f8ec42e"
+        }
+      },
+      {
+        "name": "host-disassembler",
+        "platform": "host",
+        "component": "Disassembler",
+        "capstone_project_version": "6.0.0"
+      },
+      {
+        "name": "host-assemble",
+        "platform": "host",
+        "component": "Assemble",
+        "capstone_project_version": "6.0.0",
+        "keystone_generated_configuration": {
+          "path": "build/assembly-validation/host-assemble-source/_deps/andswapchain_keystone-build/llvm/include/llvm/Config/llvm-config.h",
+          "sha256": "e7f8cdf487e1d2b95cd7f325e57e24afb83c9b65701b03bd60a3c42df2e70c6f"
+        }
+      },
+      {
+        "name": "android-assemble-debug",
+        "platform": "android",
+        "component": "Assemble",
+        "capstone_project_version": "6.0.0",
+        "keystone_generated_configuration": {
+          "path": "build/android-assemble-debug/_deps/andswapchain_keystone-build/llvm/include/llvm/Config/llvm-config.h",
+          "sha256": "622023a114680487212a5932dd67c88b938a2da6b696e3d921536ef5290bcada"
+        }
+      },
+      {
+        "name": "android-assemble-release",
+        "platform": "android",
+        "component": "Assemble",
+        "capstone_project_version": "6.0.0",
+        "keystone_generated_configuration": {
+          "path": "build/android-assemble-release/_deps/andswapchain_keystone-build/llvm/include/llvm/Config/llvm-config.h",
+          "sha256": "df0f57c188452fd66c1567dc0e698b2ee5c55998e33e8d923fd8d361ccc24c78"
+        }
+      },
+      {
+        "name": "android-assembler",
+        "platform": "android",
+        "component": "Assembler",
+        "keystone_generated_configuration": {
+          "path": "build/assembly-validation/android-assembler-source/_deps/andswapchain_keystone-build/llvm/include/llvm/Config/llvm-config.h",
+          "sha256": "be31766ddd0aed71a9471441e44c7469dcf7e331d8e240fd4552145c248b42ac"
+        }
+      },
+      {
+        "name": "android-disassembler",
+        "platform": "android",
+        "component": "Disassembler",
+        "capstone_project_version": "6.0.0"
+      },
+      {
+        "name": "android-assemble",
+        "platform": "android",
+        "component": "Assemble",
+        "capstone_project_version": "6.0.0",
+        "keystone_generated_configuration": {
+          "path": "build/assembly-validation/android-assemble-source/_deps/andswapchain_keystone-build/llvm/include/llvm/Config/llvm-config.h",
+          "sha256": "6a27012b84a3b1a5d21a3a4fa35d7b2b1665d42b5d4ea425517f608c148fa897"
+        }
+      }
+    ],
+    "source_hashes": [
+      {
+        "path": "CMakeLists.txt",
+        "sha256": "0ef206e492b799ed4b92b8cbaf2208d1bff2c7edc4c04e2c20b8b2d93ade6f1b"
+      },
+      {
+        "path": "CMakePresets.json",
+        "sha256": "5ec9a0b22e1e1d78fd945799ebddc802a49fb033e55b78cad7cfbe1538ca91d8"
+      },
+      {
+        "path": "README.md",
+        "sha256": "9cddff29d72412169cd4760d2e7c19d3712df4fd0d8f9b3a7f961db4182c75c9"
+      },
+      {
+        "path": "THIRD_PARTY_NOTICES.md",
+        "sha256": "f2eaabe18dd0dd7caed31cd71e33ad518224e0ea067ee4a524ed2348a98e89ba"
+      },
+      {
+        "path": "cmake/AnalysisDependencies.cmake",
+        "sha256": "c006bcf562b1c52eb53d10f727a2cb7a050ba8039037838dacbadee61d00fef5"
+      },
+      {
+        "path": "cmake/AndSwapChainHookConfig.cmake.in",
+        "sha256": "05332184328e4074f2f1e55c7887e3cce83c5fe14dde56a0746acb498122c4c1"
+      },
+      {
+        "path": "cmake/analysis/CapstoneConfig.cmake.in",
+        "sha256": "cb765115a1558696f0dc7c6bda8f88541cac7225b4cc230a372c86b09aa84162"
+      },
+      {
+        "path": "cmake/analysis/KeystoneConfig.cmake.in",
+        "sha256": "0718ef9559a399ab8754def2345ee0f217ad553296a433a857fcf67c84d33044"
+      },
+      {
+        "path": "cmake/analysis/licenses/capstone/LICENSE.TXT",
+        "sha256": "65e9ed46a59976eda8f5bd1ea79a680dea38dd299c760bc9a8d87a764ef5029b"
+      },
+      {
+        "path": "cmake/analysis/licenses/capstone/LICENSE_BSD_3_CLAUSE.txt",
+        "sha256": "5a93d5831e1297ab10fe643e1a631e83be392896da14ee2951285a79012df69d"
+      },
+      {
+        "path": "cmake/analysis/licenses/capstone/LICENSE_LLVM.TXT",
+        "sha256": "dfdca2d7fdbabfd937f9dc41b7f61647b0e6cb1f9ee767ecb4520f979ebe91da"
+      },
+      {
+        "path": "cmake/analysis/licenses/keystone/COPYING",
+        "sha256": "ab15fd526bd8dd18a9e77ebc139656bf4d33e97fc7238cd11bf60e2b9b8666c6"
+      },
+      {
+        "path": "cmake/analysis/licenses/keystone/EXCEPTIONS-CLIENT",
+        "sha256": "2e3ba49ed5363ecbdf4bc8b6d2b886c772cdc0b321fb1e6e137098fc2dd5968e"
+      },
+      {
+        "path": "cmake/analysis/licenses/keystone/LICENSE-COM.TXT",
+        "sha256": "51330f413cbe607a1f1dc9e73c78c040f9423230d2b7ef98c84c1bd4c54af055"
+      },
+      {
+        "path": "cmake/analysis/licenses/keystone/llvm/LICENSE.TXT",
+        "sha256": "721cb11de618fcf9bbb7d25a389207bf2227357e6694bc326ab32a6699f9b951"
+      },
+      {
+        "path": "cmake/analysis/licenses/keystone/llvm/include/llvm/Support/LICENSE.TXT",
+        "sha256": "a012d664e4e01df52a65b2eeafdfb8aeb856fec0e6c372265d01b0109c3f5e2a"
+      },
+      {
+        "path": "cmake/analysis/licenses/keystone/llvm/keystone/LICENSE",
+        "sha256": "258ec4a974b62937005323ee22fb641f5f3dfe7ed99911c99d4178025b98be06"
+      },
+      {
+        "path": "cmake/analysis/licenses/keystone/llvm/lib/Support/COPYRIGHT.regex",
+        "sha256": "0424e57d4303164dc59a8509c20dae0518b853692e5c2b0e98b11816fdbc97c7"
+      },
+      {
+        "path": "cmake/analysis/licenses/keystone/llvm/lib/Target/ARM/LICENSE.TXT",
+        "sha256": "28cbd5f6dac844fc3d94e879dba83c3ca87328ece8e0d388284f8cec6a042a97"
+      },
+      {
+        "path": "cmake/analysis/patches/KeystoneCompatibility.cmake",
+        "sha256": "b91f9af606a1d529a1d2b7049ccc8aa6b3259d3d494cec7bb002c52784f71cc9"
+      },
+      {
+        "path": "include/AndSwapChainHook/Assembler.h",
+        "sha256": "bfdd4d41e60851635db9b14ff5df5e5dac7eed2e02f3394f6df808db3bd10906"
+      },
+      {
+        "path": "include/AndSwapChainHook/Disassembler.h",
+        "sha256": "33928b3082d4f1ac1fcf1919abdb7db5966cc3a2bae64090620a8f5ab29c5229"
+      },
+      {
+        "path": "source/Assemble/Assembler.cpp",
+        "sha256": "b8af5dad13265e7fe7a85972f536bf4543c501a407d179ad2b49e0202ecfc550"
+      },
+      {
+        "path": "source/Assemble/Disassembler.cpp",
+        "sha256": "dd2979d1b9d7e87c6fda723c5c2f7278a38c329798ecfa766a98dc528fb3bba4"
+      },
+      {
+        "path": "tests/assemble_consumer/CMakeLists.txt",
+        "sha256": "336aca9ff666ec84965bf584e25181243e9e4adc6b37074aa20d1bc201bddd62"
+      },
+      {
+        "path": "tests/assemble_contracts.cpp",
+        "sha256": "7e238edb5da14a74eb4d2feaa3bc3b1ea8d6cee5335a9d09c3eca414c8940a42"
+      },
+      {
+        "path": "tests/assemble_roundtrip.cpp",
+        "sha256": "0d730f0c29a40c75d7c145b37555cf83bed88355c30fbe3ac63e180e826b5f27"
+      },
+      {
+        "path": "tests/assembler_roundtrip.cpp",
+        "sha256": "50fa5cc74fbeafec5caf250f623f01470d67821276ca87693cc67d4eabe8f2f1"
+      },
+      {
+        "path": "tests/disassembler_roundtrip.cpp",
+        "sha256": "5aa7067d826383962ba2560c9bfec20c219fcb2480116320057e67d27b433379"
+      },
+      {
+        "path": "tests/verify_assemble.py",
+        "sha256": "38980b6ea24f006eb6c0715c906d366f8af2077d057b99a60defb81712bef9c6"
+      }
+    ],
+    "artifacts": [
+      {
+        "path": "build/android-assemble-debug/_deps/andswapchain_capstone-build/libandswapchain_capstone.a",
+        "sha256": "a9e46982b0abf34fc64bbec0485cb67a4b0689c2632c9d50dec02dceab4b4b44"
+      },
+      {
+        "path": "build/android-assemble-debug/_deps/andswapchain_keystone-build/llvm/lib/libandswapchain_keystone.a",
+        "sha256": "fe6dcd9a1ef2715eebe6a2fb03c9fd77ca2ee1ad3cd59e722ac0575bdb2d2c55"
+      },
+      {
+        "path": "build/android-assemble-debug/andswapchain_assemble_contracts",
+        "sha256": "c69357914cd1e1fb57fcd8aeeab3a56f30e0584bfdf4c3f08e829d98fcd80dbb"
+      },
+      {
+        "path": "build/android-assemble-debug/andswapchain_assemble_roundtrip",
+        "sha256": "d93421ad3ee74ffae13fbf339605ec8cb10124de1df05bbbcb6104f0c7d7477b"
+      },
+      {
+        "path": "build/android-assemble-debug/andswapchain_assembler_roundtrip",
+        "sha256": "4dea13c9ed700da0da101105056bef05487e46f310bdb9a9bfda8c98c3fa2779"
+      },
+      {
+        "path": "build/android-assemble-debug/andswapchain_disassembler_roundtrip",
+        "sha256": "cd7c37a354a11b0384ab77994328cb125803a7fe7c38059963cc5887e6356298"
+      },
+      {
+        "path": "build/android-assemble-debug/libAndSwapChainHookAssembler.a",
+        "sha256": "a953aaec820cd38ac1b97fadbf5b0417a4e0f1f70d38c6b2653a4263cb186e45"
+      },
+      {
+        "path": "build/android-assemble-debug/libAndSwapChainHookDisassembler.a",
+        "sha256": "4077cc455c19ad3e77cc820a478c23418caa46d206da89ab58fae62c6e1c61ff"
+      },
+      {
+        "path": "build/android-assemble-release/_deps/andswapchain_capstone-build/libandswapchain_capstone.a",
+        "sha256": "149a12bdcd8f0fabb74230db7b0d60808b56317cb32cf306d9075c07944cf091"
+      },
+      {
+        "path": "build/android-assemble-release/_deps/andswapchain_keystone-build/llvm/lib/libandswapchain_keystone.a",
+        "sha256": "bb0a6ae14677662721872135ae5ad7340abb5fc5e8c688283c7e205507e2ad0d"
+      },
+      {
+        "path": "build/android-assemble-release/andswapchain_assemble_contracts",
+        "sha256": "d79da3641dc7e1ff36dba9935f1c92cb555f6a244911b97849bc66d223315ad2"
+      },
+      {
+        "path": "build/android-assemble-release/andswapchain_assemble_roundtrip",
+        "sha256": "f3141ccfcb3294ee8d140391dacb8c6a84c1002a86f9466a700674fa1b99dd6b"
+      },
+      {
+        "path": "build/android-assemble-release/andswapchain_assembler_roundtrip",
+        "sha256": "53b2386e82764b1edc53c2e0bc82c12464b9b9f6312cb4fbbdbebbb24c43923b"
+      },
+      {
+        "path": "build/android-assemble-release/andswapchain_disassembler_roundtrip",
+        "sha256": "a008f7e6fe072f8f9de85c25d5308a05ba08be2669134fdc83fad1715a060798"
+      },
+      {
+        "path": "build/android-assemble-release/libAndSwapChainHookAssembler.a",
+        "sha256": "8dba1b0c943759e1d4325f7a698c5c67e08b1d7f6a13ccef3e6a0bd58adccad3"
+      },
+      {
+        "path": "build/android-assemble-release/libAndSwapChainHookDisassembler.a",
+        "sha256": "b456627d1bf690309ece4faa43669976d4d524945372843fc31ff083405e3669"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-installed/consumer",
+        "sha256": "3929228afd3b6b3c71691521058f43c7ce59cda40b1f2db2efa95ef2cb917cc9"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/include/AndSwapChainHook/Assembler.h",
+        "sha256": "bfdd4d41e60851635db9b14ff5df5e5dac7eed2e02f3394f6df808db3bd10906"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/include/AndSwapChainHook/Disassembler.h",
+        "sha256": "33928b3082d4f1ac1fcf1919abdb7db5966cc3a2bae64090620a8f5ab29c5229"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/lib/cmake/AndSwapChainHook/AndSwapChainHookConfig.cmake",
+        "sha256": "8b68fe3b5da668d76b8cfed6af52d8f077eb6ca27ed96969363deacff74c8b8f"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/lib/cmake/AndSwapChainHook/AndSwapChainHookConfigVersion.cmake",
+        "sha256": "bef27358917b8deca0715d09e7d3004f9fb86c7b5a76fc12ca8c48481d93aa7c"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/lib/cmake/AndSwapChainHook/AndSwapChainHookTargets-release.cmake",
+        "sha256": "b55d01762dd8e29f20d3d04b51fd27aba313121915d80bc42e3d5feb13f71ab0"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/lib/cmake/AndSwapChainHook/AndSwapChainHookTargets.cmake",
+        "sha256": "183b8f4e145a8e152cb3a72d31091cf5db51e849bb4ec8854eb6a986c6fa7558"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/lib/cmake/Capstone/CapstoneConfig.cmake",
+        "sha256": "547cdbe8c3ed4dda1f69dd254d1d332afb4308b9fbd4e0b019b2f30512027f5e"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/lib/cmake/Capstone/CapstoneConfigVersion.cmake",
+        "sha256": "02b58b09ca210bff9b531461c3b06975f0f7685ac0cc8fafabbd570670724b3f"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/lib/cmake/Capstone/CapstoneTargets-release.cmake",
+        "sha256": "be5b9162c6af979d77dc89774809e5a1aed740331f0a7ea4080d92c33f47691c"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/lib/cmake/Capstone/CapstoneTargets.cmake",
+        "sha256": "f60aef73797c21a6c6ed15bd19995570dc7a655d1f0f9fce9bef1fc2f2073e19"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/lib/cmake/Keystone/KeystoneConfig.cmake",
+        "sha256": "12f4e3deb8bd78f8c5d501fb049b3fd555695ef93ceee296d8c088453c23700b"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/lib/cmake/Keystone/KeystoneConfigVersion.cmake",
+        "sha256": "6e7899c6c6aa15956a5521ccd7a61e23aee6eadc66c7f9ec50b157e2893c8a2e"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/lib/cmake/Keystone/KeystoneTargets-release.cmake",
+        "sha256": "7cd6bda1aae470ad4904cb6eb192571e1037b8379d62714e2cada6f11ccbe94d"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/lib/cmake/Keystone/KeystoneTargets.cmake",
+        "sha256": "74c8d2878d9859facf1002c33359874fd4ea8373cf5dabb61d8c320b474fba16"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/lib/libAndSwapChainHookAssembler.a",
+        "sha256": "6c2236306ab47d1a48453f07b7c43e2a1882c7db6685fff240c969ccbadaaabd"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/lib/libAndSwapChainHookDisassembler.a",
+        "sha256": "ad6f7f905209eec8930d3bf56e1536555f981029b8431a4b174792bd0d1c0f84"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/lib/libandswapchain_capstone.a",
+        "sha256": "252f09492b3a3bed712a27f084a564d0c177a3ffbaaf022666872ecff8aad6b3"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/lib/libandswapchain_keystone.a",
+        "sha256": "0e17943efd9ab0aede95125f7c2de136ce23c29d471aa3d25882d7aaca22f6d8"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/share/licenses/AndSwapChainHook/LICENSE",
+        "sha256": "6fd6687a70b0ae73b186ab5b427481c67d7994c5a9bfa66fd056303f978ba9dd"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/share/licenses/AndSwapChainHook/THIRD_PARTY_NOTICES.md",
+        "sha256": "f2eaabe18dd0dd7caed31cd71e33ad518224e0ea067ee4a524ed2348a98e89ba"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/share/licenses/AndSwapChainHook/capstone/LICENSE.TXT",
+        "sha256": "65e9ed46a59976eda8f5bd1ea79a680dea38dd299c760bc9a8d87a764ef5029b"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/share/licenses/AndSwapChainHook/capstone/LICENSE_BSD_3_CLAUSE.txt",
+        "sha256": "5a93d5831e1297ab10fe643e1a631e83be392896da14ee2951285a79012df69d"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/share/licenses/AndSwapChainHook/capstone/LICENSE_LLVM.TXT",
+        "sha256": "dfdca2d7fdbabfd937f9dc41b7f61647b0e6cb1f9ee767ecb4520f979ebe91da"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/share/licenses/AndSwapChainHook/keystone/COPYING",
+        "sha256": "ab15fd526bd8dd18a9e77ebc139656bf4d33e97fc7238cd11bf60e2b9b8666c6"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/share/licenses/AndSwapChainHook/keystone/EXCEPTIONS-CLIENT",
+        "sha256": "2e3ba49ed5363ecbdf4bc8b6d2b886c772cdc0b321fb1e6e137098fc2dd5968e"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/share/licenses/AndSwapChainHook/keystone/KeystoneCompatibility.cmake",
+        "sha256": "b91f9af606a1d529a1d2b7049ccc8aa6b3259d3d494cec7bb002c52784f71cc9"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/share/licenses/AndSwapChainHook/keystone/LICENSE-COM.TXT",
+        "sha256": "51330f413cbe607a1f1dc9e73c78c040f9423230d2b7ef98c84c1bd4c54af055"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/share/licenses/AndSwapChainHook/keystone/llvm/LICENSE.TXT",
+        "sha256": "721cb11de618fcf9bbb7d25a389207bf2227357e6694bc326ab32a6699f9b951"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/share/licenses/AndSwapChainHook/keystone/llvm/include/llvm/Support/LICENSE.TXT",
+        "sha256": "a012d664e4e01df52a65b2eeafdfb8aeb856fec0e6c372265d01b0109c3f5e2a"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/share/licenses/AndSwapChainHook/keystone/llvm/keystone/LICENSE",
+        "sha256": "258ec4a974b62937005323ee22fb641f5f3dfe7ed99911c99d4178025b98be06"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/share/licenses/AndSwapChainHook/keystone/llvm/lib/Support/COPYRIGHT.regex",
+        "sha256": "0424e57d4303164dc59a8509c20dae0518b853692e5c2b0e98b11816fdbc97c7"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-relocated-install/share/licenses/AndSwapChainHook/keystone/llvm/lib/Target/ARM/LICENSE.TXT",
+        "sha256": "28cbd5f6dac844fc3d94e879dba83c3ca87328ece8e0d388284f8cec6a042a97"
+      },
+      {
+        "path": "build/assembly-validation/android-assemble-source/consumer",
+        "sha256": "00388ab85cfd0914cf5497d42fb6b92028daa4925a11def854cd7c3bf8a70d6c"
+      },
+      {
+        "path": "build/assembly-validation/android-assembler-installed/consumer",
+        "sha256": "c9e79bdf1d1ab05a097717e4e702c6da95323ca9224c5d5b05aefe70f93955ad"
+      },
+      {
+        "path": "build/assembly-validation/android-assembler-relocated-install/include/AndSwapChainHook/Assembler.h",
+        "sha256": "bfdd4d41e60851635db9b14ff5df5e5dac7eed2e02f3394f6df808db3bd10906"
+      },
+      {
+        "path": "build/assembly-validation/android-assembler-relocated-install/lib/cmake/AndSwapChainHook/AndSwapChainHookConfig.cmake",
+        "sha256": "2fceab4dcb16461632f0814f69971272f4652df4cb3f1b98b197b878831d1ba5"
+      },
+      {
+        "path": "build/assembly-validation/android-assembler-relocated-install/lib/cmake/AndSwapChainHook/AndSwapChainHookConfigVersion.cmake",
+        "sha256": "bef27358917b8deca0715d09e7d3004f9fb86c7b5a76fc12ca8c48481d93aa7c"
+      },
+      {
+        "path": "build/assembly-validation/android-assembler-relocated-install/lib/cmake/AndSwapChainHook/AndSwapChainHookTargets-release.cmake",
+        "sha256": "01279f5f0b54a8d0845925a2aafe21af972b68f7817be500bc07b0c7e2ab2e78"
+      },
+      {
+        "path": "build/assembly-validation/android-assembler-relocated-install/lib/cmake/AndSwapChainHook/AndSwapChainHookTargets.cmake",
+        "sha256": "9f8631da004e49ef2c74f9d8d7fb6ef1eaa35b2c023eab0f560ad386e4f3d45a"
+      },
+      {
+        "path": "build/assembly-validation/android-assembler-relocated-install/lib/cmake/Keystone/KeystoneConfig.cmake",
+        "sha256": "12f4e3deb8bd78f8c5d501fb049b3fd555695ef93ceee296d8c088453c23700b"
+      },
+      {
+        "path": "build/assembly-validation/android-assembler-relocated-install/lib/cmake/Keystone/KeystoneConfigVersion.cmake",
+        "sha256": "6e7899c6c6aa15956a5521ccd7a61e23aee6eadc66c7f9ec50b157e2893c8a2e"
+      },
+      {
+        "path": "build/assembly-validation/android-assembler-relocated-install/lib/cmake/Keystone/KeystoneTargets-release.cmake",
+        "sha256": "7cd6bda1aae470ad4904cb6eb192571e1037b8379d62714e2cada6f11ccbe94d"
+      },
+      {
+        "path": "build/assembly-validation/android-assembler-relocated-install/lib/cmake/Keystone/KeystoneTargets.cmake",
+        "sha256": "74c8d2878d9859facf1002c33359874fd4ea8373cf5dabb61d8c320b474fba16"
+      },
+      {
+        "path": "build/assembly-validation/android-assembler-relocated-install/lib/libAndSwapChainHookAssembler.a",
+        "sha256": "85fdad41f61b26471587af53c67ab04bd4bc0270769b79f9ab64be48f0b7c418"
+      },
+      {
+        "path": "build/assembly-validation/android-assembler-relocated-install/lib/libandswapchain_keystone.a",
+        "sha256": "b0ffc69aed536dd36c3afdfbbfcf32987ad67db22b55081613f803f2dffdf593"
+      },
+      {
+        "path": "build/assembly-validation/android-assembler-relocated-install/share/licenses/AndSwapChainHook/LICENSE",
+        "sha256": "6fd6687a70b0ae73b186ab5b427481c67d7994c5a9bfa66fd056303f978ba9dd"
+      },
+      {
+        "path": "build/assembly-validation/android-assembler-relocated-install/share/licenses/AndSwapChainHook/THIRD_PARTY_NOTICES.md",
+        "sha256": "f2eaabe18dd0dd7caed31cd71e33ad518224e0ea067ee4a524ed2348a98e89ba"
+      },
+      {
+        "path": "build/assembly-validation/android-assembler-relocated-install/share/licenses/AndSwapChainHook/keystone/COPYING",
+        "sha256": "ab15fd526bd8dd18a9e77ebc139656bf4d33e97fc7238cd11bf60e2b9b8666c6"
+      },
+      {
+        "path": "build/assembly-validation/android-assembler-relocated-install/share/licenses/AndSwapChainHook/keystone/EXCEPTIONS-CLIENT",
+        "sha256": "2e3ba49ed5363ecbdf4bc8b6d2b886c772cdc0b321fb1e6e137098fc2dd5968e"
+      },
+      {
+        "path": "build/assembly-validation/android-assembler-relocated-install/share/licenses/AndSwapChainHook/keystone/KeystoneCompatibility.cmake",
+        "sha256": "b91f9af606a1d529a1d2b7049ccc8aa6b3259d3d494cec7bb002c52784f71cc9"
+      },
+      {
+        "path": "build/assembly-validation/android-assembler-relocated-install/share/licenses/AndSwapChainHook/keystone/LICENSE-COM.TXT",
+        "sha256": "51330f413cbe607a1f1dc9e73c78c040f9423230d2b7ef98c84c1bd4c54af055"
+      },
+      {
+        "path": "build/assembly-validation/android-assembler-relocated-install/share/licenses/AndSwapChainHook/keystone/llvm/LICENSE.TXT",
+        "sha256": "721cb11de618fcf9bbb7d25a389207bf2227357e6694bc326ab32a6699f9b951"
+      },
+      {
+        "path": "build/assembly-validation/android-assembler-relocated-install/share/licenses/AndSwapChainHook/keystone/llvm/include/llvm/Support/LICENSE.TXT",
+        "sha256": "a012d664e4e01df52a65b2eeafdfb8aeb856fec0e6c372265d01b0109c3f5e2a"
+      },
+      {
+        "path": "build/assembly-validation/android-assembler-relocated-install/share/licenses/AndSwapChainHook/keystone/llvm/keystone/LICENSE",
+        "sha256": "258ec4a974b62937005323ee22fb641f5f3dfe7ed99911c99d4178025b98be06"
+      },
+      {
+        "path": "build/assembly-validation/android-assembler-relocated-install/share/licenses/AndSwapChainHook/keystone/llvm/lib/Support/COPYRIGHT.regex",
+        "sha256": "0424e57d4303164dc59a8509c20dae0518b853692e5c2b0e98b11816fdbc97c7"
+      },
+      {
+        "path": "build/assembly-validation/android-assembler-relocated-install/share/licenses/AndSwapChainHook/keystone/llvm/lib/Target/ARM/LICENSE.TXT",
+        "sha256": "28cbd5f6dac844fc3d94e879dba83c3ca87328ece8e0d388284f8cec6a042a97"
+      },
+      {
+        "path": "build/assembly-validation/android-assembler-source/consumer",
+        "sha256": "532cfcca8fc953b620e921076d4c67eed73e9cf232a0c00baae0be19a80f2ba7"
+      },
+      {
+        "path": "build/assembly-validation/android-disassembler-installed/consumer",
+        "sha256": "83fe4340b180998297896bab88d58fc37366e8910589436704687635ff5472dd"
+      },
+      {
+        "path": "build/assembly-validation/android-disassembler-relocated-install/include/AndSwapChainHook/Disassembler.h",
+        "sha256": "33928b3082d4f1ac1fcf1919abdb7db5966cc3a2bae64090620a8f5ab29c5229"
+      },
+      {
+        "path": "build/assembly-validation/android-disassembler-relocated-install/lib/cmake/AndSwapChainHook/AndSwapChainHookConfig.cmake",
+        "sha256": "4f5b54123094f65606e5fa930660ce89fdf2c3407e5c05434aed00caddbdc349"
+      },
+      {
+        "path": "build/assembly-validation/android-disassembler-relocated-install/lib/cmake/AndSwapChainHook/AndSwapChainHookConfigVersion.cmake",
+        "sha256": "bef27358917b8deca0715d09e7d3004f9fb86c7b5a76fc12ca8c48481d93aa7c"
+      },
+      {
+        "path": "build/assembly-validation/android-disassembler-relocated-install/lib/cmake/AndSwapChainHook/AndSwapChainHookTargets-release.cmake",
+        "sha256": "bf7dfef169d7accd939376fb5bff0ac6205367a96fa54e1d9aee23e6ecfca38f"
+      },
+      {
+        "path": "build/assembly-validation/android-disassembler-relocated-install/lib/cmake/AndSwapChainHook/AndSwapChainHookTargets.cmake",
+        "sha256": "63946a75c9e34ef177484e3565115d145004124fa7f36285a85dd639ce4a386a"
+      },
+      {
+        "path": "build/assembly-validation/android-disassembler-relocated-install/lib/cmake/Capstone/CapstoneConfig.cmake",
+        "sha256": "547cdbe8c3ed4dda1f69dd254d1d332afb4308b9fbd4e0b019b2f30512027f5e"
+      },
+      {
+        "path": "build/assembly-validation/android-disassembler-relocated-install/lib/cmake/Capstone/CapstoneConfigVersion.cmake",
+        "sha256": "02b58b09ca210bff9b531461c3b06975f0f7685ac0cc8fafabbd570670724b3f"
+      },
+      {
+        "path": "build/assembly-validation/android-disassembler-relocated-install/lib/cmake/Capstone/CapstoneTargets-release.cmake",
+        "sha256": "be5b9162c6af979d77dc89774809e5a1aed740331f0a7ea4080d92c33f47691c"
+      },
+      {
+        "path": "build/assembly-validation/android-disassembler-relocated-install/lib/cmake/Capstone/CapstoneTargets.cmake",
+        "sha256": "f60aef73797c21a6c6ed15bd19995570dc7a655d1f0f9fce9bef1fc2f2073e19"
+      },
+      {
+        "path": "build/assembly-validation/android-disassembler-relocated-install/lib/libAndSwapChainHookDisassembler.a",
+        "sha256": "1e961e54093b81e46c85d2d692133673056734f2f933a51a8259b3411121394e"
+      },
+      {
+        "path": "build/assembly-validation/android-disassembler-relocated-install/lib/libandswapchain_capstone.a",
+        "sha256": "9e19e718fcbbbb1230b1d0c7d5a2bee49e7d6f1f0155c8e7a9594f0993bf1741"
+      },
+      {
+        "path": "build/assembly-validation/android-disassembler-relocated-install/share/licenses/AndSwapChainHook/LICENSE",
+        "sha256": "6fd6687a70b0ae73b186ab5b427481c67d7994c5a9bfa66fd056303f978ba9dd"
+      },
+      {
+        "path": "build/assembly-validation/android-disassembler-relocated-install/share/licenses/AndSwapChainHook/THIRD_PARTY_NOTICES.md",
+        "sha256": "f2eaabe18dd0dd7caed31cd71e33ad518224e0ea067ee4a524ed2348a98e89ba"
+      },
+      {
+        "path": "build/assembly-validation/android-disassembler-relocated-install/share/licenses/AndSwapChainHook/capstone/LICENSE.TXT",
+        "sha256": "65e9ed46a59976eda8f5bd1ea79a680dea38dd299c760bc9a8d87a764ef5029b"
+      },
+      {
+        "path": "build/assembly-validation/android-disassembler-relocated-install/share/licenses/AndSwapChainHook/capstone/LICENSE_BSD_3_CLAUSE.txt",
+        "sha256": "5a93d5831e1297ab10fe643e1a631e83be392896da14ee2951285a79012df69d"
+      },
+      {
+        "path": "build/assembly-validation/android-disassembler-relocated-install/share/licenses/AndSwapChainHook/capstone/LICENSE_LLVM.TXT",
+        "sha256": "dfdca2d7fdbabfd937f9dc41b7f61647b0e6cb1f9ee767ecb4520f979ebe91da"
+      },
+      {
+        "path": "build/assembly-validation/android-disassembler-source/consumer",
+        "sha256": "76bdd7528e5fdbce1be082ba21e9ddeac80521089b8ccfe73500989777e48b04"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-installed/consumer",
+        "sha256": "a27345740480d56019dd865411582fd5beb5ce42bf21a359afe67f8a0cedcb01"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/include/AndSwapChainHook/Assembler.h",
+        "sha256": "bfdd4d41e60851635db9b14ff5df5e5dac7eed2e02f3394f6df808db3bd10906"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/include/AndSwapChainHook/Disassembler.h",
+        "sha256": "33928b3082d4f1ac1fcf1919abdb7db5966cc3a2bae64090620a8f5ab29c5229"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/lib/cmake/AndSwapChainHook/AndSwapChainHookConfig.cmake",
+        "sha256": "8b68fe3b5da668d76b8cfed6af52d8f077eb6ca27ed96969363deacff74c8b8f"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/lib/cmake/AndSwapChainHook/AndSwapChainHookConfigVersion.cmake",
+        "sha256": "bef27358917b8deca0715d09e7d3004f9fb86c7b5a76fc12ca8c48481d93aa7c"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/lib/cmake/AndSwapChainHook/AndSwapChainHookTargets-release.cmake",
+        "sha256": "b55d01762dd8e29f20d3d04b51fd27aba313121915d80bc42e3d5feb13f71ab0"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/lib/cmake/AndSwapChainHook/AndSwapChainHookTargets.cmake",
+        "sha256": "183b8f4e145a8e152cb3a72d31091cf5db51e849bb4ec8854eb6a986c6fa7558"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/lib/cmake/Capstone/CapstoneConfig.cmake",
+        "sha256": "547cdbe8c3ed4dda1f69dd254d1d332afb4308b9fbd4e0b019b2f30512027f5e"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/lib/cmake/Capstone/CapstoneConfigVersion.cmake",
+        "sha256": "02b58b09ca210bff9b531461c3b06975f0f7685ac0cc8fafabbd570670724b3f"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/lib/cmake/Capstone/CapstoneTargets-release.cmake",
+        "sha256": "be5b9162c6af979d77dc89774809e5a1aed740331f0a7ea4080d92c33f47691c"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/lib/cmake/Capstone/CapstoneTargets.cmake",
+        "sha256": "f60aef73797c21a6c6ed15bd19995570dc7a655d1f0f9fce9bef1fc2f2073e19"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/lib/cmake/Keystone/KeystoneConfig.cmake",
+        "sha256": "12f4e3deb8bd78f8c5d501fb049b3fd555695ef93ceee296d8c088453c23700b"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/lib/cmake/Keystone/KeystoneConfigVersion.cmake",
+        "sha256": "6e7899c6c6aa15956a5521ccd7a61e23aee6eadc66c7f9ec50b157e2893c8a2e"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/lib/cmake/Keystone/KeystoneTargets-release.cmake",
+        "sha256": "7cd6bda1aae470ad4904cb6eb192571e1037b8379d62714e2cada6f11ccbe94d"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/lib/cmake/Keystone/KeystoneTargets.cmake",
+        "sha256": "74c8d2878d9859facf1002c33359874fd4ea8373cf5dabb61d8c320b474fba16"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/lib/libAndSwapChainHookAssembler.a",
+        "sha256": "49f896ceaad4c4b467dbbcd09ba45a104b4062e40d6217057e1693a281ded953"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/lib/libAndSwapChainHookDisassembler.a",
+        "sha256": "574d8cd36ea671aab693a6588b6ce652128f2ff411d9a647407f2feef77a046e"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/lib/libandswapchain_capstone.a",
+        "sha256": "1eeb4d8ce15bd3b12be1c50d198852a3fed54b5348cf788c3b7c18cf1db3941c"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/lib/libandswapchain_keystone.a",
+        "sha256": "a57adf1a49f38f73177105ef7c29618adef7949e4bb14a60908a9bc10b86c113"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/share/licenses/AndSwapChainHook/LICENSE",
+        "sha256": "6fd6687a70b0ae73b186ab5b427481c67d7994c5a9bfa66fd056303f978ba9dd"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/share/licenses/AndSwapChainHook/THIRD_PARTY_NOTICES.md",
+        "sha256": "f2eaabe18dd0dd7caed31cd71e33ad518224e0ea067ee4a524ed2348a98e89ba"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/share/licenses/AndSwapChainHook/capstone/LICENSE.TXT",
+        "sha256": "65e9ed46a59976eda8f5bd1ea79a680dea38dd299c760bc9a8d87a764ef5029b"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/share/licenses/AndSwapChainHook/capstone/LICENSE_BSD_3_CLAUSE.txt",
+        "sha256": "5a93d5831e1297ab10fe643e1a631e83be392896da14ee2951285a79012df69d"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/share/licenses/AndSwapChainHook/capstone/LICENSE_LLVM.TXT",
+        "sha256": "dfdca2d7fdbabfd937f9dc41b7f61647b0e6cb1f9ee767ecb4520f979ebe91da"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/share/licenses/AndSwapChainHook/keystone/COPYING",
+        "sha256": "ab15fd526bd8dd18a9e77ebc139656bf4d33e97fc7238cd11bf60e2b9b8666c6"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/share/licenses/AndSwapChainHook/keystone/EXCEPTIONS-CLIENT",
+        "sha256": "2e3ba49ed5363ecbdf4bc8b6d2b886c772cdc0b321fb1e6e137098fc2dd5968e"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/share/licenses/AndSwapChainHook/keystone/KeystoneCompatibility.cmake",
+        "sha256": "b91f9af606a1d529a1d2b7049ccc8aa6b3259d3d494cec7bb002c52784f71cc9"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/share/licenses/AndSwapChainHook/keystone/LICENSE-COM.TXT",
+        "sha256": "51330f413cbe607a1f1dc9e73c78c040f9423230d2b7ef98c84c1bd4c54af055"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/share/licenses/AndSwapChainHook/keystone/llvm/LICENSE.TXT",
+        "sha256": "721cb11de618fcf9bbb7d25a389207bf2227357e6694bc326ab32a6699f9b951"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/share/licenses/AndSwapChainHook/keystone/llvm/include/llvm/Support/LICENSE.TXT",
+        "sha256": "a012d664e4e01df52a65b2eeafdfb8aeb856fec0e6c372265d01b0109c3f5e2a"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/share/licenses/AndSwapChainHook/keystone/llvm/keystone/LICENSE",
+        "sha256": "258ec4a974b62937005323ee22fb641f5f3dfe7ed99911c99d4178025b98be06"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/share/licenses/AndSwapChainHook/keystone/llvm/lib/Support/COPYRIGHT.regex",
+        "sha256": "0424e57d4303164dc59a8509c20dae0518b853692e5c2b0e98b11816fdbc97c7"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-relocated-install/share/licenses/AndSwapChainHook/keystone/llvm/lib/Target/ARM/LICENSE.TXT",
+        "sha256": "28cbd5f6dac844fc3d94e879dba83c3ca87328ece8e0d388284f8cec6a042a97"
+      },
+      {
+        "path": "build/assembly-validation/host-assemble-source/consumer",
+        "sha256": "1a74806f91f089b337d59a2558c0aaa9e94a1bfb6aa14099417a206882879a62"
+      },
+      {
+        "path": "build/assembly-validation/host-assembler-installed/consumer",
+        "sha256": "4c4c9306aa2895eccb1a855c00c3d6a1f27c90122d19f34412f269da32753c04"
+      },
+      {
+        "path": "build/assembly-validation/host-assembler-relocated-install/include/AndSwapChainHook/Assembler.h",
+        "sha256": "bfdd4d41e60851635db9b14ff5df5e5dac7eed2e02f3394f6df808db3bd10906"
+      },
+      {
+        "path": "build/assembly-validation/host-assembler-relocated-install/lib/cmake/AndSwapChainHook/AndSwapChainHookConfig.cmake",
+        "sha256": "2fceab4dcb16461632f0814f69971272f4652df4cb3f1b98b197b878831d1ba5"
+      },
+      {
+        "path": "build/assembly-validation/host-assembler-relocated-install/lib/cmake/AndSwapChainHook/AndSwapChainHookConfigVersion.cmake",
+        "sha256": "bef27358917b8deca0715d09e7d3004f9fb86c7b5a76fc12ca8c48481d93aa7c"
+      },
+      {
+        "path": "build/assembly-validation/host-assembler-relocated-install/lib/cmake/AndSwapChainHook/AndSwapChainHookTargets-release.cmake",
+        "sha256": "01279f5f0b54a8d0845925a2aafe21af972b68f7817be500bc07b0c7e2ab2e78"
+      },
+      {
+        "path": "build/assembly-validation/host-assembler-relocated-install/lib/cmake/AndSwapChainHook/AndSwapChainHookTargets.cmake",
+        "sha256": "9f8631da004e49ef2c74f9d8d7fb6ef1eaa35b2c023eab0f560ad386e4f3d45a"
+      },
+      {
+        "path": "build/assembly-validation/host-assembler-relocated-install/lib/cmake/Keystone/KeystoneConfig.cmake",
+        "sha256": "12f4e3deb8bd78f8c5d501fb049b3fd555695ef93ceee296d8c088453c23700b"
+      },
+      {
+        "path": "build/assembly-validation/host-assembler-relocated-install/lib/cmake/Keystone/KeystoneConfigVersion.cmake",
+        "sha256": "6e7899c6c6aa15956a5521ccd7a61e23aee6eadc66c7f9ec50b157e2893c8a2e"
+      },
+      {
+        "path": "build/assembly-validation/host-assembler-relocated-install/lib/cmake/Keystone/KeystoneTargets-release.cmake",
+        "sha256": "7cd6bda1aae470ad4904cb6eb192571e1037b8379d62714e2cada6f11ccbe94d"
+      },
+      {
+        "path": "build/assembly-validation/host-assembler-relocated-install/lib/cmake/Keystone/KeystoneTargets.cmake",
+        "sha256": "74c8d2878d9859facf1002c33359874fd4ea8373cf5dabb61d8c320b474fba16"
+      },
+      {
+        "path": "build/assembly-validation/host-assembler-relocated-install/lib/libAndSwapChainHookAssembler.a",
+        "sha256": "646a0617f3f2cd8a140daa87a43dcbb4ac1e65d765ff2d43096da7a8b8413dd5"
+      },
+      {
+        "path": "build/assembly-validation/host-assembler-relocated-install/lib/libandswapchain_keystone.a",
+        "sha256": "2425fe4e9ac576a8d776a89eff472ecb4c9f269936d964cbc7a19f748b24a2ce"
+      },
+      {
+        "path": "build/assembly-validation/host-assembler-relocated-install/share/licenses/AndSwapChainHook/LICENSE",
+        "sha256": "6fd6687a70b0ae73b186ab5b427481c67d7994c5a9bfa66fd056303f978ba9dd"
+      },
+      {
+        "path": "build/assembly-validation/host-assembler-relocated-install/share/licenses/AndSwapChainHook/THIRD_PARTY_NOTICES.md",
+        "sha256": "f2eaabe18dd0dd7caed31cd71e33ad518224e0ea067ee4a524ed2348a98e89ba"
+      },
+      {
+        "path": "build/assembly-validation/host-assembler-relocated-install/share/licenses/AndSwapChainHook/keystone/COPYING",
+        "sha256": "ab15fd526bd8dd18a9e77ebc139656bf4d33e97fc7238cd11bf60e2b9b8666c6"
+      },
+      {
+        "path": "build/assembly-validation/host-assembler-relocated-install/share/licenses/AndSwapChainHook/keystone/EXCEPTIONS-CLIENT",
+        "sha256": "2e3ba49ed5363ecbdf4bc8b6d2b886c772cdc0b321fb1e6e137098fc2dd5968e"
+      },
+      {
+        "path": "build/assembly-validation/host-assembler-relocated-install/share/licenses/AndSwapChainHook/keystone/KeystoneCompatibility.cmake",
+        "sha256": "b91f9af606a1d529a1d2b7049ccc8aa6b3259d3d494cec7bb002c52784f71cc9"
+      },
+      {
+        "path": "build/assembly-validation/host-assembler-relocated-install/share/licenses/AndSwapChainHook/keystone/LICENSE-COM.TXT",
+        "sha256": "51330f413cbe607a1f1dc9e73c78c040f9423230d2b7ef98c84c1bd4c54af055"
+      },
+      {
+        "path": "build/assembly-validation/host-assembler-relocated-install/share/licenses/AndSwapChainHook/keystone/llvm/LICENSE.TXT",
+        "sha256": "721cb11de618fcf9bbb7d25a389207bf2227357e6694bc326ab32a6699f9b951"
+      },
+      {
+        "path": "build/assembly-validation/host-assembler-relocated-install/share/licenses/AndSwapChainHook/keystone/llvm/include/llvm/Support/LICENSE.TXT",
+        "sha256": "a012d664e4e01df52a65b2eeafdfb8aeb856fec0e6c372265d01b0109c3f5e2a"
+      },
+      {
+        "path": "build/assembly-validation/host-assembler-relocated-install/share/licenses/AndSwapChainHook/keystone/llvm/keystone/LICENSE",
+        "sha256": "258ec4a974b62937005323ee22fb641f5f3dfe7ed99911c99d4178025b98be06"
+      },
+      {
+        "path": "build/assembly-validation/host-assembler-relocated-install/share/licenses/AndSwapChainHook/keystone/llvm/lib/Support/COPYRIGHT.regex",
+        "sha256": "0424e57d4303164dc59a8509c20dae0518b853692e5c2b0e98b11816fdbc97c7"
+      },
+      {
+        "path": "build/assembly-validation/host-assembler-relocated-install/share/licenses/AndSwapChainHook/keystone/llvm/lib/Target/ARM/LICENSE.TXT",
+        "sha256": "28cbd5f6dac844fc3d94e879dba83c3ca87328ece8e0d388284f8cec6a042a97"
+      },
+      {
+        "path": "build/assembly-validation/host-assembler-source/consumer",
+        "sha256": "6b487e736fa74608ca530cd15fcf960c9fc1cd00598975c131c086e080563d38"
+      },
+      {
+        "path": "build/assembly-validation/host-disassembler-installed/consumer",
+        "sha256": "641a13d7c2d529c8156bb50a1674ce19deac35188df0b6f0248237132014397c"
+      },
+      {
+        "path": "build/assembly-validation/host-disassembler-relocated-install/include/AndSwapChainHook/Disassembler.h",
+        "sha256": "33928b3082d4f1ac1fcf1919abdb7db5966cc3a2bae64090620a8f5ab29c5229"
+      },
+      {
+        "path": "build/assembly-validation/host-disassembler-relocated-install/lib/cmake/AndSwapChainHook/AndSwapChainHookConfig.cmake",
+        "sha256": "4f5b54123094f65606e5fa930660ce89fdf2c3407e5c05434aed00caddbdc349"
+      },
+      {
+        "path": "build/assembly-validation/host-disassembler-relocated-install/lib/cmake/AndSwapChainHook/AndSwapChainHookConfigVersion.cmake",
+        "sha256": "bef27358917b8deca0715d09e7d3004f9fb86c7b5a76fc12ca8c48481d93aa7c"
+      },
+      {
+        "path": "build/assembly-validation/host-disassembler-relocated-install/lib/cmake/AndSwapChainHook/AndSwapChainHookTargets-release.cmake",
+        "sha256": "bf7dfef169d7accd939376fb5bff0ac6205367a96fa54e1d9aee23e6ecfca38f"
+      },
+      {
+        "path": "build/assembly-validation/host-disassembler-relocated-install/lib/cmake/AndSwapChainHook/AndSwapChainHookTargets.cmake",
+        "sha256": "63946a75c9e34ef177484e3565115d145004124fa7f36285a85dd639ce4a386a"
+      },
+      {
+        "path": "build/assembly-validation/host-disassembler-relocated-install/lib/cmake/Capstone/CapstoneConfig.cmake",
+        "sha256": "547cdbe8c3ed4dda1f69dd254d1d332afb4308b9fbd4e0b019b2f30512027f5e"
+      },
+      {
+        "path": "build/assembly-validation/host-disassembler-relocated-install/lib/cmake/Capstone/CapstoneConfigVersion.cmake",
+        "sha256": "02b58b09ca210bff9b531461c3b06975f0f7685ac0cc8fafabbd570670724b3f"
+      },
+      {
+        "path": "build/assembly-validation/host-disassembler-relocated-install/lib/cmake/Capstone/CapstoneTargets-release.cmake",
+        "sha256": "be5b9162c6af979d77dc89774809e5a1aed740331f0a7ea4080d92c33f47691c"
+      },
+      {
+        "path": "build/assembly-validation/host-disassembler-relocated-install/lib/cmake/Capstone/CapstoneTargets.cmake",
+        "sha256": "f60aef73797c21a6c6ed15bd19995570dc7a655d1f0f9fce9bef1fc2f2073e19"
+      },
+      {
+        "path": "build/assembly-validation/host-disassembler-relocated-install/lib/libAndSwapChainHookDisassembler.a",
+        "sha256": "c6b014fac9ef5a57ff31be2e050c910d934f0d9b6993348b169ef794aae56ad7"
+      },
+      {
+        "path": "build/assembly-validation/host-disassembler-relocated-install/lib/libandswapchain_capstone.a",
+        "sha256": "fe09bab8a55a3c31072a2686509bd9abbbf4a4ed798e60731d222628ecfeeac2"
+      },
+      {
+        "path": "build/assembly-validation/host-disassembler-relocated-install/share/licenses/AndSwapChainHook/LICENSE",
+        "sha256": "6fd6687a70b0ae73b186ab5b427481c67d7994c5a9bfa66fd056303f978ba9dd"
+      },
+      {
+        "path": "build/assembly-validation/host-disassembler-relocated-install/share/licenses/AndSwapChainHook/THIRD_PARTY_NOTICES.md",
+        "sha256": "f2eaabe18dd0dd7caed31cd71e33ad518224e0ea067ee4a524ed2348a98e89ba"
+      },
+      {
+        "path": "build/assembly-validation/host-disassembler-relocated-install/share/licenses/AndSwapChainHook/capstone/LICENSE.TXT",
+        "sha256": "65e9ed46a59976eda8f5bd1ea79a680dea38dd299c760bc9a8d87a764ef5029b"
+      },
+      {
+        "path": "build/assembly-validation/host-disassembler-relocated-install/share/licenses/AndSwapChainHook/capstone/LICENSE_BSD_3_CLAUSE.txt",
+        "sha256": "5a93d5831e1297ab10fe643e1a631e83be392896da14ee2951285a79012df69d"
+      },
+      {
+        "path": "build/assembly-validation/host-disassembler-relocated-install/share/licenses/AndSwapChainHook/capstone/LICENSE_LLVM.TXT",
+        "sha256": "dfdca2d7fdbabfd937f9dc41b7f61647b0e6cb1f9ee767ecb4520f979ebe91da"
+      },
+      {
+        "path": "build/assembly-validation/host-disassembler-source/consumer",
+        "sha256": "f547ca6841d08a553f9e7a1ceef6ebab50d2a6c3261717f521f49003a4c39f82"
+      },
+      {
+        "path": "build/host-assemble-debug/_deps/andswapchain_capstone-build/libandswapchain_capstone.a",
+        "sha256": "22d15841d804f9e6c9f302bcf5b16ee9a5e7ab5c5ddaaaface71caad431c327b"
+      },
+      {
+        "path": "build/host-assemble-debug/_deps/andswapchain_keystone-build/llvm/lib/libandswapchain_keystone.a",
+        "sha256": "650c98b4cb8b4b7b2da63cc0fd3c95a543cfe563854ca1bdcfc7040142f9b11e"
+      },
+      {
+        "path": "build/host-assemble-debug/andswapchain_assemble_contracts",
+        "sha256": "5777c0fe1a71a74d812967bb12b9750905978890e3a3dba85b281763313e9550"
+      },
+      {
+        "path": "build/host-assemble-debug/andswapchain_assemble_roundtrip",
+        "sha256": "5dcbbf158661fb033803267cea62a8a4bb7dd6f5bb520d469dccba3d53cdf7d9"
+      },
+      {
+        "path": "build/host-assemble-debug/andswapchain_assembler_roundtrip",
+        "sha256": "9edc28f3a79e072b3d67d1a20cb36955f0eb3cdbfba508727211e796fc4dd6d5"
+      },
+      {
+        "path": "build/host-assemble-debug/andswapchain_disassembler_roundtrip",
+        "sha256": "069517904eae10388bc7661847faece36b0436e669f8f5ad3afb7fdaf34e0f03"
+      },
+      {
+        "path": "build/host-assemble-debug/libAndSwapChainHookAssembler.a",
+        "sha256": "fc1e2d09e2ec8860844c7280342dbfd3e452ec443927344c8be1d336d5555123"
+      },
+      {
+        "path": "build/host-assemble-debug/libAndSwapChainHookDisassembler.a",
+        "sha256": "7e852a580df659798558deae6c34a979ffb32abd1329870d79414c70ade44f0d"
+      },
+      {
+        "path": "build/host-assemble-release/_deps/andswapchain_capstone-build/libandswapchain_capstone.a",
+        "sha256": "1870f8e59f8e89503bbe9af9dabcbbde0131dd37b052b858ce38196d01567cf1"
+      },
+      {
+        "path": "build/host-assemble-release/_deps/andswapchain_keystone-build/llvm/lib/libandswapchain_keystone.a",
+        "sha256": "cb8776dbe5e745af319805087e5dea18a57b4968166e9b5edcc6e9521917d983"
+      },
+      {
+        "path": "build/host-assemble-release/andswapchain_assemble_contracts",
+        "sha256": "c87b08f09605cdaa669964334cefe53de8c23d1079bd4e5317def9c0fa3983fd"
+      },
+      {
+        "path": "build/host-assemble-release/andswapchain_assemble_roundtrip",
+        "sha256": "8c335aa9250ccad16657d75e1e3d4a4693301a8ba143b91ecc696d050b170a91"
+      },
+      {
+        "path": "build/host-assemble-release/andswapchain_assembler_roundtrip",
+        "sha256": "06e179b464422fdebd7224541cb7c021a5cf624f699e241e981bbbc15ff81cf8"
+      },
+      {
+        "path": "build/host-assemble-release/andswapchain_disassembler_roundtrip",
+        "sha256": "5259dc0abd179466b8f8f15f433f5d03d249b288bd34e8476bd9c403f39e8a76"
+      },
+      {
+        "path": "build/host-assemble-release/libAndSwapChainHookAssembler.a",
+        "sha256": "dd211a315a9bdfcaf7f34782d7ea0204f6e99ae395a117c9cc0adfe16299cf8a"
+      },
+      {
+        "path": "build/host-assemble-release/libAndSwapChainHookDisassembler.a",
+        "sha256": "9e866658269a724bfedd1b71f6cb58df1608bc698d8bed07b2c8a30103ae5c0a"
+      }
+    ],
+    "limitations": [
+      "Consumer builds use Release; producer fixtures cover Debug and Release.",
+      "Generated AArch64 instruction bytes are not executed.",
+      "No Dobby, hook, instrumentation, concealment, or process-permission validation is performed."
+    ]
+  }
+}

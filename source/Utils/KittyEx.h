@@ -109,10 +109,7 @@ inline bool Init(const std::string& processName = "") {
         KT_LOGE("[KittyEx] Init error: failed to init KittyMemoryMgr");
         return false;
     }
-    int orig_dumpable = prctl(PR_GET_DUMPABLE);
-    if (orig_dumpable != 1) prctl(PR_SET_DUMPABLE, 1);
     bool io_ok = detail::g_io.init(detail::g_pid);
-    if (orig_dumpable != 1) prctl(PR_SET_DUMPABLE, orig_dumpable >= 0 ? orig_dumpable : 0);
     if (!io_ok) {
         KT_LOGE("[KittyEx] Init error: KittyMemIO init failed (ForceRead/ForceWrite unavailable)");
         return false;

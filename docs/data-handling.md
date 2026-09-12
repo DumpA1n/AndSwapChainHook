@@ -1,17 +1,15 @@
 # Data handling
 
-## Actual data access
+The supported analysis session reads an explicitly supplied range in its own process and retains match addresses and structured progress/errors in memory. `ASC_Snapshot` copies values into caller-owned storage. It does not export a file, load configuration, upload results or install process-wide diagnostics. `ASC_Destroy` cancels and joins the session worker and releases its read channel.
 
-Memory/ELF utilities inspect native addresses, mappings and module metadata. Input hooks observe host input; ImGui and configuration state can include user-entered text. Logging can include addresses, module names, package identifiers and diagnostic values. Runtime strings remain unchanged in this documentation phase.
+The Input component retains copied pointer coordinates and event metadata in a fixed queue until consumption or reset. It neither hooks a framework input function nor accesses ImGui directly.
 
-Configuration storage uses `<EXTERNAL_STORAGE>/Android/data/<getprogname()>/cache`, with `/sdcard` as the base fallback. Active filenames and marker names derive from `kPROJECT_NAME`. Filenames are not protected by a complete path-containment policy, and updates are not transactional.
+The caller controls whether results or callbacks are logged or persisted. No repository-wide redaction, deletion or retention service is provided. Minimize addresses, module identities and other target data before external disclosure. Credentials, identity originals and private authorization records do not belong in this public repository.
 
-Logger paths depend on the compiled logger implementation and project macros; the adjacent AndCommon copy and UE's pinned dependency are not interchangeable. Logcat, per-tag files and buffered timeline files are separate output channels. Write failure, rotation or process termination can lose records; logs are not a complete audit trail.
+The optional Dobby-backed EGL component uses a fixed source facade with logging disabled. Source, local patch, artifact digests and retained allocation limits are recorded in [third-party notices](../THIRD_PARTY_NOTICES.md). Explicit installation reads process mappings and temporarily adds write permission only to owned pages; errors and incomplete restoration remain observable. The optional SurfaceView component retains Activity, WindowManager, SurfaceView and ANativeWindow resources until explicit successful retirement. It does not intercept input.
 
-Source: [ConfigStorage.cpp](../source/Utils/Config/ConfigStorage.cpp), [Logger.h](../source/Utils/Logger.h), [CrashHandler.cpp](../source/Utils/CrashHandler/CrashHandler.cpp), [InputEventHook.cpp](../source/InputEvent/InputEventHook.cpp).
+The optional CrashRecorder duplicates a caller-supplied writable descriptor and retains that descriptor for process lifetime, including after restoration. Each binary record contains signal/code, fault address and available PC/SP/LR fields; offline handling is the caller's responsibility. No signal recorder is included in the default DSO.
 
-## Handling expectations and missing controls
+Legacy configuration/logger/input sources are not part of advertised targets. Their source-level output paths and limitations must be reviewed before any downstream reintroduction; their presence does not establish transactional persistence, redaction or signal safety.
 
-There is no verified repository-wide redaction, deletion or retention service. Review and minimize logs/dumps before sharing; remove the specifically identified experiment outputs when they are no longer needed. Identity originals, credentials, customer authorization documents and unapproved third-party data must remain outside Git and public reports. No cleanup command here authorizes deleting unrelated application data.
-
-The review did not dynamically monitor network traffic and does not claim that execution is offline or free of external transmission. Model-assisted work can itself transmit supplied content to the selected platform. Approval for cyber access does not establish permission to disclose private source/data or determine account retention settings. Those require the actual task's data permissions and account configuration.
+The inert-loading device fixture observes threads, file descriptors, local directory entries, dumpability and selected signal handlers. It is not a network-capture audit or proof about arbitrary downstream composition. Sharing model-assisted work requires the actual source/data permissions and account retention configuration.

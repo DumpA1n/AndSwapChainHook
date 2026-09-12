@@ -1,0 +1,77 @@
+UpdateCTestConfiguration  from :/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/DartConfiguration.tcl
+Parse Config file:/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/DartConfiguration.tcl
+Test project /Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 1
+    Start 1: andswapchain_profiler
+
+1: Test command: /Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_profiler_tests
+1: Working Directory: /Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release
+1: Test timeout computed to be: 30
+1: PASS: owned bounded names, concurrent publication/capacity, 80000 concurrent records, scoped timing and retained history
+1/7 Test #1: andswapchain_profiler .................   Passed    1.00 sec
+test 2
+    Start 2: andswapchain_assembler_roundtrip
+
+2: Test command: /Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_assembler_roundtrip
+2: Working Directory: /Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release
+2: Test timeout computed to be: 30
+2: PASS: independent Keystone-only assembler, exact AArch64 bytes, padded data and invalid input
+2/7 Test #2: andswapchain_assembler_roundtrip ......   Passed    0.51 sec
+test 3
+    Start 3: andswapchain_disassembler_roundtrip
+
+3: Test command: /Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_disassembler_roundtrip
+3: Working Directory: /Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release
+3: Test timeout computed to be: 30
+3: PASS: independent Capstone-only decoder, exact AArch64 instructions and partial batch
+3/7 Test #3: andswapchain_disassembler_roundtrip ...   Passed    0.49 sec
+test 4
+    Start 4: andswapchain_assemble_contracts
+
+4: Test command: /Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_assemble_contracts
+4: Working Directory: /Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release
+4: Test timeout computed to be: 30
+4: R14: production assembler/disassembler ownership, backend failures, exact tail reads, callback exceptions, vector batching, concurrent assembly and data encoding passed
+4/7 Test #4: andswapchain_assemble_contracts .......   Passed    0.46 sec
+test 5
+    Start 5: andswapchain_assemble_roundtrip
+
+5: Test command: /Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_assemble_roundtrip
+5: Working Directory: /Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release
+5: Test timeout computed to be: 30
+5: PASS: pinned source Keystone/Capstone round-trip, exact AArch64 bytes, invalid assembly and short reader
+5/7 Test #5: andswapchain_assemble_roundtrip .......   Passed    0.48 sec
+test 6
+    Start 6: andswapchain_crash_record
+
+6: Test command: /Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_crash_record_test
+6: Working Directory: /Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release
+6: Test timeout computed to be: 30
+6/7 Test #6: andswapchain_crash_record .............   Passed    0.66 sec
+test 8
+    Start 8: andswapchain_contracts
+
+8: Test command: /Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release/andswapchain_contract_tests
+8: Working Directory: /Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release
+8: Test timeout computed to be: 30
+8: R01/R05 memory, lifecycle, failure-injection contracts passed
+7/7 Test #8: andswapchain_contracts ................   Passed    0.55 sec
+
+The following tests passed:
+	andswapchain_profiler
+	andswapchain_assembler_roundtrip
+	andswapchain_disassembler_roundtrip
+	andswapchain_assemble_contracts
+	andswapchain_assemble_roundtrip
+	andswapchain_crash_record
+	andswapchain_contracts
+
+100% tests passed out of 7
+
+Total Test time (real) =   4.17 sec

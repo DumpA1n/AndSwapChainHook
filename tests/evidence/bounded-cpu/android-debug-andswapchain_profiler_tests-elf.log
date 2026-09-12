@@ -1,0 +1,54 @@
+There are 36 section headers, starting at offset 0x602c10:
+
+Section Headers:
+  [Nr] Name              Type            Address          Off    Size   ES Flg Lk Inf Al
+  [ 0]                   NULL            0000000000000000 000000 000000 00      0   0  0
+  [ 1] .interp           PROGBITS        0000000000000270 000270 000015 00   A  0   0  1
+  [ 2] .note.android.ident NOTE          0000000000000288 000288 000098 00   A  0   0  4
+  [ 3] .note.gnu.build-id NOTE           0000000000000320 000320 000024 00   A  0   0  4
+  [ 4] .dynsym           DYNSYM          0000000000000348 000348 000cd8 18   A  8   1  8
+  [ 5] .gnu.version      VERSYM          0000000000001020 001020 000112 02   A  4   0  2
+  [ 6] .gnu.version_r    VERNEED         0000000000001134 001134 000040 00   A  8   2  4
+  [ 7] .gnu.hash         GNU_HASH        0000000000001178 001178 00001c 00   A  4   0  8
+  [ 8] .dynstr           STRTAB          0000000000001194 001194 000622 00   A  0   0  1
+  [ 9] .rela.dyn         RELA            00000000000017b8 0017b8 014868 18   A  4   0  8
+  [10] .rela.plt         RELA            0000000000016020 016020 000c90 18  AI  4  22  8
+  [11] .gcc_except_table PROGBITS        0000000000016cb0 016cb0 005198 00   A  0   0  4
+  [12] .rodata           PROGBITS        000000000001be50 01be50 006b24 00 AMSR  0   0 16
+  [13] .eh_frame_hdr     PROGBITS        0000000000022974 022974 0049ec 00   A  0   0  4
+  [14] .eh_frame         PROGBITS        0000000000027360 027360 019564 00   A  0   0  8
+  [15] .text             PROGBITS        00000000000408d0 0408d0 0782f8 00  AX  0   0 16
+  [16] __lcxx_override   PROGBITS        00000000000b8bc8 0b8bc8 00010c 00  AX  0   0  4
+  [17] .plt              PROGBITS        00000000000b8ce0 0b8ce0 000880 00  AX  0   0 16
+  [18] .data.rel.ro      PROGBITS        00000000000bd560 0b9560 0076d8 00  WA  0   0  8
+  [19] .init_array       INIT_ARRAY      00000000000c4c38 0c0c38 000018 00  WA  0   0  8
+  [20] .dynamic          DYNAMIC         00000000000c4c50 0c0c50 000190 10  WA  8   0  8
+  [21] .got              PROGBITS        00000000000c4de0 0c0de0 000558 00  WA  0   0  8
+  [22] .got.plt          PROGBITS        00000000000c5338 0c1338 000448 00  WA  0   0  8
+  [23] .relro_padding    NOBITS          00000000000c5780 0c1780 000880 00  WA  0   0  1
+  [24] .data             PROGBITS        00000000000c9780 0c1780 00fb38 00  WA  0   0  8
+  [25] .bss              NOBITS          00000000000d92c0 0d12b8 0027a0 00  WA  0   0 16
+  [26] .comment          PROGBITS        0000000000000000 0d12b8 00020b 01  MS  0   0  1
+  [27] .debug_abbrev     PROGBITS        0000000000000000 0d14c3 00cb16 00      0   0  1
+  [28] .debug_info       PROGBITS        0000000000000000 0ddfd9 19f9c6 00      0   0  1
+  [29] .debug_ranges     PROGBITS        0000000000000000 27d99f 06c010 00      0   0  1
+  [30] .debug_str        PROGBITS        0000000000000000 2e99af 0a50c1 01  MS  0   0  1
+  [31] .debug_line       PROGBITS        0000000000000000 38ea70 077ba2 00      0   0  1
+  [32] .debug_loc        PROGBITS        0000000000000000 406612 189db2 00      0   0  1
+  [33] .symtab           SYMTAB          0000000000000000 5903c8 033bb8 18     35 6654  8
+  [34] .shstrtab         STRTAB          0000000000000000 5c3f80 00017e 00      0   0  1
+  [35] .strtab           STRTAB          0000000000000000 5c40fe 03eb0f 00      0   0  1
+Key to Flags:
+  W (write), A (alloc), X (execute), M (merge), S (strings), I (info),
+  L (link order), O (extra OS processing required), G (group), T (TLS),
+  C (compressed), x (unknown), o (OS specific), E (exclude),
+  R (retain), p (processor specific)
+Displaying notes found in: .note.android.ident
+  Owner                Data size 	Description
+  Android              0x00000084	NT_ANDROID_TYPE_IDENT
+   description data: 1b 00 00 00 72 32 39 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 31 34 32 30 36 38 36 35 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+
+Displaying notes found in: .note.gnu.build-id
+  Owner                Data size 	Description
+  GNU                  0x00000014	NT_GNU_BUILD_ID (unique build ID bitstring)
+    Build ID: aeb899d925124474009b79e2fb350e3425362360

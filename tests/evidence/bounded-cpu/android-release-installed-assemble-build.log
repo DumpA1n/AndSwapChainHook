@@ -1,0 +1,4 @@
+[1/4] Building CXX object CMakeFiles/consumer_header_Assembler.dir/Assembler_header.cpp.o
+[2/4] Building CXX object CMakeFiles/consumer_header_Disassembler.dir/Disassembler_header.cpp.o
+[3/4] Building CXX object CMakeFiles/consumer.dir/Users/ddd/Developer/AndSwapChainHook/tests/assemble_roundtrip.cpp.o
+[4/4] Linking CXX executable consumer

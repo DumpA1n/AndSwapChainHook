@@ -1,0 +1,1202 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "source_hashes": {
+    "/Users/ddd/Developer/AndSwapChainHook/tests/assemble_consumer/CMakeLists.txt": "336aca9ff666ec84965bf584e25181243e9e4adc6b37074aa20d1bc201bddd62",
+    "/Users/ddd/Developer/AndSwapChainHook/CMakeLists.txt": "4854f5037969f07968910c5aaf27bb3018fd68693cfa94c50351f71cc4d5afaa",
+    "/Users/ddd/Developer/AndSwapChainHook/CMakePresets.json": "5ec9a0b22e1e1d78fd945799ebddc802a49fb033e55b78cad7cfbe1538ca91d8",
+    "/Users/ddd/Developer/AndSwapChainHook/README.md": "525c50710616b02b626b1a0ad186425ef0bf593653130806402271d5f08956e7",
+    "/Users/ddd/Developer/AndSwapChainHook/THIRD_PARTY_NOTICES.md": "f2eaabe18dd0dd7caed31cd71e33ad518224e0ea067ee4a524ed2348a98e89ba",
+    "/Users/ddd/Developer/AndSwapChainHook/cmake/AnalysisDependencies.cmake": "c006bcf562b1c52eb53d10f727a2cb7a050ba8039037838dacbadee61d00fef5",
+    "/Users/ddd/Developer/AndSwapChainHook/cmake/AndSwapChainHookConfig.cmake.in": "4bcaed1283f51ae4484c9262c40028fbb299d3d68bc1be1f37be740d30278f85",
+    "/Users/ddd/Developer/AndSwapChainHook/cmake/analysis/CapstoneConfig.cmake.in": "cb765115a1558696f0dc7c6bda8f88541cac7225b4cc230a372c86b09aa84162",
+    "/Users/ddd/Developer/AndSwapChainHook/cmake/analysis/KeystoneConfig.cmake.in": "0718ef9559a399ab8754def2345ee0f217ad553296a433a857fcf67c84d33044",
+    "/Users/ddd/Developer/AndSwapChainHook/cmake/analysis/licenses/capstone/LICENSE.TXT": "65e9ed46a59976eda8f5bd1ea79a680dea38dd299c760bc9a8d87a764ef5029b",
+    "/Users/ddd/Developer/AndSwapChainHook/cmake/analysis/licenses/capstone/LICENSE_BSD_3_CLAUSE.txt": "5a93d5831e1297ab10fe643e1a631e83be392896da14ee2951285a79012df69d",
+    "/Users/ddd/Developer/AndSwapChainHook/cmake/analysis/licenses/capstone/LICENSE_LLVM.TXT": "dfdca2d7fdbabfd937f9dc41b7f61647b0e6cb1f9ee767ecb4520f979ebe91da",
+    "/Users/ddd/Developer/AndSwapChainHook/cmake/analysis/licenses/keystone/COPYING": "ab15fd526bd8dd18a9e77ebc139656bf4d33e97fc7238cd11bf60e2b9b8666c6",
+    "/Users/ddd/Developer/AndSwapChainHook/cmake/analysis/licenses/keystone/EXCEPTIONS-CLIENT": "2e3ba49ed5363ecbdf4bc8b6d2b886c772cdc0b321fb1e6e137098fc2dd5968e",
+    "/Users/ddd/Developer/AndSwapChainHook/cmake/analysis/licenses/keystone/LICENSE-COM.TXT": "51330f413cbe607a1f1dc9e73c78c040f9423230d2b7ef98c84c1bd4c54af055",
+    "/Users/ddd/Developer/AndSwapChainHook/cmake/analysis/licenses/keystone/llvm/LICENSE.TXT": "721cb11de618fcf9bbb7d25a389207bf2227357e6694bc326ab32a6699f9b951",
+    "/Users/ddd/Developer/AndSwapChainHook/cmake/analysis/licenses/keystone/llvm/include/llvm/Support/LICENSE.TXT": "a012d664e4e01df52a65b2eeafdfb8aeb856fec0e6c372265d01b0109c3f5e2a",
+    "/Users/ddd/Developer/AndSwapChainHook/cmake/analysis/licenses/keystone/llvm/keystone/LICENSE": "258ec4a974b62937005323ee22fb641f5f3dfe7ed99911c99d4178025b98be06",
+    "/Users/ddd/Developer/AndSwapChainHook/cmake/analysis/licenses/keystone/llvm/lib/Support/COPYRIGHT.regex": "0424e57d4303164dc59a8509c20dae0518b853692e5c2b0e98b11816fdbc97c7",
+    "/Users/ddd/Developer/AndSwapChainHook/cmake/analysis/licenses/keystone/llvm/lib/Target/ARM/LICENSE.TXT": "28cbd5f6dac844fc3d94e879dba83c3ca87328ece8e0d388284f8cec6a042a97",
+    "/Users/ddd/Developer/AndSwapChainHook/cmake/analysis/patches/KeystoneCompatibility.cmake": "b91f9af606a1d529a1d2b7049ccc8aa6b3259d3d494cec7bb002c52784f71cc9",
+    "/Users/ddd/Developer/AndSwapChainHook/include/AndSwapChainHook/Assembler.h": "bfdd4d41e60851635db9b14ff5df5e5dac7eed2e02f3394f6df808db3bd10906",
+    "/Users/ddd/Developer/AndSwapChainHook/include/AndSwapChainHook/CallbackGate.h": "2b82316ae112e7caea3191f05ba5890dadb70b1c9d7ed9094fa96c71a38b8922",
+    "/Users/ddd/Developer/AndSwapChainHook/include/AndSwapChainHook/CrashRecorder.h": "5f2f8d6079a3aaac220b7249f779509c2be09cf0721275562205bbea60aa2fd0",
+    "/Users/ddd/Developer/AndSwapChainHook/include/AndSwapChainHook/Disassembler.h": "33928b3082d4f1ac1fcf1919abdb7db5966cc3a2bae64090620a8f5ab29c5229",
+    "/Users/ddd/Developer/AndSwapChainHook/include/AndSwapChainHook/HookTransaction.h": "34cb66e0b8be492bd430d8b165e88f7c26e852020d9baec02317a177fb900b1a",
+    "/Users/ddd/Developer/AndSwapChainHook/include/AndSwapChainHook/Memory.h": "aa7268dd6c6ea17b32df4ac5ab72f2713f91f0a4ed888d2e3ae86bb8766c7dac",
+    "/Users/ddd/Developer/AndSwapChainHook/include/AndSwapChainHook/Profiler.h": "68329bf69d05410d310c9d4b3e913953e343884c678ea03e86554a529c5f416d",
+    "/Users/ddd/Developer/AndSwapChainHook/include/AndSwapChainHook/Runtime.h": "fea8f3d57eca6db1f29e7c5e6331c811f1b035b8dacb0268709d23c3a3a27753",
+    "/Users/ddd/Developer/AndSwapChainHook/source/Analysis/Runtime.cpp": "c0276f382a812d45bef1809d24035e821d254499e8854e0a803febe4da371d49",
+    "/Users/ddd/Developer/AndSwapChainHook/source/Analysis/Scan.cpp": "a975ba6d880f54c03834fa7428203da294748215460a9ff2795556f58a157d4e",
+    "/Users/ddd/Developer/AndSwapChainHook/source/Assemble/Assembler.cpp": "b8af5dad13265e7fe7a85972f536bf4543c501a407d179ad2b49e0202ecfc550",
+    "/Users/ddd/Developer/AndSwapChainHook/source/Assemble/Disassembler.cpp": "dd2979d1b9d7e87c6fda723c5c2f7278a38c329798ecfa766a98dc528fb3bba4",
+    "/Users/ddd/Developer/AndSwapChainHook/source/Diagnostics/CrashRecorder.cpp": "09946a856f5571574ded51826e188d4a1591ee07fd2a66673bc84758121df26d",
+    "/Users/ddd/Developer/AndSwapChainHook/source/Diagnostics/Profiler.cpp": "c76540dfe6df2be33345c05faebf793325021044b757214e5a0c23175bdbb9eb",
+    "/Users/ddd/Developer/AndSwapChainHook/source/Instrumentation/HookTransaction.cpp": "e138d1f7e43ce49fef5f92efcf0fb98a592c685a132afb0ff3d9d49421dcda5d",
+    "/Users/ddd/Developer/AndSwapChainHook/source/Memory/Memory.cpp": "b13e3e63c08b8ef204aa3be867a2283ea15860f1cb4ef58cd1e16b226ac6e2bb",
+    "/Users/ddd/Developer/AndSwapChainHook/tests/assemble_contracts.cpp": "7e238edb5da14a74eb4d2feaa3bc3b1ea8d6cee5335a9d09c3eca414c8940a42",
+    "/Users/ddd/Developer/AndSwapChainHook/tests/assemble_roundtrip.cpp": "0d730f0c29a40c75d7c145b37555cf83bed88355c30fbe3ac63e180e826b5f27",
+    "/Users/ddd/Developer/AndSwapChainHook/tests/assembler_roundtrip.cpp": "50fa5cc74fbeafec5caf250f623f01470d67821276ca87693cc67d4eabe8f2f1",
+    "/Users/ddd/Developer/AndSwapChainHook/tests/contracts.cpp": "241ae2cc5f3f1262c3bac20193684256d08c8d5fe515acc00783c9633689fbbb",
+    "/Users/ddd/Developer/AndSwapChainHook/tests/crash_record.cpp": "afa1d41dfe3f57a190b2008710463ab1cf15945270fdacb437df6901a72ed4fd",
+    "/Users/ddd/Developer/AndSwapChainHook/tests/disassembler_roundtrip.cpp": "5aa7067d826383962ba2560c9bfec20c219fcb2480116320057e67d27b433379",
+    "/Users/ddd/Developer/AndSwapChainHook/tests/profiler.cpp": "3e17e3624ffcb1766e958053bc5dfb8bfb70f4ebb01f9cdce871e92e97a9b761",
+    "/Users/ddd/Developer/AndSwapChainHook/tests/runtime_header.c": "3fb8d1bba43a308947174fa9acf6be5cd17068bdaea3b4f6c1f3441e094604ac"
+  },
+  "source_consistent": true,
+  "checks": [
+    {
+      "name": "host-release-install-input-archive",
+      "command": [
+        "cmake",
+        "--build",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release",
+        "--target",
+        "AndSwapChainHookInput",
+        "--parallel",
+        "3"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install-input-archive.log",
+        "sha256": "8c35b1682f73592d30612d7b0fabdb384fcfff35cb5a076cb48b85b1368aa794"
+      }
+    },
+    {
+      "name": "host-release-install",
+      "command": [
+        "cmake",
+        "--install",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release",
+        "--prefix",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install.log",
+        "sha256": "4a94678cef3bf504e83c2e6a75a07b196fae6acf041bc53d5843ccefc8e60bbf"
+      }
+    },
+    {
+      "name": "host-release-installed-assemble-configure",
+      "command": [
+        "cmake",
+        "-S",
+        "/Users/ddd/Developer/AndSwapChainHook/tests/assemble_consumer",
+        "-B",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-installed-assemble",
+        "-G",
+        "Ninja",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DASSEMBLE_COMPONENT=Assemble",
+        "-DCMAKE_PREFIX_PATH=/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-installed-assemble-configure.log",
+        "sha256": "063953764e33f2e770ca9e7933b0762234076551f7b3f42e3a4c8f63b6340e31"
+      }
+    },
+    {
+      "name": "host-release-installed-assemble-build",
+      "command": [
+        "cmake",
+        "--build",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-installed-assemble",
+        "--parallel",
+        "3"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-installed-assemble-build.log",
+        "sha256": "0774d45a1b49709d8658199a0d6eb4f36e190f47c95aeee26e2ee112356f24ac"
+      }
+    },
+    {
+      "name": "host-release-installed-assemble-runtime",
+      "command": [
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-installed-assemble/consumer"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-installed-assemble-runtime.log",
+        "sha256": "abe4e70482059af25d1a50c78482aec8bb05bd83779636aedd698792ab8e2a4c"
+      }
+    },
+    {
+      "name": "host-release-installed-assemble-uuid",
+      "command": [
+        "dwarfdump",
+        "--uuid",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-installed-assemble/consumer"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-installed-assemble-uuid.log",
+        "sha256": "3d6ffa99236ff6ee3beafc50f6c14f15e5972267045c28c0cca10863789a6a03"
+      }
+    },
+    {
+      "name": "android-release-install-input-archive",
+      "command": [
+        "cmake",
+        "--build",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release",
+        "--target",
+        "AndSwapChainHookInput",
+        "--parallel",
+        "3"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install-input-archive.log",
+        "sha256": "5ffc3e19e968cd26c0cdd11541444089ae619120cdd1f3a1ed099617539b662c"
+      }
+    },
+    {
+      "name": "android-release-install",
+      "command": [
+        "cmake",
+        "--install",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release",
+        "--prefix",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install.log",
+        "sha256": "7ac7b403f2b961f8ec6e6757ae15297e1a37cd7562db3d64a664d14d3a9283ce"
+      }
+    },
+    {
+      "name": "android-release-installed-assemble-configure",
+      "command": [
+        "cmake",
+        "-S",
+        "/Users/ddd/Developer/AndSwapChainHook/tests/assemble_consumer",
+        "-B",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-installed-assemble",
+        "-G",
+        "Ninja",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DASSEMBLE_COMPONENT=Assemble",
+        "-DCMAKE_PREFIX_PATH=/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install",
+        "-DCMAKE_TOOLCHAIN_FILE=/opt/homebrew/share/android-ndk/build/cmake/android.toolchain.cmake",
+        "-DANDROID_ABI=arm64-v8a",
+        "-DANDROID_PLATFORM=27",
+        "-DANDROID_STL=c++_static",
+        "-DCMAKE_FIND_ROOT_PATH=/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-installed-assemble-configure.log",
+        "sha256": "2567d6485d0537321f49648b80664f452981b2c201339c8c6a7e4ad24df6787c"
+      }
+    },
+    {
+      "name": "android-release-installed-assemble-build",
+      "command": [
+        "cmake",
+        "--build",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-installed-assemble",
+        "--parallel",
+        "3"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-installed-assemble-build.log",
+        "sha256": "0774d45a1b49709d8658199a0d6eb4f36e190f47c95aeee26e2ee112356f24ac"
+      }
+    },
+    {
+      "name": "android-release-installed-assemble-push",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "push",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-installed-assemble/consumer",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release-installed-assemble"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-installed-assemble-push.log",
+        "sha256": "341cf93701ba58c989740d55708cce05e05657eadbaec4ac1f564c1db3c7f5c9"
+      }
+    },
+    {
+      "name": "android-release-installed-assemble-chmod",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "shell",
+        "chmod",
+        "700",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release-installed-assemble"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-installed-assemble-chmod.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "android-release-installed-assemble-sha256",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "shell",
+        "sha256sum",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release-installed-assemble"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-installed-assemble-sha256.log",
+        "sha256": "3a669fbbf92888ca61dc12fda88c076079c962d31b0a1649779ce122e3cd0d0a"
+      }
+    },
+    {
+      "name": "android-release-installed-assemble-runtime",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "shell",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release-installed-assemble"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-installed-assemble-runtime.log",
+        "sha256": "abe4e70482059af25d1a50c78482aec8bb05bd83779636aedd698792ab8e2a4c"
+      }
+    },
+    {
+      "name": "android-release-installed-assemble-elf",
+      "command": [
+        "/opt/homebrew/share/android-ndk/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "--notes",
+        "--sections",
+        "-W",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-installed-assemble/consumer"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-installed-assemble-elf.log",
+        "sha256": "4acd32d1da7fbaa50759ea83a0fa28cb4379d06b472369bca73286abf38e0cbe"
+      }
+    }
+  ],
+  "executions": [
+    {
+      "configuration": "host-release",
+      "component": "Assemble",
+      "mode": "installed",
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-installed-assemble/consumer",
+      "sha256": "00eb534e5133a41d72bc06d1a34b589802f7e3fe52434a2abd76fee856d0df3d",
+      "output": "PASS: pinned source Keystone/Capstone round-trip, exact AArch64 bytes, invalid assembly and short reader\n",
+      "uuid": "UUID: 618C7731-EED6-31A5-A313-03D60F0E83E6 (arm64) /Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-installed-assemble/consumer",
+      "status": "passed"
+    },
+    {
+      "configuration": "android-release",
+      "component": "Assemble",
+      "mode": "installed",
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-installed-assemble/consumer",
+      "sha256": "5281ad043498bb16d85855426fcd00b1c2ec0b0457a7616454a24b59908ed1e0",
+      "device_sha256": "5281ad043498bb16d85855426fcd00b1c2ec0b0457a7616454a24b59908ed1e0",
+      "output": "PASS: pinned source Keystone/Capstone round-trip, exact AArch64 bytes, invalid assembly and short reader\n",
+      "build_id": "7b3dc971963e39df7dc8f97c3dbbcc42d91d85af",
+      "status": "passed"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-installed-assemble/consumer",
+      "sha256": "00eb534e5133a41d72bc06d1a34b589802f7e3fe52434a2abd76fee856d0df3d",
+      "bytes": 6376888
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-installed-assemble/CMakeCache.txt",
+      "sha256": "669c0bb385c779a29e19a7c3690adee497e0641af33e2087394c400581e00535",
+      "bytes": 15063
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-installed-assemble/build.ninja",
+      "sha256": "13451828e798ac8126a8c44f832d41285bd4989d30690cf83682d8a142aabb8c",
+      "bytes": 27062
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/AndSwapChainHook/Assembler.h",
+      "sha256": "bfdd4d41e60851635db9b14ff5df5e5dac7eed2e02f3394f6df808db3bd10906",
+      "bytes": 2068
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/AndSwapChainHook/Input.h",
+      "sha256": "c3434ad440167adf5166d3c08bea8f945e57a81868c336e748eb43deac9bc051",
+      "bytes": 2938
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/AndSwapChainHook/CallbackGate.h",
+      "sha256": "2b82316ae112e7caea3191f05ba5890dadb70b1c9d7ed9094fa96c71a38b8922",
+      "bytes": 2533
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/AndSwapChainHook/Disassembler.h",
+      "sha256": "33928b3082d4f1ac1fcf1919abdb7db5966cc3a2bae64090620a8f5ab29c5229",
+      "bytes": 2319
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/AndSwapChainHook/Overlay.h",
+      "sha256": "2d25f3590741dd805cd49c8b5594aef026e7f0e653da0e9fbc8be5b1aa8aa93f",
+      "bytes": 2286
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/AndSwapChainHook/CrashRecorder.h",
+      "sha256": "5f2f8d6079a3aaac220b7249f779509c2be09cf0721275562205bbea60aa2fd0",
+      "bytes": 1338
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/AndSwapChainHook/HookTransaction.h",
+      "sha256": "34cb66e0b8be492bd430d8b165e88f7c26e852020d9baec02317a177fb900b1a",
+      "bytes": 2314
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/AndSwapChainHook/Runtime.h",
+      "sha256": "fea8f3d57eca6db1f29e7c5e6331c811f1b035b8dacb0268709d23c3a3a27753",
+      "bytes": 2196
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/AndSwapChainHook/Memory.h",
+      "sha256": "aa7268dd6c6ea17b32df4ac5ab72f2713f91f0a4ed888d2e3ae86bb8766c7dac",
+      "bytes": 3532
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/AndSwapChainHook/Graphics.h",
+      "sha256": "18af202d84dba150c81697f7b90f7b0ce44b98bf48e87649ec27185549144954",
+      "bytes": 1927
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/AndSwapChainHook/Profiler.h",
+      "sha256": "68329bf69d05410d310c9d4b3e913953e343884c678ea03e86554a529c5f416d",
+      "bytes": 3064
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/keystone/hexagon.h",
+      "sha256": "98e7a8e1e816af28c53cda7739d58ee86edccb4f96eb6ff07a0c3fdc545f7464",
+      "bytes": 410
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/keystone/mips.h",
+      "sha256": "58dba29ddd1336d6599fc97027398279b1781cbc5118509199d3722ea01e89c0",
+      "bytes": 388
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/keystone/sparc.h",
+      "sha256": "57da47b0ad2ff7f9c4bf92330a7adff7d6e8cc8854b496c826a05340470d6a86",
+      "bytes": 396
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/keystone/systemz.h",
+      "sha256": "0f72d70ccaa70e24508b2e19ffdd086c5e085b4f271b58b712ce914832d53d0c",
+      "bytes": 410
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/keystone/arm.h",
+      "sha256": "e46c3546f7e9b10b3fa089586c3bff9ba9ba7893d93261ea12b17c513fcdf3ba",
+      "bytes": 381
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/keystone/evm.h",
+      "sha256": "94b1296b91358aa86bb2affa259c48f14370f148d1206601de0d245865882e90",
+      "bytes": 386
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/keystone/x86.h",
+      "sha256": "fc0643cd96d834fe390b57dfff46a3c56ba3800bd82d7002200233edfe3b5a4d",
+      "bytes": 381
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/keystone/keystone.h",
+      "sha256": "fd2af465679198eb270dc596dec719a8c64b9588c982005f20b2569c7cb48ddf",
+      "bytes": 11660
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/keystone/ppc.h",
+      "sha256": "447beafb363df17fbe8cd64a907862dac7db3c9d0bd4d835d7fa3af1e49d6cdf",
+      "bytes": 382
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/keystone/arm64.h",
+      "sha256": "7e2b9ce77c29722f1e4d4cb46b9a1916dbc7738da8de66b2501f6ba7f9eaad83",
+      "bytes": 395
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/capstone/capstone.h",
+      "sha256": "ac42446cc8b1bc22d024152ddaeb176f85163c87a2f71854675569bfbe3ae042",
+      "bytes": 38922
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/capstone/mips.h",
+      "sha256": "0e80f16a3dd3852dbbf36e2f141798f13c3022e53e8a123449b773988489a412",
+      "bytes": 51653
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/capstone/sparc.h",
+      "sha256": "b0b57503d066529af1c25f02f3c061ac3d278161e2877b9f50303394bcdb5f86",
+      "bytes": 44128
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/capstone/systemz.h",
+      "sha256": "d8baef044416855a325faa84e6814cf16c8213f5e872d0c4144ed86b0428926f",
+      "bytes": 65721
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/capstone/m68k.h",
+      "sha256": "085df86714d35a653b6154a53f32cb1c7fac38557dc66e4c7ed35e836bb10f6c",
+      "bytes": 14026
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/capstone/cs_operand.h",
+      "sha256": "bc58da81cf1d1151fcb7d540891108ec3270889ee10db724b2dcabe7ed1e99c2",
+      "bytes": 1756
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/capstone/sh.h",
+      "sha256": "cb59caef77a41da204bd0681d8428454ae2b1fad6b239f37bcd99291fabf1eef",
+      "bytes": 7705
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/capstone/arm.h",
+      "sha256": "600a9186866a0ea9670c97272ff8eee175bbab763d1511d34ba672fd309f09f2",
+      "bytes": 40646
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/capstone/bpf.h",
+      "sha256": "a38f4633bd3c16ad9e5925ea908a9194be8037067598ce190c46a118e5ae4c1c",
+      "bytes": 5651
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/capstone/alpha.h",
+      "sha256": "72b6f827893671549d6263af0d0ea19210d149a749483e476ca7088904cf8b7d",
+      "bytes": 6148
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/capstone/arc.h",
+      "sha256": "22fe30b06b2f033cf7ac5f5b2f4fd4d59bc1535c5b2658a7af004b4fefed1dd6",
+      "bytes": 6405
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/capstone/mos65xx.h",
+      "sha256": "4bf5583f172e10f69d1b4722842f345d52b0fbc59725638d995424f9b1cba6d3",
+      "bytes": 5858
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/capstone/hppa.h",
+      "sha256": "eaf1d90ae8f2f4187b2520f2898bea7d05d90bfdb227e5d515a7dbe90b93dea0",
+      "bytes": 9604
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/capstone/evm.h",
+      "sha256": "1bbe84b2365603273d583b8c068d661bbc88fb465c00c695b2c33cbca1c15a92",
+      "bytes": 4722
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/capstone/xtensa.h",
+      "sha256": "6b2bca93c631bdf5584c0943a78d8cd20f57be62e6c889f57bf271cc2ea3fa24",
+      "bytes": 46969
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/capstone/x86.h",
+      "sha256": "a148bd6d0a52d31e8c3f619badc6ac75a82914402b89fc1d67a3dfe380f572aa",
+      "bytes": 43152
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/capstone/wasm.h",
+      "sha256": "8547948a692e59d1d82fbd71e1fe319617a5ad9f15976a93f0e4497860de2774",
+      "bytes": 6379
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/capstone/tricore.h",
+      "sha256": "0d717b2c708964c8553734fa4831c952815b54662fb4bb79caacedc1a7e9c16c",
+      "bytes": 13827
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/capstone/systemz_compatibility.h",
+      "sha256": "68273bcd2fdbc3722adebcbf72f8b66649ff6060d55436c142b031d9deb62c7b",
+      "bytes": 110872
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/capstone/ppc.h",
+      "sha256": "00022edcdde5bc55b893f7e545f24ea73b01430579171a5378a79be8de34f3d1",
+      "bytes": 94486
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/capstone/arm64.h",
+      "sha256": "9e5570e9362848337b12112a43491b82f2264deb9ce5847a8d1c53f288b1e7ac",
+      "bytes": 205286
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/capstone/xcore.h",
+      "sha256": "f498453e593d37c40d91efb0bec0f4e45a7bb74870c7264da11fcfe094f59583",
+      "bytes": 4991
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/capstone/riscv.h",
+      "sha256": "f5ca10859eaefecada4d0a83f769e5d6d1af0e2fe2bc0f86a70face36ed35640",
+      "bytes": 13162
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/capstone/m680x.h",
+      "sha256": "304ad9bfecf15b146f67bd69e2b24bf42b7019cf51610ef08ca2a42dcb989f29",
+      "bytes": 12482
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/capstone/loongarch.h",
+      "sha256": "937dbbc5e5158b4ca4e4a8e896df9c889d70dda2a23f6af93b155b0b4f5d3dc9",
+      "bytes": 67965
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/capstone/platform.h",
+      "sha256": "17ff832b57b85647368860c16ec31ae789e73aaac182fc5a9d3c2ebe8fbea568",
+      "bytes": 4010
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/capstone/aarch64.h",
+      "sha256": "411af8b4ad5d10353b6c42eddab3807d6a0a53c84f0cddc3c41390826386d841",
+      "bytes": 151635
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/include/capstone/tms320c64x.h",
+      "sha256": "1ac357507000bb92215977c67bbe8b5532366d8c3ee22345b5908394758c4a6c",
+      "bytes": 8349
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/lib/libandswapchain_capstone.a",
+      "sha256": "19558810ff207eeace0f3ab35478938039bd29cf0e348b6a680345fa0929214b",
+      "bytes": 8926688
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/lib/libAndSwapChainHookMemory.a",
+      "sha256": "7866967dc078aea49d55a4f687c6fce4c7f10d7b787f89d90b33c73cee99065f",
+      "bytes": 132528
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/lib/libAndSwapChainHookCrashRecorder.a",
+      "sha256": "eaf2179c0ae825620791845916ae4bd246d4080c70a7fe3a2c687192408c753b",
+      "bytes": 68600
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/lib/libAndSwapChainHookDisassembler.a",
+      "sha256": "f1ed86d341b424f1349aedd423e13364528eda3d4b9f5f3f0861c2afea954030",
+      "bytes": 323080
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/lib/libandswapchain_keystone.a",
+      "sha256": "b17ef54c0923d770c3241ea8fe909704069a5abc02fba51443db2598a7e7b587",
+      "bytes": 42741288
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/lib/libAndSwapChainHookAnalysis.a",
+      "sha256": "8a3bdbf65c843935ea0b51ac1227c080b866f36dea8e2e46b737844f59b005b6",
+      "bytes": 458528
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/lib/libAndSwapChainHookProfiler.a",
+      "sha256": "51fdef7ad57847fe75b422647ea1cbb1a9571e0ddeb0e7339c422eea16199197",
+      "bytes": 205232
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/lib/libAndSwapChainHookInput.a",
+      "sha256": "72c6901910b3152bcf70ba385ec245f956f7b8067770ad60d6e09a6c9e1f79b6",
+      "bytes": 68472
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/lib/libAndSwapChainHookInstrumentation.a",
+      "sha256": "67aef94b00fb518e3d7605bdb6c83e1810cef857169f6fcfeb12b3dd5025fd0b",
+      "bytes": 42368
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/lib/libAndSwapChainHookAssembler.a",
+      "sha256": "4db73271410138701295889b4bfdc36bc3bb84a484fca792a6e71f694ac2458a",
+      "bytes": 130504
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/lib/cmake/AndSwapChainHook/AndSwapChainHookTargets.cmake",
+      "sha256": "b69b9e1e3643fc39160cd7648f94af45c088b1e2e6c71abdd5e9c684e954d24d",
+      "bytes": 7853
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/lib/cmake/AndSwapChainHook/AndSwapChainHookTargets-release.cmake",
+      "sha256": "ec37a07d3a3319cb0ac73529750e6813b5fb1660bfa70f0804a5ce0f81417f79",
+      "bytes": 4950
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/lib/cmake/AndSwapChainHook/AndSwapChainHookConfigVersion.cmake",
+      "sha256": "bef27358917b8deca0715d09e7d3004f9fb86c7b5a76fc12ca8c48481d93aa7c",
+      "bytes": 2762
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/lib/cmake/AndSwapChainHook/AndSwapChainHookConfig.cmake",
+      "sha256": "f0a130ef79ed90ac75fb10425914bbb5008a81ca13ca1ad9f9620e356ef43798",
+      "bytes": 1707
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/lib/cmake/Keystone/KeystoneConfigVersion.cmake",
+      "sha256": "6e7899c6c6aa15956a5521ccd7a61e23aee6eadc66c7f9ec50b157e2893c8a2e",
+      "bytes": 2762
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/lib/cmake/Keystone/KeystoneTargets-release.cmake",
+      "sha256": "7cd6bda1aae470ad4904cb6eb192571e1037b8379d62714e2cada6f11ccbe94d",
+      "bytes": 895
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/lib/cmake/Keystone/KeystoneConfig.cmake",
+      "sha256": "12f4e3deb8bd78f8c5d501fb049b3fd555695ef93ceee296d8c088453c23700b",
+      "bytes": 976
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/lib/cmake/Keystone/KeystoneTargets.cmake",
+      "sha256": "74c8d2878d9859facf1002c33359874fd4ea8373cf5dabb61d8c320b474fba16",
+      "bytes": 4133
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/lib/cmake/Capstone/CapstoneConfig.cmake",
+      "sha256": "547cdbe8c3ed4dda1f69dd254d1d332afb4308b9fbd4e0b019b2f30512027f5e",
+      "bytes": 976
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/lib/cmake/Capstone/CapstoneTargets-release.cmake",
+      "sha256": "be5b9162c6af979d77dc89774809e5a1aed740331f0a7ea4080d92c33f47691c",
+      "bytes": 891
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/lib/cmake/Capstone/CapstoneTargets.cmake",
+      "sha256": "f60aef73797c21a6c6ed15bd19995570dc7a655d1f0f9fce9bef1fc2f2073e19",
+      "bytes": 4133
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/lib/cmake/Capstone/CapstoneConfigVersion.cmake",
+      "sha256": "02b58b09ca210bff9b531461c3b06975f0f7685ac0cc8fafabbd570670724b3f",
+      "bytes": 2762
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/share/licenses/AndSwapChainHook/LICENSE",
+      "sha256": "6fd6687a70b0ae73b186ab5b427481c67d7994c5a9bfa66fd056303f978ba9dd",
+      "bytes": 1064
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/share/licenses/AndSwapChainHook/THIRD_PARTY_NOTICES.md",
+      "sha256": "f2eaabe18dd0dd7caed31cd71e33ad518224e0ea067ee4a524ed2348a98e89ba",
+      "bytes": 5810
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/share/licenses/AndSwapChainHook/keystone/KeystoneCompatibility.cmake",
+      "sha256": "b91f9af606a1d529a1d2b7049ccc8aa6b3259d3d494cec7bb002c52784f71cc9",
+      "bytes": 1820
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/share/licenses/AndSwapChainHook/keystone/COPYING",
+      "sha256": "ab15fd526bd8dd18a9e77ebc139656bf4d33e97fc7238cd11bf60e2b9b8666c6",
+      "bytes": 17987
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/share/licenses/AndSwapChainHook/keystone/LICENSE-COM.TXT",
+      "sha256": "51330f413cbe607a1f1dc9e73c78c040f9423230d2b7ef98c84c1bd4c54af055",
+      "bytes": 362
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/share/licenses/AndSwapChainHook/keystone/EXCEPTIONS-CLIENT",
+      "sha256": "2e3ba49ed5363ecbdf4bc8b6d2b886c772cdc0b321fb1e6e137098fc2dd5968e",
+      "bytes": 7892
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/share/licenses/AndSwapChainHook/keystone/llvm/LICENSE.TXT",
+      "sha256": "721cb11de618fcf9bbb7d25a389207bf2227357e6694bc326ab32a6699f9b951",
+      "bytes": 3281
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/share/licenses/AndSwapChainHook/keystone/llvm/include/llvm/Support/LICENSE.TXT",
+      "sha256": "a012d664e4e01df52a65b2eeafdfb8aeb856fec0e6c372265d01b0109c3f5e2a",
+      "bytes": 284
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/share/licenses/AndSwapChainHook/keystone/llvm/keystone/LICENSE",
+      "sha256": "258ec4a974b62937005323ee22fb641f5f3dfe7ed99911c99d4178025b98be06",
+      "bytes": 105
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/share/licenses/AndSwapChainHook/keystone/llvm/lib/Target/ARM/LICENSE.TXT",
+      "sha256": "28cbd5f6dac844fc3d94e879dba83c3ca87328ece8e0d388284f8cec6a042a97",
+      "bytes": 2764
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/share/licenses/AndSwapChainHook/keystone/llvm/lib/Support/COPYRIGHT.regex",
+      "sha256": "0424e57d4303164dc59a8509c20dae0518b853692e5c2b0e98b11816fdbc97c7",
+      "bytes": 2718
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/share/licenses/AndSwapChainHook/capstone/LICENSE_LLVM.TXT",
+      "sha256": "dfdca2d7fdbabfd937f9dc41b7f61647b0e6cb1f9ee767ecb4520f979ebe91da",
+      "bytes": 3331
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/share/licenses/AndSwapChainHook/capstone/LICENSE_BSD_3_CLAUSE.txt",
+      "sha256": "5a93d5831e1297ab10fe643e1a631e83be392896da14ee2951285a79012df69d",
+      "bytes": 1460
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/host-release-install/share/licenses/AndSwapChainHook/capstone/LICENSE.TXT",
+      "sha256": "65e9ed46a59976eda8f5bd1ea79a680dea38dd299c760bc9a8d87a764ef5029b",
+      "bytes": 1687
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-installed-assemble/consumer",
+      "sha256": "5281ad043498bb16d85855426fcd00b1c2ec0b0457a7616454a24b59908ed1e0",
+      "bytes": 23909784
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-installed-assemble/CMakeCache.txt",
+      "sha256": "4475d14bf5032f6671aba3ec576626702e70e3950f378acfe8eb1b06130578a7",
+      "bytes": 17435
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-installed-assemble/build.ninja",
+      "sha256": "f3d814451446b879e48b2a38652df5df47889552e4edf2851c9c7a461c0058d0",
+      "bytes": 30045
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/AndSwapChainHook/Assembler.h",
+      "sha256": "bfdd4d41e60851635db9b14ff5df5e5dac7eed2e02f3394f6df808db3bd10906",
+      "bytes": 2068
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/AndSwapChainHook/Input.h",
+      "sha256": "c3434ad440167adf5166d3c08bea8f945e57a81868c336e748eb43deac9bc051",
+      "bytes": 2938
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/AndSwapChainHook/CallbackGate.h",
+      "sha256": "2b82316ae112e7caea3191f05ba5890dadb70b1c9d7ed9094fa96c71a38b8922",
+      "bytes": 2533
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/AndSwapChainHook/Disassembler.h",
+      "sha256": "33928b3082d4f1ac1fcf1919abdb7db5966cc3a2bae64090620a8f5ab29c5229",
+      "bytes": 2319
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/AndSwapChainHook/Overlay.h",
+      "sha256": "2d25f3590741dd805cd49c8b5594aef026e7f0e653da0e9fbc8be5b1aa8aa93f",
+      "bytes": 2286
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/AndSwapChainHook/CrashRecorder.h",
+      "sha256": "5f2f8d6079a3aaac220b7249f779509c2be09cf0721275562205bbea60aa2fd0",
+      "bytes": 1338
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/AndSwapChainHook/HookTransaction.h",
+      "sha256": "34cb66e0b8be492bd430d8b165e88f7c26e852020d9baec02317a177fb900b1a",
+      "bytes": 2314
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/AndSwapChainHook/Runtime.h",
+      "sha256": "fea8f3d57eca6db1f29e7c5e6331c811f1b035b8dacb0268709d23c3a3a27753",
+      "bytes": 2196
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/AndSwapChainHook/Memory.h",
+      "sha256": "aa7268dd6c6ea17b32df4ac5ab72f2713f91f0a4ed888d2e3ae86bb8766c7dac",
+      "bytes": 3532
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/AndSwapChainHook/Graphics.h",
+      "sha256": "18af202d84dba150c81697f7b90f7b0ce44b98bf48e87649ec27185549144954",
+      "bytes": 1927
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/AndSwapChainHook/Profiler.h",
+      "sha256": "68329bf69d05410d310c9d4b3e913953e343884c678ea03e86554a529c5f416d",
+      "bytes": 3064
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/keystone/hexagon.h",
+      "sha256": "98e7a8e1e816af28c53cda7739d58ee86edccb4f96eb6ff07a0c3fdc545f7464",
+      "bytes": 410
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/keystone/mips.h",
+      "sha256": "58dba29ddd1336d6599fc97027398279b1781cbc5118509199d3722ea01e89c0",
+      "bytes": 388
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/keystone/sparc.h",
+      "sha256": "57da47b0ad2ff7f9c4bf92330a7adff7d6e8cc8854b496c826a05340470d6a86",
+      "bytes": 396
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/keystone/systemz.h",
+      "sha256": "0f72d70ccaa70e24508b2e19ffdd086c5e085b4f271b58b712ce914832d53d0c",
+      "bytes": 410
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/keystone/arm.h",
+      "sha256": "e46c3546f7e9b10b3fa089586c3bff9ba9ba7893d93261ea12b17c513fcdf3ba",
+      "bytes": 381
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/keystone/evm.h",
+      "sha256": "94b1296b91358aa86bb2affa259c48f14370f148d1206601de0d245865882e90",
+      "bytes": 386
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/keystone/x86.h",
+      "sha256": "fc0643cd96d834fe390b57dfff46a3c56ba3800bd82d7002200233edfe3b5a4d",
+      "bytes": 381
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/keystone/keystone.h",
+      "sha256": "fd2af465679198eb270dc596dec719a8c64b9588c982005f20b2569c7cb48ddf",
+      "bytes": 11660
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/keystone/ppc.h",
+      "sha256": "447beafb363df17fbe8cd64a907862dac7db3c9d0bd4d835d7fa3af1e49d6cdf",
+      "bytes": 382
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/keystone/arm64.h",
+      "sha256": "7e2b9ce77c29722f1e4d4cb46b9a1916dbc7738da8de66b2501f6ba7f9eaad83",
+      "bytes": 395
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/capstone/capstone.h",
+      "sha256": "ac42446cc8b1bc22d024152ddaeb176f85163c87a2f71854675569bfbe3ae042",
+      "bytes": 38922
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/capstone/mips.h",
+      "sha256": "0e80f16a3dd3852dbbf36e2f141798f13c3022e53e8a123449b773988489a412",
+      "bytes": 51653
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/capstone/sparc.h",
+      "sha256": "b0b57503d066529af1c25f02f3c061ac3d278161e2877b9f50303394bcdb5f86",
+      "bytes": 44128
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/capstone/systemz.h",
+      "sha256": "d8baef044416855a325faa84e6814cf16c8213f5e872d0c4144ed86b0428926f",
+      "bytes": 65721
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/capstone/m68k.h",
+      "sha256": "085df86714d35a653b6154a53f32cb1c7fac38557dc66e4c7ed35e836bb10f6c",
+      "bytes": 14026
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/capstone/cs_operand.h",
+      "sha256": "bc58da81cf1d1151fcb7d540891108ec3270889ee10db724b2dcabe7ed1e99c2",
+      "bytes": 1756
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/capstone/sh.h",
+      "sha256": "cb59caef77a41da204bd0681d8428454ae2b1fad6b239f37bcd99291fabf1eef",
+      "bytes": 7705
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/capstone/arm.h",
+      "sha256": "600a9186866a0ea9670c97272ff8eee175bbab763d1511d34ba672fd309f09f2",
+      "bytes": 40646
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/capstone/bpf.h",
+      "sha256": "a38f4633bd3c16ad9e5925ea908a9194be8037067598ce190c46a118e5ae4c1c",
+      "bytes": 5651
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/capstone/alpha.h",
+      "sha256": "72b6f827893671549d6263af0d0ea19210d149a749483e476ca7088904cf8b7d",
+      "bytes": 6148
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/capstone/arc.h",
+      "sha256": "22fe30b06b2f033cf7ac5f5b2f4fd4d59bc1535c5b2658a7af004b4fefed1dd6",
+      "bytes": 6405
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/capstone/mos65xx.h",
+      "sha256": "4bf5583f172e10f69d1b4722842f345d52b0fbc59725638d995424f9b1cba6d3",
+      "bytes": 5858
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/capstone/hppa.h",
+      "sha256": "eaf1d90ae8f2f4187b2520f2898bea7d05d90bfdb227e5d515a7dbe90b93dea0",
+      "bytes": 9604
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/capstone/evm.h",
+      "sha256": "1bbe84b2365603273d583b8c068d661bbc88fb465c00c695b2c33cbca1c15a92",
+      "bytes": 4722
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/capstone/xtensa.h",
+      "sha256": "6b2bca93c631bdf5584c0943a78d8cd20f57be62e6c889f57bf271cc2ea3fa24",
+      "bytes": 46969
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/capstone/x86.h",
+      "sha256": "a148bd6d0a52d31e8c3f619badc6ac75a82914402b89fc1d67a3dfe380f572aa",
+      "bytes": 43152
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/capstone/wasm.h",
+      "sha256": "8547948a692e59d1d82fbd71e1fe319617a5ad9f15976a93f0e4497860de2774",
+      "bytes": 6379
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/capstone/tricore.h",
+      "sha256": "0d717b2c708964c8553734fa4831c952815b54662fb4bb79caacedc1a7e9c16c",
+      "bytes": 13827
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/capstone/systemz_compatibility.h",
+      "sha256": "68273bcd2fdbc3722adebcbf72f8b66649ff6060d55436c142b031d9deb62c7b",
+      "bytes": 110872
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/capstone/ppc.h",
+      "sha256": "00022edcdde5bc55b893f7e545f24ea73b01430579171a5378a79be8de34f3d1",
+      "bytes": 94486
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/capstone/arm64.h",
+      "sha256": "9e5570e9362848337b12112a43491b82f2264deb9ce5847a8d1c53f288b1e7ac",
+      "bytes": 205286
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/capstone/xcore.h",
+      "sha256": "f498453e593d37c40d91efb0bec0f4e45a7bb74870c7264da11fcfe094f59583",
+      "bytes": 4991
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/capstone/riscv.h",
+      "sha256": "f5ca10859eaefecada4d0a83f769e5d6d1af0e2fe2bc0f86a70face36ed35640",
+      "bytes": 13162
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/capstone/m680x.h",
+      "sha256": "304ad9bfecf15b146f67bd69e2b24bf42b7019cf51610ef08ca2a42dcb989f29",
+      "bytes": 12482
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/capstone/loongarch.h",
+      "sha256": "937dbbc5e5158b4ca4e4a8e896df9c889d70dda2a23f6af93b155b0b4f5d3dc9",
+      "bytes": 67965
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/capstone/platform.h",
+      "sha256": "17ff832b57b85647368860c16ec31ae789e73aaac182fc5a9d3c2ebe8fbea568",
+      "bytes": 4010
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/capstone/aarch64.h",
+      "sha256": "411af8b4ad5d10353b6c42eddab3807d6a0a53c84f0cddc3c41390826386d841",
+      "bytes": 151635
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/include/capstone/tms320c64x.h",
+      "sha256": "1ac357507000bb92215977c67bbe8b5532366d8c3ee22345b5908394758c4a6c",
+      "bytes": 8349
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/lib/libandswapchain_capstone.a",
+      "sha256": "97645bf3b9d068a72df45b5f09cc19658033f9e398863a3d1058b20988fe8e56",
+      "bytes": 12452248
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/lib/libAndSwapChainHookMemory.a",
+      "sha256": "7c82d35c2b3414e267d1403f202e742473541463c8932cbe46ea0be9353c92bd",
+      "bytes": 226638
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/lib/libAndSwapChainHookCrashRecorder.a",
+      "sha256": "62584330e8a9ce54e006baa00fdbf70025c01a5ee02a02d5bd29230231eed827",
+      "bytes": 102946
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/lib/libAndSwapChainHookDisassembler.a",
+      "sha256": "41999844062531d8a2cdf68dce06e2f74e66610ebf71c8e440f0f2348b6bb371",
+      "bytes": 104020
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/lib/libandswapchain_keystone.a",
+      "sha256": "18e5596ef6166c8a35f9ba6de56db728339455d9e257e8184277b4db4a03876f",
+      "bytes": 24858682
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/lib/libAndSwapChainHookAnalysis.a",
+      "sha256": "376c26bda968b0f6051df4dd518fa0f4ccff15410d261669cbcebbb8ff48c00a",
+      "bytes": 529580
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/lib/libAndSwapChainHookProfiler.a",
+      "sha256": "50c475a79c2cac6a2014bd677882faa1ae6096fd3868b3a1295fc1f044475881",
+      "bytes": 218208
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/lib/libAndSwapChainHookInput.a",
+      "sha256": "02608c170ef69cfa93fa0eaee1f1d5e279ceb4b461b07ca7e2331c05a0c0a551",
+      "bytes": 92562
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/lib/libAndSwapChainHookInstrumentation.a",
+      "sha256": "eeaaf185d07e3e65925b0159862070a5d27aa08bb1d623f0fff5ad9f2a26ac0a",
+      "bytes": 60416
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/lib/libAndSwapChainHookAssembler.a",
+      "sha256": "3290cb57fdcebfa0aca5ba412519546615f739a9a09f61b922ef809a5afd2cac",
+      "bytes": 183696
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/lib/cmake/AndSwapChainHook/AndSwapChainHookTargets.cmake",
+      "sha256": "b69b9e1e3643fc39160cd7648f94af45c088b1e2e6c71abdd5e9c684e954d24d",
+      "bytes": 7853
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/lib/cmake/AndSwapChainHook/AndSwapChainHookTargets-release.cmake",
+      "sha256": "ec37a07d3a3319cb0ac73529750e6813b5fb1660bfa70f0804a5ce0f81417f79",
+      "bytes": 4950
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/lib/cmake/AndSwapChainHook/AndSwapChainHookConfigVersion.cmake",
+      "sha256": "bef27358917b8deca0715d09e7d3004f9fb86c7b5a76fc12ca8c48481d93aa7c",
+      "bytes": 2762
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/lib/cmake/AndSwapChainHook/AndSwapChainHookConfig.cmake",
+      "sha256": "f0a130ef79ed90ac75fb10425914bbb5008a81ca13ca1ad9f9620e356ef43798",
+      "bytes": 1707
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/lib/cmake/Keystone/KeystoneConfigVersion.cmake",
+      "sha256": "6e7899c6c6aa15956a5521ccd7a61e23aee6eadc66c7f9ec50b157e2893c8a2e",
+      "bytes": 2762
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/lib/cmake/Keystone/KeystoneTargets-release.cmake",
+      "sha256": "7cd6bda1aae470ad4904cb6eb192571e1037b8379d62714e2cada6f11ccbe94d",
+      "bytes": 895
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/lib/cmake/Keystone/KeystoneConfig.cmake",
+      "sha256": "12f4e3deb8bd78f8c5d501fb049b3fd555695ef93ceee296d8c088453c23700b",
+      "bytes": 976
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/lib/cmake/Keystone/KeystoneTargets.cmake",
+      "sha256": "74c8d2878d9859facf1002c33359874fd4ea8373cf5dabb61d8c320b474fba16",
+      "bytes": 4133
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/lib/cmake/Capstone/CapstoneConfig.cmake",
+      "sha256": "547cdbe8c3ed4dda1f69dd254d1d332afb4308b9fbd4e0b019b2f30512027f5e",
+      "bytes": 976
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/lib/cmake/Capstone/CapstoneTargets-release.cmake",
+      "sha256": "be5b9162c6af979d77dc89774809e5a1aed740331f0a7ea4080d92c33f47691c",
+      "bytes": 891
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/lib/cmake/Capstone/CapstoneTargets.cmake",
+      "sha256": "f60aef73797c21a6c6ed15bd19995570dc7a655d1f0f9fce9bef1fc2f2073e19",
+      "bytes": 4133
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/lib/cmake/Capstone/CapstoneConfigVersion.cmake",
+      "sha256": "02b58b09ca210bff9b531461c3b06975f0f7685ac0cc8fafabbd570670724b3f",
+      "bytes": 2762
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/share/licenses/AndSwapChainHook/LICENSE",
+      "sha256": "6fd6687a70b0ae73b186ab5b427481c67d7994c5a9bfa66fd056303f978ba9dd",
+      "bytes": 1064
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/share/licenses/AndSwapChainHook/THIRD_PARTY_NOTICES.md",
+      "sha256": "f2eaabe18dd0dd7caed31cd71e33ad518224e0ea067ee4a524ed2348a98e89ba",
+      "bytes": 5810
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/share/licenses/AndSwapChainHook/keystone/KeystoneCompatibility.cmake",
+      "sha256": "b91f9af606a1d529a1d2b7049ccc8aa6b3259d3d494cec7bb002c52784f71cc9",
+      "bytes": 1820
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/share/licenses/AndSwapChainHook/keystone/COPYING",
+      "sha256": "ab15fd526bd8dd18a9e77ebc139656bf4d33e97fc7238cd11bf60e2b9b8666c6",
+      "bytes": 17987
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/share/licenses/AndSwapChainHook/keystone/LICENSE-COM.TXT",
+      "sha256": "51330f413cbe607a1f1dc9e73c78c040f9423230d2b7ef98c84c1bd4c54af055",
+      "bytes": 362
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/share/licenses/AndSwapChainHook/keystone/EXCEPTIONS-CLIENT",
+      "sha256": "2e3ba49ed5363ecbdf4bc8b6d2b886c772cdc0b321fb1e6e137098fc2dd5968e",
+      "bytes": 7892
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/share/licenses/AndSwapChainHook/keystone/llvm/LICENSE.TXT",
+      "sha256": "721cb11de618fcf9bbb7d25a389207bf2227357e6694bc326ab32a6699f9b951",
+      "bytes": 3281
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/share/licenses/AndSwapChainHook/keystone/llvm/include/llvm/Support/LICENSE.TXT",
+      "sha256": "a012d664e4e01df52a65b2eeafdfb8aeb856fec0e6c372265d01b0109c3f5e2a",
+      "bytes": 284
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/share/licenses/AndSwapChainHook/keystone/llvm/keystone/LICENSE",
+      "sha256": "258ec4a974b62937005323ee22fb641f5f3dfe7ed99911c99d4178025b98be06",
+      "bytes": 105
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/share/licenses/AndSwapChainHook/keystone/llvm/lib/Target/ARM/LICENSE.TXT",
+      "sha256": "28cbd5f6dac844fc3d94e879dba83c3ca87328ece8e0d388284f8cec6a042a97",
+      "bytes": 2764
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/share/licenses/AndSwapChainHook/keystone/llvm/lib/Support/COPYRIGHT.regex",
+      "sha256": "0424e57d4303164dc59a8509c20dae0518b853692e5c2b0e98b11816fdbc97c7",
+      "bytes": 2718
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/share/licenses/AndSwapChainHook/capstone/LICENSE_LLVM.TXT",
+      "sha256": "dfdca2d7fdbabfd937f9dc41b7f61647b0e6cb1f9ee767ecb4520f979ebe91da",
+      "bytes": 3331
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/share/licenses/AndSwapChainHook/capstone/LICENSE_BSD_3_CLAUSE.txt",
+      "sha256": "5a93d5831e1297ab10fe643e1a631e83be392896da14ee2951285a79012df69d",
+      "bytes": 1460
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release-install/share/licenses/AndSwapChainHook/capstone/LICENSE.TXT",
+      "sha256": "65e9ed46a59976eda8f5bd1ea79a680dea38dd299c760bc9a8d87a764ef5029b",
+      "bytes": 1687
+    }
+  ],
+  "scope": "Installed public combined Assemble consumers on host and owned Android CLI. Portable Input archive built only to satisfy producer installation; no Input runtime or public UI acceptance."
+}

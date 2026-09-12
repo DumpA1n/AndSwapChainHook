@@ -1,0 +1,825 @@
+{
+  "schema": 1,
+  "configuration": "android-release",
+  "status": "passed",
+  "failure": null,
+  "source_hashes": {
+    "CMakeLists.txt": "4854f5037969f07968910c5aaf27bb3018fd68693cfa94c50351f71cc4d5afaa",
+    "CMakePresets.json": "5ec9a0b22e1e1d78fd945799ebddc802a49fb033e55b78cad7cfbe1538ca91d8",
+    "README.md": "525c50710616b02b626b1a0ad186425ef0bf593653130806402271d5f08956e7",
+    "THIRD_PARTY_NOTICES.md": "f2eaabe18dd0dd7caed31cd71e33ad518224e0ea067ee4a524ed2348a98e89ba",
+    "cmake/AnalysisDependencies.cmake": "c006bcf562b1c52eb53d10f727a2cb7a050ba8039037838dacbadee61d00fef5",
+    "cmake/AndSwapChainHookConfig.cmake.in": "4bcaed1283f51ae4484c9262c40028fbb299d3d68bc1be1f37be740d30278f85",
+    "cmake/analysis/CapstoneConfig.cmake.in": "cb765115a1558696f0dc7c6bda8f88541cac7225b4cc230a372c86b09aa84162",
+    "cmake/analysis/KeystoneConfig.cmake.in": "0718ef9559a399ab8754def2345ee0f217ad553296a433a857fcf67c84d33044",
+    "cmake/analysis/licenses/capstone/LICENSE.TXT": "65e9ed46a59976eda8f5bd1ea79a680dea38dd299c760bc9a8d87a764ef5029b",
+    "cmake/analysis/licenses/capstone/LICENSE_BSD_3_CLAUSE.txt": "5a93d5831e1297ab10fe643e1a631e83be392896da14ee2951285a79012df69d",
+    "cmake/analysis/licenses/capstone/LICENSE_LLVM.TXT": "dfdca2d7fdbabfd937f9dc41b7f61647b0e6cb1f9ee767ecb4520f979ebe91da",
+    "cmake/analysis/licenses/keystone/COPYING": "ab15fd526bd8dd18a9e77ebc139656bf4d33e97fc7238cd11bf60e2b9b8666c6",
+    "cmake/analysis/licenses/keystone/EXCEPTIONS-CLIENT": "2e3ba49ed5363ecbdf4bc8b6d2b886c772cdc0b321fb1e6e137098fc2dd5968e",
+    "cmake/analysis/licenses/keystone/LICENSE-COM.TXT": "51330f413cbe607a1f1dc9e73c78c040f9423230d2b7ef98c84c1bd4c54af055",
+    "cmake/analysis/licenses/keystone/llvm/LICENSE.TXT": "721cb11de618fcf9bbb7d25a389207bf2227357e6694bc326ab32a6699f9b951",
+    "cmake/analysis/licenses/keystone/llvm/include/llvm/Support/LICENSE.TXT": "a012d664e4e01df52a65b2eeafdfb8aeb856fec0e6c372265d01b0109c3f5e2a",
+    "cmake/analysis/licenses/keystone/llvm/keystone/LICENSE": "258ec4a974b62937005323ee22fb641f5f3dfe7ed99911c99d4178025b98be06",
+    "cmake/analysis/licenses/keystone/llvm/lib/Support/COPYRIGHT.regex": "0424e57d4303164dc59a8509c20dae0518b853692e5c2b0e98b11816fdbc97c7",
+    "cmake/analysis/licenses/keystone/llvm/lib/Target/ARM/LICENSE.TXT": "28cbd5f6dac844fc3d94e879dba83c3ca87328ece8e0d388284f8cec6a042a97",
+    "cmake/analysis/patches/KeystoneCompatibility.cmake": "b91f9af606a1d529a1d2b7049ccc8aa6b3259d3d494cec7bb002c52784f71cc9",
+    "include/AndSwapChainHook/Assembler.h": "bfdd4d41e60851635db9b14ff5df5e5dac7eed2e02f3394f6df808db3bd10906",
+    "include/AndSwapChainHook/CallbackGate.h": "2b82316ae112e7caea3191f05ba5890dadb70b1c9d7ed9094fa96c71a38b8922",
+    "include/AndSwapChainHook/CrashRecorder.h": "5f2f8d6079a3aaac220b7249f779509c2be09cf0721275562205bbea60aa2fd0",
+    "include/AndSwapChainHook/Disassembler.h": "33928b3082d4f1ac1fcf1919abdb7db5966cc3a2bae64090620a8f5ab29c5229",
+    "include/AndSwapChainHook/HookTransaction.h": "34cb66e0b8be492bd430d8b165e88f7c26e852020d9baec02317a177fb900b1a",
+    "include/AndSwapChainHook/Memory.h": "aa7268dd6c6ea17b32df4ac5ab72f2713f91f0a4ed888d2e3ae86bb8766c7dac",
+    "include/AndSwapChainHook/Profiler.h": "68329bf69d05410d310c9d4b3e913953e343884c678ea03e86554a529c5f416d",
+    "include/AndSwapChainHook/Runtime.h": "fea8f3d57eca6db1f29e7c5e6331c811f1b035b8dacb0268709d23c3a3a27753",
+    "source/Analysis/Runtime.cpp": "c0276f382a812d45bef1809d24035e821d254499e8854e0a803febe4da371d49",
+    "source/Analysis/Scan.cpp": "a975ba6d880f54c03834fa7428203da294748215460a9ff2795556f58a157d4e",
+    "source/Assemble/Assembler.cpp": "b8af5dad13265e7fe7a85972f536bf4543c501a407d179ad2b49e0202ecfc550",
+    "source/Assemble/Disassembler.cpp": "dd2979d1b9d7e87c6fda723c5c2f7278a38c329798ecfa766a98dc528fb3bba4",
+    "source/Diagnostics/CrashRecorder.cpp": "09946a856f5571574ded51826e188d4a1591ee07fd2a66673bc84758121df26d",
+    "source/Diagnostics/Profiler.cpp": "c76540dfe6df2be33345c05faebf793325021044b757214e5a0c23175bdbb9eb",
+    "source/Instrumentation/HookTransaction.cpp": "e138d1f7e43ce49fef5f92efcf0fb98a592c685a132afb0ff3d9d49421dcda5d",
+    "source/Memory/Memory.cpp": "b13e3e63c08b8ef204aa3be867a2283ea15860f1cb4ef58cd1e16b226ac6e2bb",
+    "tests/assemble_contracts.cpp": "7e238edb5da14a74eb4d2feaa3bc3b1ea8d6cee5335a9d09c3eca414c8940a42",
+    "tests/assemble_roundtrip.cpp": "0d730f0c29a40c75d7c145b37555cf83bed88355c30fbe3ac63e180e826b5f27",
+    "tests/assembler_roundtrip.cpp": "50fa5cc74fbeafec5caf250f623f01470d67821276ca87693cc67d4eabe8f2f1",
+    "tests/contracts.cpp": "241ae2cc5f3f1262c3bac20193684256d08c8d5fe515acc00783c9633689fbbb",
+    "tests/crash_record.cpp": "afa1d41dfe3f57a190b2008710463ab1cf15945270fdacb437df6901a72ed4fd",
+    "tests/disassembler_roundtrip.cpp": "5aa7067d826383962ba2560c9bfec20c219fcb2480116320057e67d27b433379",
+    "tests/profiler.cpp": "3e17e3624ffcb1766e958053bc5dfb8bfb70f4ebb01f9cdce871e92e97a9b761",
+    "tests/runtime_header.c": "3fb8d1bba43a308947174fa9acf6be5cd17068bdaea3b4f6c1f3441e094604ac"
+  },
+  "source_consistent": true,
+  "scope": "Owned bounded Memory/Analysis, Profiler, CrashRecorder and Assemble CPU fixtures; contracts.cpp also exercises its fake backend transaction and callback gate. No Graphics, Overlay, InputEvent, Dobby, Vulkan or hook installation execution.",
+  "options": [
+    "-DCMAKE_BUILD_TYPE=Release",
+    "-DBUILD_TESTING=ON",
+    "-DANDSWAPCHAIN_BUILD_ASSEMBLE=ON",
+    "-DANDSWAPCHAIN_BUILD_CRASH_RECORDER=ON",
+    "-DANDSWAPCHAIN_ENABLE_SANITIZERS=OFF",
+    "-DANDSWAPCHAIN_BUILD_ANDROID=OFF",
+    "-DANDSWAPCHAIN_BUILD_GRAPHICS=OFF",
+    "-DANDSWAPCHAIN_BUILD_OVERLAY=OFF",
+    "-DANDSWAPCHAIN_BUILD_POINTER_ADAPTER=OFF",
+    "-DCMAKE_TOOLCHAIN_FILE=/opt/homebrew/share/android-ndk/build/cmake/android.toolchain.cmake",
+    "-DANDROID_ABI=arm64-v8a",
+    "-DANDROID_PLATFORM=android-27",
+    "-DANDROID_STL=c++_static"
+  ],
+  "checks": [
+    {
+      "name": "configure",
+      "command": [
+        "cmake",
+        "-S",
+        "/Users/ddd/Developer/AndSwapChainHook",
+        "-B",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release",
+        "-G",
+        "Ninja",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DBUILD_TESTING=ON",
+        "-DANDSWAPCHAIN_BUILD_ASSEMBLE=ON",
+        "-DANDSWAPCHAIN_BUILD_CRASH_RECORDER=ON",
+        "-DANDSWAPCHAIN_ENABLE_SANITIZERS=OFF",
+        "-DANDSWAPCHAIN_BUILD_ANDROID=OFF",
+        "-DANDSWAPCHAIN_BUILD_GRAPHICS=OFF",
+        "-DANDSWAPCHAIN_BUILD_OVERLAY=OFF",
+        "-DANDSWAPCHAIN_BUILD_POINTER_ADAPTER=OFF",
+        "-DCMAKE_TOOLCHAIN_FILE=/opt/homebrew/share/android-ndk/build/cmake/android.toolchain.cmake",
+        "-DANDROID_ABI=arm64-v8a",
+        "-DANDROID_PLATFORM=android-27",
+        "-DANDROID_STL=c++_static"
+      ],
+      "exit_code": 0,
+      "seconds": 99.753,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/configure.log",
+      "log_sha256": "94f9629c2e53c0d79f3afab3b01345f7f5b6d9f575bb1b2bddccff034fb64af3"
+    },
+    {
+      "name": "build",
+      "command": [
+        "cmake",
+        "--build",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release",
+        "--parallel",
+        "2",
+        "--target",
+        "andswapchain_contract_tests",
+        "andswapchain_profiler_tests",
+        "andswapchain_crash_record_test",
+        "andswapchain_assembler_roundtrip",
+        "andswapchain_disassembler_roundtrip",
+        "andswapchain_assemble_roundtrip",
+        "andswapchain_assemble_contracts",
+        "andswapchain_header_Memory",
+        "andswapchain_header_Runtime",
+        "andswapchain_header_CrashRecorder",
+        "andswapchain_header_Profiler",
+        "andswapchain_header_Assembler",
+        "andswapchain_header_Disassembler",
+        "andswapchain_header_HookTransaction",
+        "andswapchain_header_CallbackGate",
+        "andswapchain_c_header"
+      ],
+      "exit_code": 0,
+      "seconds": 41.372,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/build.log",
+      "log_sha256": "2c03860c3d92c76e9ce2968e47dd3bf6d9a9bd99b3e0c53f2cd0ef8438feb41b"
+    },
+    {
+      "name": "device-directory",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "shell",
+        "mkdir",
+        "-p",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release"
+      ],
+      "exit_code": 0,
+      "seconds": 0.058,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/device-directory.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "andswapchain_contract_tests-push",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "push",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_contract_tests",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release/andswapchain_contract_tests"
+      ],
+      "exit_code": 0,
+      "seconds": 0.093,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_contract_tests-push.log",
+      "log_sha256": "2998bf9dc3ba0b104c55c24967a0416afc47175d6d0535f4f5a4afbad6722217"
+    },
+    {
+      "name": "andswapchain_contract_tests-chmod",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "shell",
+        "chmod",
+        "700",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release/andswapchain_contract_tests"
+      ],
+      "exit_code": 0,
+      "seconds": 0.058,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_contract_tests-chmod.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "andswapchain_contract_tests-sha256",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "shell",
+        "sha256sum",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release/andswapchain_contract_tests"
+      ],
+      "exit_code": 0,
+      "seconds": 0.11,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_contract_tests-sha256.log",
+      "log_sha256": "d6918f6a05ae59d4386450fdbc86e904b21a2a9f087ecf9c0341640983154870"
+    },
+    {
+      "name": "andswapchain_contract_tests-runtime",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "shell",
+        "timeout",
+        "30",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release/andswapchain_contract_tests"
+      ],
+      "exit_code": 0,
+      "seconds": 0.169,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_contract_tests-runtime.log",
+      "log_sha256": "bd62160fe5615efb3903777fee469ec4a2005d781dc0873c37a3e817aa4c8eb9"
+    },
+    {
+      "name": "andswapchain_contract_tests-elf",
+      "command": [
+        "/opt/homebrew/share/android-ndk/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "--notes",
+        "--sections",
+        "-W",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_contract_tests"
+      ],
+      "exit_code": 0,
+      "seconds": 0.038,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_contract_tests-elf.log",
+      "log_sha256": "7c67685a3f4c9bea0dbd7cbbcf205cda69639bb2bc8e5ceba16f6cd26ec7a91b"
+    },
+    {
+      "name": "andswapchain_profiler_tests-push",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "push",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_profiler_tests",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release/andswapchain_profiler_tests"
+      ],
+      "exit_code": 0,
+      "seconds": 0.096,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_profiler_tests-push.log",
+      "log_sha256": "d23715a9298ff5f22b7f77b29c12355f0eb01f610a2f02f1114c71a6db33c720"
+    },
+    {
+      "name": "andswapchain_profiler_tests-chmod",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "shell",
+        "chmod",
+        "700",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release/andswapchain_profiler_tests"
+      ],
+      "exit_code": 0,
+      "seconds": 0.057,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_profiler_tests-chmod.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "andswapchain_profiler_tests-sha256",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "shell",
+        "sha256sum",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release/andswapchain_profiler_tests"
+      ],
+      "exit_code": 0,
+      "seconds": 0.052,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_profiler_tests-sha256.log",
+      "log_sha256": "d8fd9314c6ccf28efd35fc09ebd18a89b5b5f081a7b313c97fbbb965b89b2b10"
+    },
+    {
+      "name": "andswapchain_profiler_tests-runtime",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "shell",
+        "timeout",
+        "30",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release/andswapchain_profiler_tests"
+      ],
+      "exit_code": 0,
+      "seconds": 0.058,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_profiler_tests-runtime.log",
+      "log_sha256": "dbee844cbf1ef31f4cf6b81d746f4e65f18a2b185492796a7e2c63a51a47f7c2"
+    },
+    {
+      "name": "andswapchain_profiler_tests-elf",
+      "command": [
+        "/opt/homebrew/share/android-ndk/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "--notes",
+        "--sections",
+        "-W",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_profiler_tests"
+      ],
+      "exit_code": 0,
+      "seconds": 0.015,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_profiler_tests-elf.log",
+      "log_sha256": "dc9d1bb8ea66931b99588efcfa6f57d21982d482fa4d91bd5ece762b18d8270c"
+    },
+    {
+      "name": "andswapchain_crash_record_test-push",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "push",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_crash_record_test",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release/andswapchain_crash_record_test"
+      ],
+      "exit_code": 0,
+      "seconds": 0.085,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_crash_record_test-push.log",
+      "log_sha256": "bb5033cad04f43ea38cc5e40c0e1ad7d9b7c0c3094e4bc45501bba4044bc8ea4"
+    },
+    {
+      "name": "andswapchain_crash_record_test-chmod",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "shell",
+        "chmod",
+        "700",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release/andswapchain_crash_record_test"
+      ],
+      "exit_code": 0,
+      "seconds": 0.055,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_crash_record_test-chmod.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "andswapchain_crash_record_test-sha256",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "shell",
+        "sha256sum",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release/andswapchain_crash_record_test"
+      ],
+      "exit_code": 0,
+      "seconds": 0.052,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_crash_record_test-sha256.log",
+      "log_sha256": "946684c36d941753b7178bbc8acf386169f1bbf75194356c2e733be5582b784b"
+    },
+    {
+      "name": "andswapchain_crash_record_test-runtime",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "shell",
+        "timeout",
+        "30",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release/andswapchain_crash_record_test"
+      ],
+      "exit_code": 0,
+      "seconds": 0.047,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_crash_record_test-runtime.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "andswapchain_crash_record_test-elf",
+      "command": [
+        "/opt/homebrew/share/android-ndk/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "--notes",
+        "--sections",
+        "-W",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_crash_record_test"
+      ],
+      "exit_code": 0,
+      "seconds": 0.013,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_crash_record_test-elf.log",
+      "log_sha256": "17255fb6e0cb1ab0667f2a30aa32cb1745af1472933780bb78a73e4ff2eee08b"
+    },
+    {
+      "name": "andswapchain_assembler_roundtrip-push",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "push",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_assembler_roundtrip",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release/andswapchain_assembler_roundtrip"
+      ],
+      "exit_code": 0,
+      "seconds": 0.192,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_assembler_roundtrip-push.log",
+      "log_sha256": "95f35be57b5c458173516ac995d2114de955aecfb8ad6191d1bd4ec1ea50ef9b"
+    },
+    {
+      "name": "andswapchain_assembler_roundtrip-chmod",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "shell",
+        "chmod",
+        "700",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release/andswapchain_assembler_roundtrip"
+      ],
+      "exit_code": 0,
+      "seconds": 0.06,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_assembler_roundtrip-chmod.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "andswapchain_assembler_roundtrip-sha256",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "shell",
+        "sha256sum",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release/andswapchain_assembler_roundtrip"
+      ],
+      "exit_code": 0,
+      "seconds": 0.065,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_assembler_roundtrip-sha256.log",
+      "log_sha256": "a3b3867fc25b7b8f3a499fd66241e2c79c542c4d9779d4e2967873fedbbae67d"
+    },
+    {
+      "name": "andswapchain_assembler_roundtrip-runtime",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "shell",
+        "timeout",
+        "30",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release/andswapchain_assembler_roundtrip"
+      ],
+      "exit_code": 0,
+      "seconds": 0.058,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_assembler_roundtrip-runtime.log",
+      "log_sha256": "701ce707187fb666d23ee82d6e9169213fbfd19376deb4952066e5c8b3085970"
+    },
+    {
+      "name": "andswapchain_assembler_roundtrip-elf",
+      "command": [
+        "/opt/homebrew/share/android-ndk/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "--notes",
+        "--sections",
+        "-W",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_assembler_roundtrip"
+      ],
+      "exit_code": 0,
+      "seconds": 0.014,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_assembler_roundtrip-elf.log",
+      "log_sha256": "ddcc8c086e1dc38323e870bff879f119e5d613e604c4522a09b4b5474adc848d"
+    },
+    {
+      "name": "andswapchain_disassembler_roundtrip-push",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "push",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_disassembler_roundtrip",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release/andswapchain_disassembler_roundtrip"
+      ],
+      "exit_code": 0,
+      "seconds": 0.138,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_disassembler_roundtrip-push.log",
+      "log_sha256": "0ab313a3a3f027b1921853e48bccb2d422e656564f8a00d0f18ff62ab64c7724"
+    },
+    {
+      "name": "andswapchain_disassembler_roundtrip-chmod",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "shell",
+        "chmod",
+        "700",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release/andswapchain_disassembler_roundtrip"
+      ],
+      "exit_code": 0,
+      "seconds": 0.052,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_disassembler_roundtrip-chmod.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "andswapchain_disassembler_roundtrip-sha256",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "shell",
+        "sha256sum",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release/andswapchain_disassembler_roundtrip"
+      ],
+      "exit_code": 0,
+      "seconds": 0.062,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_disassembler_roundtrip-sha256.log",
+      "log_sha256": "ac22a2ccf43562b8391ff51784f89fb5b3e885dde25b4f95e463bf3baeaca5bf"
+    },
+    {
+      "name": "andswapchain_disassembler_roundtrip-runtime",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "shell",
+        "timeout",
+        "30",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release/andswapchain_disassembler_roundtrip"
+      ],
+      "exit_code": 0,
+      "seconds": 0.057,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_disassembler_roundtrip-runtime.log",
+      "log_sha256": "76df9ba9052142a0efc930a07f98ff3a9ce8d8656274c5aea5ecc765ab408fd7"
+    },
+    {
+      "name": "andswapchain_disassembler_roundtrip-elf",
+      "command": [
+        "/opt/homebrew/share/android-ndk/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "--notes",
+        "--sections",
+        "-W",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_disassembler_roundtrip"
+      ],
+      "exit_code": 0,
+      "seconds": 0.014,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_disassembler_roundtrip-elf.log",
+      "log_sha256": "301b1c215ed677bb425db7c4b456f2efa5318576b26fe2bed3314acbefa0be8b"
+    },
+    {
+      "name": "andswapchain_assemble_roundtrip-push",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "push",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_assemble_roundtrip",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release/andswapchain_assemble_roundtrip"
+      ],
+      "exit_code": 0,
+      "seconds": 0.23,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_assemble_roundtrip-push.log",
+      "log_sha256": "063d46ac088626b265b037b20d7a050b05a99a98d610083d265120feafe4791d"
+    },
+    {
+      "name": "andswapchain_assemble_roundtrip-chmod",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "shell",
+        "chmod",
+        "700",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release/andswapchain_assemble_roundtrip"
+      ],
+      "exit_code": 0,
+      "seconds": 0.053,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_assemble_roundtrip-chmod.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "andswapchain_assemble_roundtrip-sha256",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "shell",
+        "sha256sum",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release/andswapchain_assemble_roundtrip"
+      ],
+      "exit_code": 0,
+      "seconds": 0.074,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_assemble_roundtrip-sha256.log",
+      "log_sha256": "cba09181317ee391c9e51a64780d31dd72f311007b3a1222c3510b30856c1532"
+    },
+    {
+      "name": "andswapchain_assemble_roundtrip-runtime",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "shell",
+        "timeout",
+        "30",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release/andswapchain_assemble_roundtrip"
+      ],
+      "exit_code": 0,
+      "seconds": 0.06,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_assemble_roundtrip-runtime.log",
+      "log_sha256": "abe4e70482059af25d1a50c78482aec8bb05bd83779636aedd698792ab8e2a4c"
+    },
+    {
+      "name": "andswapchain_assemble_roundtrip-elf",
+      "command": [
+        "/opt/homebrew/share/android-ndk/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "--notes",
+        "--sections",
+        "-W",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_assemble_roundtrip"
+      ],
+      "exit_code": 0,
+      "seconds": 0.015,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_assemble_roundtrip-elf.log",
+      "log_sha256": "71fc72947e6e7bbe5788ab36b63d4923117f6f3e17da2b06f2d7770ef44a1392"
+    },
+    {
+      "name": "andswapchain_assemble_contracts-push",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "push",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_assemble_contracts",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release/andswapchain_assemble_contracts"
+      ],
+      "exit_code": 0,
+      "seconds": 0.087,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_assemble_contracts-push.log",
+      "log_sha256": "922f8723ab1862caf8593de3b1cd33848a6cea2d7398d6e5659f2e3e105535fd"
+    },
+    {
+      "name": "andswapchain_assemble_contracts-chmod",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "shell",
+        "chmod",
+        "700",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release/andswapchain_assemble_contracts"
+      ],
+      "exit_code": 0,
+      "seconds": 0.045,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_assemble_contracts-chmod.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "andswapchain_assemble_contracts-sha256",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "shell",
+        "sha256sum",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release/andswapchain_assemble_contracts"
+      ],
+      "exit_code": 0,
+      "seconds": 0.059,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_assemble_contracts-sha256.log",
+      "log_sha256": "493a5ba577c1ae0b0932ffa1f62372e2c0439498a8521eb2e30e448ad61acd44"
+    },
+    {
+      "name": "andswapchain_assemble_contracts-runtime",
+      "command": [
+        "adb",
+        "-s",
+        "3B163600WKV00000",
+        "shell",
+        "timeout",
+        "30",
+        "/data/local/tmp/andswapchain-bounded-current-20260912/android-release/andswapchain_assemble_contracts"
+      ],
+      "exit_code": 0,
+      "seconds": 0.057,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_assemble_contracts-runtime.log",
+      "log_sha256": "ddf9738c06d39e8d68b46b8093ba231b87dea66dbba9e43dda937d6a770d8a3a"
+    },
+    {
+      "name": "andswapchain_assemble_contracts-elf",
+      "command": [
+        "/opt/homebrew/share/android-ndk/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "--notes",
+        "--sections",
+        "-W",
+        "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_assemble_contracts"
+      ],
+      "exit_code": 0,
+      "seconds": 0.014,
+      "log": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_assemble_contracts-elf.log",
+      "log_sha256": "21d9ebcf7fb8859402e2f8d36ffee45a831a8bbcd69a97a31fe6891cf6c9137b"
+    }
+  ],
+  "executions": [
+    {
+      "fixture": "andswapchain_contract_tests",
+      "status": "passed",
+      "output": "R01/R05 memory, lifecycle, failure-injection contracts passed\n",
+      "sha256": "92a0443d513423c3b2e51d7f65c8f69fa1e57252496ab227f6cb577a0be6772f",
+      "device_sha256": "92a0443d513423c3b2e51d7f65c8f69fa1e57252496ab227f6cb577a0be6772f",
+      "build_id": "f51fdb3d27842e1bdd12243f734f8469c9cd40b0"
+    },
+    {
+      "fixture": "andswapchain_profiler_tests",
+      "status": "passed",
+      "output": "PASS: owned bounded names, concurrent publication/capacity, 80000 concurrent records, scoped timing and retained history\n",
+      "sha256": "bd3f481ef704986e0498a15e662669be92348a6413691ed6b56fcece5c9e422b",
+      "device_sha256": "bd3f481ef704986e0498a15e662669be92348a6413691ed6b56fcece5c9e422b",
+      "build_id": "9581a7a60bc54f66251134e48cb90761a4be3476"
+    },
+    {
+      "fixture": "andswapchain_crash_record_test",
+      "status": "passed",
+      "output": "",
+      "sha256": "1c3aeaafd5e095f53cdf9994d1c601d84a90225f2f9b5637e030837118253abd",
+      "device_sha256": "1c3aeaafd5e095f53cdf9994d1c601d84a90225f2f9b5637e030837118253abd",
+      "build_id": "bfcfbcbe758cad15ccf230b54a5a62fb72b9ca4d"
+    },
+    {
+      "fixture": "andswapchain_assembler_roundtrip",
+      "status": "passed",
+      "output": "PASS: independent Keystone-only assembler, exact AArch64 bytes, padded data and invalid input\n",
+      "sha256": "281e08a95ff8b52d5eda3b1154f68dbf6a02b48628f6a678ba11b5c604f4a18d",
+      "device_sha256": "281e08a95ff8b52d5eda3b1154f68dbf6a02b48628f6a678ba11b5c604f4a18d",
+      "build_id": "7b3a04d2a3301e1b1013f9bed5e0a6ffc80c499a"
+    },
+    {
+      "fixture": "andswapchain_disassembler_roundtrip",
+      "status": "passed",
+      "output": "PASS: independent Capstone-only decoder, exact AArch64 instructions and partial batch\n",
+      "sha256": "e6d05fecb23b4876a0fbc12145975372e92e3ad1063f8345e609b608295f9234",
+      "device_sha256": "e6d05fecb23b4876a0fbc12145975372e92e3ad1063f8345e609b608295f9234",
+      "build_id": "5312bbbe7983d9f6e8a3195a492499a3100e820c"
+    },
+    {
+      "fixture": "andswapchain_assemble_roundtrip",
+      "status": "passed",
+      "output": "PASS: pinned source Keystone/Capstone round-trip, exact AArch64 bytes, invalid assembly and short reader\n",
+      "sha256": "8e1232a8c595dc62ebf2e487a214cb6d4778fb4b4f6b8254cf9efaae328a6791",
+      "device_sha256": "8e1232a8c595dc62ebf2e487a214cb6d4778fb4b4f6b8254cf9efaae328a6791",
+      "build_id": "3dc1028278f14a62d19a32f5ff84972ced0869cf"
+    },
+    {
+      "fixture": "andswapchain_assemble_contracts",
+      "status": "passed",
+      "output": "R14: production assembler/disassembler ownership, backend failures, exact tail reads, callback exceptions, vector batching, concurrent assembly and data encoding passed\n",
+      "sha256": "a25773999d22dadb1a46667b016b37edc1876e94c5fc68f5af02665fef613245",
+      "device_sha256": "a25773999d22dadb1a46667b016b37edc1876e94c5fc68f5af02665fef613245",
+      "build_id": "72331f71b9caed52772f8c5ef036e663fe55fc4d"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_contract_tests",
+      "sha256": "92a0443d513423c3b2e51d7f65c8f69fa1e57252496ab227f6cb577a0be6772f",
+      "bytes": 6332224
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_profiler_tests",
+      "sha256": "bd3f481ef704986e0498a15e662669be92348a6413691ed6b56fcece5c9e422b",
+      "bytes": 5747816
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_crash_record_test",
+      "sha256": "1c3aeaafd5e095f53cdf9994d1c601d84a90225f2f9b5637e030837118253abd",
+      "bytes": 5500400
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_assembler_roundtrip",
+      "sha256": "281e08a95ff8b52d5eda3b1154f68dbf6a02b48628f6a678ba11b5c604f4a18d",
+      "bytes": 16538504
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_disassembler_roundtrip",
+      "sha256": "e6d05fecb23b4876a0fbc12145975372e92e3ad1063f8345e609b608295f9234",
+      "bytes": 12589088
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_assemble_roundtrip",
+      "sha256": "8e1232a8c595dc62ebf2e487a214cb6d4778fb4b4f6b8254cf9efaae328a6791",
+      "bytes": 23909568
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/andswapchain_assemble_contracts",
+      "sha256": "a25773999d22dadb1a46667b016b37edc1876e94c5fc68f5af02665fef613245",
+      "bytes": 5860744
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/libAndSwapChainHookMemory.a",
+      "sha256": "7c82d35c2b3414e267d1403f202e742473541463c8932cbe46ea0be9353c92bd",
+      "bytes": 226638
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/libAndSwapChainHookCrashRecorder.a",
+      "sha256": "62584330e8a9ce54e006baa00fdbf70025c01a5ee02a02d5bd29230231eed827",
+      "bytes": 102946
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/libAndSwapChainHookDisassembler.a",
+      "sha256": "41999844062531d8a2cdf68dce06e2f74e66610ebf71c8e440f0f2348b6bb371",
+      "bytes": 104020
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/libAndSwapChainHookAnalysis.a",
+      "sha256": "376c26bda968b0f6051df4dd518fa0f4ccff15410d261669cbcebbb8ff48c00a",
+      "bytes": 529580
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/libAndSwapChainHookProfiler.a",
+      "sha256": "50c475a79c2cac6a2014bd677882faa1ae6096fd3868b3a1295fc1f044475881",
+      "bytes": 218208
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/libAndSwapChainHookInstrumentation.a",
+      "sha256": "eeaaf185d07e3e65925b0159862070a5d27aa08bb1d623f0fff5ad9f2a26ac0a",
+      "bytes": 60416
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/libAndSwapChainHookAssembler.a",
+      "sha256": "3290cb57fdcebfa0aca5ba412519546615f739a9a09f61b922ef809a5afd2cac",
+      "bytes": 183696
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/CMakeCache.txt",
+      "sha256": "fa37dc9924959de8f4cdce0993097a21ea83e4cda1808f1960311eed1fc01e2c",
+      "bytes": 42912
+    },
+    {
+      "path": "/Users/ddd/Developer/AndSwapChainHook/build/bounded-current-20260912/android-release/build.ninja",
+      "sha256": "c1daa77e6a1c282c2927c2e2535be975e936ae464e9cd6affb0f8b36046ffaeb",
+      "bytes": 548887
+    }
+  ],
+  "ndk": "Pkg.Desc = Android NDK\nPkg.Revision = 29.0.14206865\nPkg.BaseRevision = 29.0.14206865\nPkg.ReleaseName = r29\n",
+  "limitations": [
+    "Host Memory::LocalReader reports UnsupportedPlatform on macOS; mapped process reads execute only in Android fixtures.",
+    "Host ASan/UBSan only, leak detection disabled because the current macOS runtime does not support LSan.",
+    "Generated assembly is inspected as bytes and never executed."
+  ]
+}
