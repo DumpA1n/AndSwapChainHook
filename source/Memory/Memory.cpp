@@ -35,16 +35,16 @@ ProcessReader::~ProcessReader()
 ReadResult ProcessReader::Open()
 {
 #if defined(__linux__)
-    return Open(getpid());
+    return Open(getpid(), MappingReadPolicy::RequireReadable);
 #else
     return {Error::UnsupportedPlatform};
 #endif
 }
-ReadResult ProcessReader::Open(pid_t pid)
+ReadResult ProcessReader::Open(pid_t pid, MappingReadPolicy policy)
 {
 #if defined(__linux__)
     if (fd_ >= 0)
-        return {Error::None};
+        return pid_ == pid && policy_ == policy ? ReadResult{} : ReadResult{Error::InvalidArgument};
     if (pid <= 0)
         return {Error::InvalidArgument};
     const std::string path = "/proc/" + std::to_string(pid) + "/mem";
@@ -52,11 +52,13 @@ ReadResult ProcessReader::Open(pid_t pid)
     if (descriptor < 0)
         return {SystemError(errno), 0, errno};
     pid_ = pid;
+    policy_ = policy;
     auto result = RefreshMappings();
     if (!result)
     {
         close(descriptor);
         pid_ = -1;
+        policy_ = MappingReadPolicy::RequireReadable;
         return result;
     }
     fd_ = descriptor;
@@ -119,7 +121,7 @@ ReadResult ProcessReader::Read(std::uintptr_t address, std::span<std::byte> dest
     {
         if (mapping == mappings_.end() || mapping->begin > cursor || mapping->end <= cursor)
             return {Error::Unmapped};
-        if (!mapping->readable)
+        if (!mapping->readable && policy_ == MappingReadPolicy::RequireReadable)
             return {Error::PermissionDenied};
         cursor = std::min(end, mapping->end);
         ++mapping;

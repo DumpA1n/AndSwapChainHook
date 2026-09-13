@@ -55,10 +55,16 @@ struct Mapping
     bool readable = false;
 };
 
+enum class MappingReadPolicy
+{
+    RequireReadable,
+    AllowProcfsForceRead
+};
+
 // Single owner: Open and RefreshMappings must not run concurrently with reads.
-// The explicit PID overload opens an already-readable procfs view. It never
-// attaches, changes dumpability, changes page permissions or elevates privilege.
-// Mapping checks are advisory snapshots: pread still reports concurrent unmapping.
+// The explicit PID overload opens a read-only procfs view. AllowProcfsForceRead
+// permits pread on mapped pages without VM_READ; the kernel still owns access
+// control and error reporting. Neither policy attaches or changes target state.
 class ProcessReader final : public Reader
 {
   public:
@@ -67,7 +73,7 @@ class ProcessReader final : public Reader
     ProcessReader(const ProcessReader &) = delete;
     ProcessReader &operator=(const ProcessReader &) = delete;
     ReadResult Open();
-    ReadResult Open(pid_t pid);
+    ReadResult Open(pid_t pid, MappingReadPolicy policy = MappingReadPolicy::RequireReadable);
     ReadResult Read(std::uintptr_t address, std::span<std::byte> destination) const override;
     ReadResult RefreshMappings();
     const std::vector<Mapping> &Mappings() const noexcept
@@ -78,6 +84,7 @@ class ProcessReader final : public Reader
   private:
     int fd_ = -1;
     pid_t pid_ = -1;
+    MappingReadPolicy policy_ = MappingReadPolicy::RequireReadable;
     std::vector<Mapping> mappings_;
 };
 

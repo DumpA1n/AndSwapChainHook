@@ -120,6 +120,11 @@ void MemoryContracts()
     CHECK(process.RefreshMappings());
     CHECK(process.Read(reinterpret_cast<std::uintptr_t>(mapping), std::span(&byte, 1)).error ==
           Memory::Error::PermissionDenied);
+    Memory::ProcessReader forced;
+    CHECK(forced.Open(getpid(), Memory::MappingReadPolicy::AllowProcfsForceRead));
+    CHECK(forced.Read(reinterpret_cast<std::uintptr_t>(mapping), std::span(&byte, 1)) &&
+          byte == std::byte{42});
+    CHECK(forced.Open(getpid()).error == Memory::Error::InvalidArgument);
     CHECK(munmap(mapping, page * 2) == 0);
     CHECK(process.RefreshMappings());
     CHECK(process.Read(reinterpret_cast<std::uintptr_t>(mapping), std::span(&byte, 1)).error ==

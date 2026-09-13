@@ -6,7 +6,7 @@ AndSwapChainHook provides bounded Android process analysis and optional presenta
 
 | CMake target | Public header | Contract |
 |---|---|---|
-| `AndSwapChainHook::Memory` | `AndSwapChainHook/Memory.h` | Explicit self-process reader; mapping, permission, overflow and short-read errors; module identity and generation catalog |
+| `AndSwapChainHook::Memory` | `AndSwapChainHook/Memory.h` | Explicit process reader with default mapping-permission enforcement and opt-in procfs force-read; mapping, overflow and short-read errors; module identity and generation catalog |
 | `AndSwapChainHook::Analysis` | `Memory.h`, `Runtime.h` | Exact byte scanning with budgets, deadlines and cancellation; explicit single-worker sessions and copied result snapshots |
 | `AndSwapChainHook::Input` | `Input.h` | Bounded copied events, whole-gesture ownership, explicit producer/consumer roles and generation reset |
 | `AndSwapChainHook::Profiler` | `Profiler.h` | [Scoped timing and bounded publication](docs/profiler.md); 96 owned names of at most 95 bytes; atomic counters and history |
@@ -17,6 +17,8 @@ AndSwapChainHook provides bounded Android process analysis and optional presenta
 | `AndSwapChainHook::HookAdapter` | `pointerhook/Hook.h` from PointerHook | Optional dependency target linking a separately configured `PointerHook::Core` |
 
 The Android `libAndSwapChainHook.so` exports the `ASC_*` analysis session API. `JNI_OnLoad` only returns `JNI_VERSION_1_6`, including when its reserved argument is `1337`. Loading installs no hooks or signal handlers, starts no analysis worker, reads no target memory, loads no configuration and changes no process dumpability or memory permissions. Explicit `ASC_Initialize` opens `/proc/self/mem`; permission denial is returned without selecting another access method. `ASC_Start` copies its pattern and owns one joinable worker. `ASC_Cancel` requests cancellation, `ASC_Stop` joins, and `ASC_Destroy` releases the handle. Destruction requires exclusive handle ownership.
+
+`ProcessReader::Open(pid, MappingReadPolicy::AllowProcfsForceRead)` is an explicit read-only analysis mode for authorized targets. It retains mapped-range and overflow validation but permits `/proc/<pid>/mem` `pread` on mappings without `VM_READ`; the kernel remains the access-control authority. It does not attach, change page permissions, change dumpability or add a write channel. The default policy remains `RequireReadable`, including the `ASC_*` API.
 
 ## Build and consume
 
