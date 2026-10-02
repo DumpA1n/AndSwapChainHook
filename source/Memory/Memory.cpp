@@ -113,14 +113,20 @@ ReadResult ProcessReader::Read(std::uintptr_t address, std::span<std::byte> dest
 #if defined(__linux__)
     if (fd_ < 0)
         return {Error::InvalidArgument};
+    // mappings_ is in address order, as /proc/<pid>/maps lists it.
     auto mapping = std::find_if(mappings_.begin(), mappings_.end(), [address](const auto &item)
-                                { return item.begin <= address && address < item.end; });
+                                { return address < item.end; });
     auto cursor = address;
     const auto end = address + destination.size();
     while (cursor < end)
     {
-        if (mapping == mappings_.end() || mapping->begin > cursor || mapping->end <= cursor)
-            return {Error::Unmapped};
+        if (mapping == mappings_.end() || mapping->begin > cursor)
+        {
+            if (policy_ != MappingReadPolicy::AllowProcfsUnlistedRead)
+                return {Error::Unmapped};
+            cursor = mapping == mappings_.end() ? end : std::min(end, mapping->begin);
+            continue;
+        }
         if (!mapping->readable && policy_ == MappingReadPolicy::RequireReadable)
             return {Error::PermissionDenied};
         cursor = std::min(end, mapping->end);

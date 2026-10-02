@@ -58,13 +58,17 @@ struct Mapping
 enum class MappingReadPolicy
 {
     RequireReadable,
-    AllowProcfsForceRead
+    AllowProcfsForceRead,
+    AllowProcfsUnlistedRead
 };
 
 // Single owner: Open and RefreshMappings must not run concurrently with reads.
 // The explicit PID overload opens a read-only procfs view. AllowProcfsForceRead
-// permits pread on mapped pages without VM_READ; the kernel still owns access
-// control and error reporting. Neither policy attaches or changes target state.
+// permits pread on mapped pages without VM_READ. AllowProcfsUnlistedRead also
+// permits ranges that /proc/<pid>/maps does not list, which a target can hide
+// while the pages stay mapped. The kernel still owns access control and error
+// reporting; an absent page reads as Unmapped. No policy attaches or changes
+// target state.
 class ProcessReader final : public Reader
 {
   public:

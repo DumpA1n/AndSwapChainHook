@@ -125,9 +125,26 @@ void MemoryContracts()
     CHECK(forced.Read(reinterpret_cast<std::uintptr_t>(mapping), std::span(&byte, 1)) &&
           byte == std::byte{42});
     CHECK(forced.Open(getpid()).error == Memory::Error::InvalidArgument);
+    Memory::ProcessReader unlisted;
+    CHECK(unlisted.Open(getpid(), Memory::MappingReadPolicy::AllowProcfsUnlistedRead));
+    // A mapping created after the last refresh is absent from the snapshot, as a
+    // mapping hidden from /proc/<pid>/maps is; only the unlisted policy reads it.
+    void *hidden =
+        mmap(nullptr, page * 2, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    CHECK(hidden != MAP_FAILED);
+    static_cast<unsigned char *>(hidden)[page] = 7;
+    const auto hiddenAddress = reinterpret_cast<std::uintptr_t>(hidden);
+    CHECK(forced.Read(hiddenAddress + page, std::span(&byte, 1)).error == Memory::Error::Unmapped);
+    CHECK(unlisted.Read(hiddenAddress + page, std::span(&byte, 1)) && byte == std::byte{7});
+    std::byte spanning[32]{};
+    CHECK(unlisted.Read(hiddenAddress + page - 16, spanning) && spanning[16] == std::byte{7});
+    CHECK(munmap(hidden, page * 2) == 0);
+    CHECK(unlisted.Read(hiddenAddress + page, std::span(&byte, 1)).error == Memory::Error::Unmapped);
     CHECK(munmap(mapping, page * 2) == 0);
     CHECK(process.RefreshMappings());
     CHECK(process.Read(reinterpret_cast<std::uintptr_t>(mapping), std::span(&byte, 1)).error ==
+          Memory::Error::Unmapped);
+    CHECK(unlisted.Read(reinterpret_cast<std::uintptr_t>(mapping), std::span(&byte, 1)).error ==
           Memory::Error::Unmapped);
 #endif
 }
